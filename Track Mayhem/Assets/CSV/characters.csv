@@ -1,0 +1,4 @@
+id,Runner,Description,Speed,Strength,Agility,Flexability,Rarity,Starter,Extra 1,Extra 2,Extra 3,Extra 4 ,Extra 5
+0,BroMan,Bro man is such a bro and a man meaning he is really good at the long jump,5,4,2,7,Common,TRUE,25,,,,
+1,BestPerson,This person is the best and always will be the best compared to bro man,2,3,10,9,Rare,TRUE,50,10,,,
+2,LockedChar,Locked forever.guess you will never know what they have and can do,1,1,3,6,Epic,FALSE,1,,,,
