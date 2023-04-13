@@ -10,6 +10,7 @@ using System.Linq;
 public class LongJumpManager : MonoBehaviour
 {
     [SerializeField] private GameObject player; //the player controller
+    [SerializeField] private ItemStorage itemStorage; //stores all the flags and character models
 
     [SerializeField] private LeaderboardManager leaderboardManager; //stores the current leaderboard manager
 
@@ -44,6 +45,8 @@ public class LongJumpManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform); //inits the runner into the current scene
+        
 
         jumpMeter.jumpBar.gameObject.transform.parent.gameObject.SetActive(false); //hides the jump meter
         player.GetComponentInChildren<Animator>().Play("Running");
@@ -52,6 +55,13 @@ public class LongJumpManager : MonoBehaviour
 
         foulImage.enabled = false; //hide the foul icon
         prImage.enabled = false; //hides the pr image
+
+        runningMeter.barDecreaseSpeed -= PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel * 10; //lowers bar slower
+        runningMeter.speedPerClick -= PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel * 0.5f; //raises bar a bit slower
+
+        jumpMeter.jumpBarSpeed -= PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel * 20; //makes the jump abr go slower
+
+        pullInLegPower += PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel * 0.5f;
 
     }
 
@@ -228,7 +238,6 @@ public class LongJumpManager : MonoBehaviour
         afterJump();
        
     }
-
     
 
     private void updatePlayerBanner(float mark)
@@ -245,6 +254,7 @@ public class LongJumpManager : MonoBehaviour
         {
             currentPlayerBanner.mark3 = mark;
         }
+        
     }
 
     private void afterJump()
@@ -303,7 +313,8 @@ public class LongJumpManager : MonoBehaviour
         {
             powerPercent = 1 - ((averageSpeed - 8500) / 4500);
         }
-        float power = 10; //temp
+        float power = 5 + PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel * 1;
+        power += PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel * 0.1f;
         power *= powerPercent;
         float jumpPercent = 1 - (Math.Abs(100 - jumpMeter.jumpMeterSpeed) / 100);
         power *= jumpPercent;

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public static class PublicData
@@ -16,5 +17,21 @@ public static class PublicData
     public static int currentRunnerUsing = 0;//shows the current runner that play is using for events
 
     public static int currentSelectedEventIndex = 1; //holds the index of the current event according to the records.csv
+
+    public static RunnerInformation getCharactersInfo(int id) //function to get the current data from game data of that runner
+    {
+        List<RunnerInformation> runnerData = PublicData.gameData.allRunners; //used in all classes to get the current character information
+        for (int i = 0; i < runnerData.Count; i++) //loops through characters
+        {
+            if (runnerData.ElementAt(i).runnerId == id) //find matching ids
+            {
+                return runnerData.ElementAt(i);
+            }
+        }
+        PublicData.gameData.allRunners.Add(new RunnerInformation(id)); //if it can't find one then it makes a new character with the same id
+        return getCharactersInfo(id); //returns the new character
+
+    }
+
 
 }

@@ -10,7 +10,7 @@ public class JumpingMeter : MonoBehaviour
     public float jumpMeterSpeed; //current value of the jump meter
     private bool jumpMeterDirection; //the direction of the meter
     private float movingBarSpeed; //the speed back and forth of the jumpm meter
-    [SerializeField] float jumpBarSpeed; //the set speed of the jump meter
+    [SerializeField] public float jumpBarSpeed; //the set speed of the jump meter. Edited by character traits
     private float startingJumpBar; //holds the starting position of the jump bar
     private float jumpBarIncreasePerInteger; //the increase of the bar per speed unit
     [SerializeField] private float jumpMeterToTop;//stores the distance from the begining to the end of the jump meter

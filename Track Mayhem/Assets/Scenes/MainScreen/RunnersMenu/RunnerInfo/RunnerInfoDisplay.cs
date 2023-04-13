@@ -9,15 +9,18 @@ using System;
 public class RunnerInfoDisplay : MonoBehaviour
 {
     [SerializeField] private Canvas mainCanvas;
+    [SerializeField] private GameObject player;
+    [SerializeField] private ItemStorage itemStorage;
 
     private void Start()
     {
+        itemStorage.initRunner(PublicData.currentRunnerOn, player.transform);
         updateBoxes();
     }
 
     private void updateBoxes()
     {
-        RunnerInformation info = getCharactersInfo(PublicData.currentRunnerOn); //gets the gamedata traits
+        RunnerInformation info = PublicData.getCharactersInfo(PublicData.currentRunnerOn); //gets the gamedata traits
         string[] att = PublicData.charactersInfo.ElementAt(info.runnerId + 1); //gets the characters.csv traits
         foreach (Transform tf in mainCanvas.transform) //sets all the text boxes to appropriate values
         {
@@ -78,35 +81,24 @@ public class RunnerInfoDisplay : MonoBehaviour
     {
         if (num == 0)
         {
-            getCharactersInfo(PublicData.currentRunnerOn).speedLevel++;
+            PublicData.getCharactersInfo(PublicData.currentRunnerOn).speedLevel++;
         }
         if (num == 1)
         {
-            getCharactersInfo(PublicData.currentRunnerOn).strengthLevel++;
+            PublicData.getCharactersInfo(PublicData.currentRunnerOn).strengthLevel++;
         }
         if (num == 2)
         {
-            getCharactersInfo(PublicData.currentRunnerOn).agilityLevel++;
+            PublicData.getCharactersInfo(PublicData.currentRunnerOn).agilityLevel++;
         }
         if (num == 3)
         {
-            getCharactersInfo(PublicData.currentRunnerOn).flexabilityLevel++;
+            PublicData.getCharactersInfo(PublicData.currentRunnerOn).flexabilityLevel++;
         }
         updateBoxes();
     }
 
-    private RunnerInformation getCharactersInfo(int id) //gets the current gamedata traits
-    {
-        List<RunnerInformation> runnerData = PublicData.gameData.allRunners;
-        for (int i = 0; i < runnerData.Count; i++)
-        {
-            if (runnerData.ElementAt(i).runnerId == id)
-            {
-                return runnerData.ElementAt(i);
-            }
-        }
-        return null;
-    }
+    
 
     private void setUpgradeButons(Transform tf, int amount, bool level) //takes a transform and loops through all the upgrade boxes to decide what is highlighted. Level decides if the highlight is for the current level
     {

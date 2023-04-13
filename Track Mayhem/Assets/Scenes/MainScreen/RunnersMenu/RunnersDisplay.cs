@@ -38,7 +38,7 @@ public class RunnersDisplay : MonoBehaviour
 
     private void makeCharacterDisplay(string[] att)
     {
-        RunnerInformation info = getCharactersInfo(Int32.Parse(att[0])); //gets the current information about the runner
+        RunnerInformation info = PublicData.getCharactersInfo(Int32.Parse(att[0])); //gets the current information about the runner
         GameObject runnerIcon; //makes a runner object to be added to the grid
         if (info.unlocked)
         {
@@ -92,20 +92,8 @@ public class RunnersDisplay : MonoBehaviour
 
     }
 
-    private RunnerInformation getCharactersInfo(int id) //function to get the current data from game data of that runner
-    {
-        List<RunnerInformation> runnerData = PublicData.gameData.allRunners;
-        Debug.Log(runnerData.ElementAt(0).points);
-        for (int i =0; i<runnerData.Count; i++)
-        {
-            if (runnerData.ElementAt(i).runnerId == id)
-            {
-                return runnerData.ElementAt(i);
-            }
-        }
-        PublicData.gameData.allRunners.Add(new RunnerInformation(id));
-        return PublicData.gameData.allRunners.ElementAt(id);
-    }
+   
+    
 
     private void setUpdateIcon(Transform tf, int num) //sets the upgrade level of a trait to a specific level
     {

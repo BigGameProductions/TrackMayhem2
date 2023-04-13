@@ -231,7 +231,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   jumpBar: {fileID: 453169777}
   jumpMeterSpeed: 0
-  jumpBarSpeed: 250
+  jumpBarSpeed: 500
   jumpMeterToTop: 180
   setScaleForMovement: 1.8062
 --- !u!4 &91191524
@@ -5326,6 +5326,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerModel
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -6138,6 +6142,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1387769874}
+  itemStorage: {fileID: 1814421225}
   leaderboardManager: {fileID: 730125508}
   runningCamera: {fileID: 964258461}
   jumpingCamera: {fileID: 754744256}
@@ -11378,6 +11383,74 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
+--- !u!1001 &1814421224
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4215284598490889881, guid: 71098ec722a8540268af9010c95b9bcd, type: 3}
+      propertyPath: m_Name
+      value: ItemStorage
+      objectReference: {fileID: 0}
+    - target: {fileID: 6074609241716996786, guid: 71098ec722a8540268af9010c95b9bcd, type: 3}
+      propertyPath: m_RootOrder
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 6074609241716996786, guid: 71098ec722a8540268af9010c95b9bcd, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 861.2188
+      objectReference: {fileID: 0}
+    - target: {fileID: 6074609241716996786, guid: 71098ec722a8540268af9010c95b9bcd, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 462.70514
+      objectReference: {fileID: 0}
+    - target: {fileID: 6074609241716996786, guid: 71098ec722a8540268af9010c95b9bcd, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -4.203071
+      objectReference: {fileID: 0}
+    - target: {fileID: 6074609241716996786, guid: 71098ec722a8540268af9010c95b9bcd, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6074609241716996786, guid: 71098ec722a8540268af9010c95b9bcd, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6074609241716996786, guid: 71098ec722a8540268af9010c95b9bcd, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6074609241716996786, guid: 71098ec722a8540268af9010c95b9bcd, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6074609241716996786, guid: 71098ec722a8540268af9010c95b9bcd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6074609241716996786, guid: 71098ec722a8540268af9010c95b9bcd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6074609241716996786, guid: 71098ec722a8540268af9010c95b9bcd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 71098ec722a8540268af9010c95b9bcd, type: 3}
+--- !u!114 &1814421225 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: -3247370279329302664, guid: 71098ec722a8540268af9010c95b9bcd, type: 3}
+  m_PrefabInstance: {fileID: 1814421224}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76fa218f965914b82a3d696964739f32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1847070682 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1929982105927666878, guid: 76f6e4cd7ecc94f0db66c1d8656e5288, type: 3}

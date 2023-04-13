@@ -8,10 +8,13 @@ public class MainMenuManager : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI currentRunnerPoints;
     [SerializeField] private TextMeshProUGUI tempEventName;
+    [SerializeField] private ItemStorage itemStorage;
+    [SerializeField] private GameObject player;
 
     // Start is called before the first frame update
     void Start()
     {
+        itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform);
         currentRunnerPoints.text = PublicData.gameData.allRunners.ElementAt(indexOfCurrentRunner()).points.ToString();
         tempEventName.text = PublicData.recordsInfo.ElementAt(PublicData.currentSelectedEventIndex + 1)[0];
     }

@@ -8,11 +8,11 @@ public class RunningMeterBar : MonoBehaviour
     public Image runningBar;
 
     public float runningSpeed; //public varible to get the running speed
-    [SerializeField] private float speedPerClick; //speed added per click of the meter
+    [SerializeField] public float speedPerClick; //speed added per click of the meter. Changed by character traits
     public float startingBarHeight; //hold the starting y value of the bar
     [SerializeField] private float maxSpeed;//max speed the player can go
     public float barIncreasePerSpeed; // increase of bar per speed number
-    [SerializeField] private float barDecreaseSpeed; //the speed in which the bar decreases
+    [SerializeField] public float barDecreaseSpeed; //the speed in which the bar decreases. Changed by character traits
     private float totalRunningSpeed; //total distance travelled for running
     private float timeElapsedRunning; //time that has elepsed for running
     [SerializeField] private float increaseForBarToTheTop;//stores distance from the bottom of the bar to the top
