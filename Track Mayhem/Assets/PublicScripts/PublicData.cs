@@ -15,8 +15,11 @@ public static class PublicData
     public static GameData gameData; //stores all the game data that has been saved for the game
     public static int currentRunnerOn = 0; //shows the current runner that the player is on
     public static int currentRunnerUsing = 0;//shows the current runner that play is using for events
+    public static int currentBoxOpening = 0; //the id of the current chest that is being opened between main menu and opening scene
+
 
     public static int currentSelectedEventIndex = 1; //holds the index of the current event according to the records.csv
+
 
     public static RunnerInformation getCharactersInfo(int id) //function to get the current data from game data of that runner
     {

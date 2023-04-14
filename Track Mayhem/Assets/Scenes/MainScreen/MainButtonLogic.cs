@@ -62,5 +62,12 @@ public class MainButtonLogic : MonoBehaviour
     {
         SceneManager.LoadScene("EventSelection");
     }
+
+    public void openChest(int slot)
+    {
+        PublicData.currentBoxOpening = PublicData.gameData.chestSlots[slot].chestID;
+        PublicData.gameData.chestSlots[slot] = null;
+        SceneManager.LoadScene("ChestOpening");
+    }
     
 }

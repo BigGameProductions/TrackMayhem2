@@ -23,4 +23,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/MainScreen/EventSelection/EventSelection.unity
     guid: 97db58b32331a48879b57e4967fcdbfe
+  - enabled: 1
+    path: Assets/Scenes/MainScreen/ChestOpening/ChestOpening.unity
+    guid: a044b3420932e445c9dd6212587f6ed3
   m_configObjects: {}

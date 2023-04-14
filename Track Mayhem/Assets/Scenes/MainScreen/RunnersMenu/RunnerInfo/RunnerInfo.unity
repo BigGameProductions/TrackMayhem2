@@ -1868,6 +1868,8 @@ MonoBehaviour:
   mainCanvas: {fileID: 260379885}
   player: {fileID: 1171595822}
   itemStorage: {fileID: 1618993994}
+  upgradeStartPrice: 100
+  upgradeScale: 3
 --- !u!1 &1832346674
 GameObject:
   m_ObjectHideFlags: 0

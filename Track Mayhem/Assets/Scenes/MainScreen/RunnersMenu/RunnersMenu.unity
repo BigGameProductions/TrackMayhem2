@@ -202,6 +202,7 @@ MonoBehaviour:
   - {fileID: 919132149155446097, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
   - {fileID: 919132149155446097, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
   mainCharacterAvatar: {fileID: 0}
+  characterAnimator: {fileID: 0}
 --- !u!1 &148805720
 GameObject:
   m_ObjectHideFlags: 0
@@ -755,7 +756,7 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_Camera: {fileID: 320495317}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
