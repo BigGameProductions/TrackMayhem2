@@ -13,6 +13,8 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private ItemStorage itemStorage;
     [SerializeField] private GameObject player;
 
+    [SerializeField] private GameObject currencyLabels;
+
     [SerializeField] private GameObject[] chestSlots;
 
     // Start is called before the first frame update
@@ -24,6 +26,7 @@ public class MainMenuManager : MonoBehaviour
         PublicData.gameData.chestSlots[0] = new ChestInfo(1, true);
         PublicData.gameData.chestSlots[1] = new ChestInfo(2, true);
         setChests();
+        updateCurrency();
     }
 
     private int indexOfCurrentRunner() //find the current index of the runner in the runner array in game data
@@ -36,6 +39,21 @@ public class MainMenuManager : MonoBehaviour
             }
         }
         return 0;
+    }
+
+    private void updateCurrency()
+    {
+        foreach (Transform tf in currencyLabels.transform)
+        {
+            if (tf.name == "Tokens")
+            {
+                tf.GetComponent<TextMeshProUGUI>().text = PublicData.gameData.tokens.ToString();
+            }
+            if (tf.name == "TrainingCards")
+            {
+                tf.GetComponent<TextMeshProUGUI>().text = PublicData.gameData.trainingCards.ToString();
+            }
+        }
     }
 
     private void setChests() //sets the image of chests

@@ -73,12 +73,27 @@ public class RunnerInfoDisplay : MonoBehaviour
                         {
                             if (info.unlocked)
                             {
-                                string upgradeText = upgradeButtonText(count, info, att);
-                                if (upgradeText == "Max")
+                                int upgradeAmount = upgradeLevelForTrait(count, info, att);
+                                if (upgradeAmount == -1 || info.upgradePoints < upgradeAmount) //test if the trait is not max and the player can afford to upgrade it
                                 {
                                     tfff.GetComponent<Button>().enabled = false; //disables the user from clicking max level
+                                    tfff.GetComponentInChildren<TextMeshProUGUI>().text = "No"; //shows the upgrade cannot happen
                                 }
-                                tfff.GetComponentInChildren<TextMeshProUGUI>().text = upgradeText; //sets the upgrade tetx button calling a method for it
+                                else
+                                {
+                                    tfff.GetComponentInChildren<TextMeshProUGUI>().text = "Yes"; //shows the uprgade can happen
+                                }
+
+                                Slider sl = tfff.GetComponentInChildren<Slider>();
+                                sl.maxValue = upgradeAmount; //temp as "max" will throw an error //TODO
+                                sl.value = info.upgradePoints;
+                                if (upgradeAmount == -1) { // making sure the text shows that it is max level
+                                    sl.GetComponentInChildren<TextMeshProUGUI>().text = "Max"; //setting the max value for slider
+                                } else
+                                {
+                                    sl.GetComponentInChildren<TextMeshProUGUI>().text = info.upgradePoints + "/" + upgradeAmount; //second value is parsed from reuturn string
+
+                                }
                             } else
                             {
                                 tfff.gameObject.SetActive(false); //hides the button for locked characters
@@ -91,7 +106,7 @@ public class RunnerInfoDisplay : MonoBehaviour
         }
     }
 
-    private string upgradeButtonText(int count, RunnerInformation ri, string[] att) //returns the text to be shown on the upgrade button
+    private int upgradeLevelForTrait(int count, RunnerInformation ri, string[] att) //returns the number of the points needed for the current upgrade
     {
         int level = 0; //gets the level for the current trait
         if (count == 0)
@@ -112,11 +127,11 @@ public class RunnerInfoDisplay : MonoBehaviour
         }
         if (level == 10)
         {
-            return "Max";
+            return -1;
         }
         if (level >= Int32.Parse(att[3+count])) //tests if it is below at or above the max standards for the runner
         {
-            return (level - Int32.Parse(att[3 + count]) + 1).ToString(); //returnst he amount of training tokens needed to go beyond the players ability
+            return (level - Int32.Parse(att[3 + count]) + 1); //returnst he amount of training tokens needed to go beyond the players ability
         } else
         {
             int finalResult = upgradeStartPrice; //sets the starting price
@@ -124,7 +139,7 @@ public class RunnerInfoDisplay : MonoBehaviour
             {
                 finalResult = (int)(finalResult * upgradeScale); //scales the price by the scale factor
             }
-            return finalResult.ToString();
+            return finalResult;
         }
         
 
@@ -132,23 +147,31 @@ public class RunnerInfoDisplay : MonoBehaviour
 
     public void upgradeCharacter(int num) //num is the index of the trait that is being upgraded
     {
-        if (num == 0)
+        RunnerInformation info = PublicData.getCharactersInfo(PublicData.currentRunnerOn); //gets the gamedata traits
+        string[] att = PublicData.charactersInfo.ElementAt(info.runnerId + 1); //gets the characters.csv traits
+        int upgradeNumber = upgradeLevelForTrait(num, info, att); //gets price of the current trait in points
+        if (info.upgradePoints >= upgradeNumber)
         {
-            PublicData.getCharactersInfo(PublicData.currentRunnerOn).speedLevel++;
+            info.upgradePoints -= upgradeNumber;
+            if (num == 0)
+            {
+                PublicData.getCharactersInfo(PublicData.currentRunnerOn).speedLevel++;
+            }
+            if (num == 1)
+            {
+                PublicData.getCharactersInfo(PublicData.currentRunnerOn).strengthLevel++;
+            }
+            if (num == 2)
+            {
+                PublicData.getCharactersInfo(PublicData.currentRunnerOn).agilityLevel++;
+            }
+            if (num == 3)
+            {
+                PublicData.getCharactersInfo(PublicData.currentRunnerOn).flexabilityLevel++;
+            }
+            updateBoxes();
         }
-        if (num == 1)
-        {
-            PublicData.getCharactersInfo(PublicData.currentRunnerOn).strengthLevel++;
-        }
-        if (num == 2)
-        {
-            PublicData.getCharactersInfo(PublicData.currentRunnerOn).agilityLevel++;
-        }
-        if (num == 3)
-        {
-            PublicData.getCharactersInfo(PublicData.currentRunnerOn).flexabilityLevel++;
-        }
-        updateBoxes();
+        
     }
 
     

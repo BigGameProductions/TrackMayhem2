@@ -12,6 +12,8 @@ public class RunnerInformation
     public int flexabilityLevel;
     public int points;
 
+    public int upgradePoints;
+
     public bool unlocked;
 
     public RunnerInformation(int id)
@@ -22,6 +24,7 @@ public class RunnerInformation
         this.agilityLevel = 0;
         this.flexabilityLevel = 0;
         this.points = 0;
+        this.upgradePoints = 0;
         this.unlocked = false;
     }
 
