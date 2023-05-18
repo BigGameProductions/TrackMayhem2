@@ -16,7 +16,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
     [SerializeField] private float seedSpreadDown; //how much the players will be spread from the seed down
     [SerializeField] private float seedSpreadUp; //how much the players will be spread from the seed up
     [SerializeField] private Image[] leaderboardBanners; //a list of all the leaderboard banners that need to have information on them
-    [SerializeField] private Camera cinematicCamera; // the camaera that plays the animations before the event
+    [SerializeField] public Camera cinematicCamera; // the camaera that plays the animations before the event. Used by other classes to determine when to start
     [SerializeField] private GameObject leaderBoardHeader; //the header for the main leaderboard;
     [SerializeField] private GameObject personalBanner; //the banner shown for the player after each jump
 
@@ -47,11 +47,10 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
     private void Start()
     {
         //nothing for now
-
         if (SceneManager.GetActiveScene().name != "EndScreen") //tests to make sure it is an event screen
         {
             //temp
-            cinematicCamera.GetComponent<Animator>().speed = 2;
+            cinematicCamera.GetComponent<Animator>().speed = 10;
             //temp
         } else
         {

@@ -53,6 +53,8 @@ public class LongJumpManager : MonoBehaviour
 
         player.transform.position = startingPlayerPosition; //puts player in starting position
 
+        leaderboardManager.cinematicCamera.GetComponent<Animator>().SetInteger("event", 1); //sets animator to the current event
+
         foulImage.enabled = false; //hide the foul icon
         prImage.enabled = false; //hides the pr image
 
@@ -68,7 +70,7 @@ public class LongJumpManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (runningCamera.enabled)
+        if (runningCamera.enabled && !leaderboardManager.cinematicCamera.gameObject.activeInHierarchy)
         {
             runningMeter.updateRunMeter();
             if (Input.GetKeyDown(KeyCode.Space) && runningMeter.runningBar.transform.parent.gameObject.activeInHierarchy) //updating speed on click
@@ -93,7 +95,7 @@ public class LongJumpManager : MonoBehaviour
                 runningMeter.runningBar.transform.parent.gameObject.SetActive(false); //hide run meter
                 player.GetComponentInChildren<Animator>().speed = 0; //make running animation stop
                 jumpMeter.jumpBar.gameObject.transform.parent.gameObject.SetActive(true); //sets the jump meter to showing
-                jumpMeter.setToRegularSpeed(); //setting the bar speed to normal  speed
+                jumpMeter.setToRegularSpeed(); //setting the bar speed to normal speed
                 float averageSpeed = runningMeter.getAverageSpeed();
                 if (averageSpeed > 7500 && averageSpeed < 9500)
                 {
