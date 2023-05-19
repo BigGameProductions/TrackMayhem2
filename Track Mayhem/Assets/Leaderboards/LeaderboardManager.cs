@@ -260,8 +260,10 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
         return 0;
     }
 
+    //-10 is miss
     //-100 is empty
     //-1000 is foul
+    //-10000 is pass
     //simulates marks for the oppenents based on the spread given in the parameters
     private PlayerBanner[] simulateMark(PlayerBanner[] playerBanners, string theEvent, float spreadUp, float spreadDown)
     {
@@ -327,6 +329,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
     //mode 2 = olympic and world records and personal bests
     //mode 3 = current jumps
     //mode 4 = 3 best marks for all players
+    //mode 5 = 3 attempt jumps 
     private void setLeaderboard(PlayerBanner[] playerBanners, int mode) //sets the leaderboard according to the array of playerBanners that it is given
     {
         for (int i = 0; i < playerBanners.Length; i++) //make all banners appear
@@ -393,18 +396,26 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
             textBoxes[5].text = markToString(personalBannersMarks.mark2);
             textBoxes[6].text = markToString(personalBannersMarks.mark3);
 
-        }
+         } 
+
     }
 
     private string markToString(float mark, bool asTime=false)
     {
-        if (mark == -100)
+        if (mark == -10)
         {
             return "X";
+        }
+        else if (mark == -100)
+        {
+            return "-";
         } else if (mark == -1000)
         {
             return "FOUL";
-        } else
+        } else if (mark == -10000)
+        {
+            return "O";
+        }else
         {
             if (asTime)
             {

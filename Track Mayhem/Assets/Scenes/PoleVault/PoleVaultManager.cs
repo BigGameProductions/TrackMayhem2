@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PoleVaultManager : MonoBehaviour
@@ -22,12 +24,22 @@ public class PoleVaultManager : MonoBehaviour
     Vector3 tempPos = new Vector3(3.6730001f, -1.17499995f, -0.213f);
     Vector3 temprot = new Vector3(57.1805916f, 299.280121f, 330.898041f);
 
+    PlayerBanner currentPlayerBanner; //stores the current player data in a banner class
+
     [SerializeField] private Camera playerCamera; //is the main camera of the character
     [SerializeField] private Camera jumpingCamera; //this is the camera for the jumping part of the vault
+    [SerializeField] private Camera frontCamera; //front facing camera for after the jump
+
+    [SerializeField] private GameObject barRaise; //bar to raise and lower
+    [SerializeField] private GameObject bar; //bar to fall
+
+    private Vector3 startingBarHeight;
 
     private int rightHandTransformPosition = 55;
 
     private Vector3 startingPosition = new Vector3(-2255.1f, 226.73f, -73.9f); //starting position of player
+    private Vector3 startingCameraPosition = new Vector3(0.150004253f, 2.09000158f, -1.94002295f); //position of player camera
+    private Vector3 startingCameraRotation = new Vector3(19.372f, 0, 0); //rotation of player camera
 
     //private Vector3 polePosition = new Vector3(-3.83200002f, -0.86500001f, 0.143999994f); // position relative to hand (local)
     //private Vector3 poleRotaion = new Vector3(288.128937f, 348.744415f, 233.137482f); //local pole rotaion
@@ -39,7 +51,9 @@ public class PoleVaultManager : MonoBehaviour
     private Vector3 playerFinalPosition = new Vector3(0.00280068698f, 0.00170000177f, 0.0182998832f);
     private Vector3 playerFinalRotation = new Vector3(355.625885f, 178.877747f, 14.6459017f);
 
-    private Vector3 playerPikeRotation = new Vector3(354.592529f, 300.05777f, 15.161294f);
+    private Vector3 playerPikeRotation = new Vector3(-3, 0, 10);
+
+    private int currentJumpNumber = 0;
 
 
     bool inCinematic = true; //changes to false once cinematic is over
@@ -51,8 +65,6 @@ public class PoleVaultManager : MonoBehaviour
     {
 
         itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform); //inits the runner into the current scene
-        Debug.Log(player.GetComponentsInChildren<Transform>()[1].GetComponentsInChildren<Transform>()[1].gameObject.name);
-        Debug.Log(player.GetComponentsInChildren<Transform>()[rightHandTransformPosition].name);
         poleVaultPole.transform.SetParent(player.GetComponentsInChildren<Transform>()[rightHandTransformPosition]); //sets the parent of the pole to the right hand of the player
         //poleVaultPole.transform.localPosition = polePosition; //sets local position of pole
         //poleVaultPole.transform.localEulerAngles = poleRotaion; //sets local rotation of pole
@@ -64,6 +76,8 @@ public class PoleVaultManager : MonoBehaviour
 
 
         player.transform.position = startingPosition; //puts player in starting position
+
+        startingBarHeight = bar.transform.position;
 
         foulImage.enabled = false; //hide the foul icon
         prImage.enabled = false; //hides the pr image
@@ -89,21 +103,47 @@ public class PoleVaultManager : MonoBehaviour
 
             }
         }
-        if (poleVaultPole.GetComponent<Animator>().GetBool("Launched"))
+        if (poleVaultPole.GetComponent<Animator>().GetBool("Launched")) //when the player is launched in the air
         {
             if (Input.GetKeyDown(KeyCode.Space) && player.GetComponentInChildren<Animator>().GetBool("Pike"))
             {
+                player.GetComponentInChildren<Animator>().speed = 1;
                 player.GetComponentInChildren<Animator>().Play("Pike");
             } else if (Input.GetKeyDown(KeyCode.Space))
             {
                 player.GetComponentInChildren<Animator>().Play("LegBack");
-                player.transform.localEulerAngles = playerPikeRotation;
+                //player.transform.localEulerAngles = playerPikeRotation;
+               // player.GetComponentInChildren<Transform>().localEulerAngles = new Vector3(0, 270, 0);
+                //player.transform.Translate(0, 0, -3); //testing
                 player.GetComponentInChildren<Animator>().SetBool("Pike", true);
+            }
+            if (player.transform.position.y < 230) { //end jump
+                if (startingBarHeight.z-bar.transform.position.z >1)
+                {
+                    updatePlayerBanner(-10); //code for a miss
+                } else
+                {
+                    updatePlayerBanner(-10000); //code for a make        
+                }
+                afterJump();
+
+            }
+
+        }
+
+        if (jumpMeter.jumpBar.gameObject.transform.parent.gameObject.activeInHierarchy) //about to jump and updates jumping meter
+        {
+            jumpMeter.updateJumpMeter();
+            if (Input.GetKeyDown(KeyCode.Space)) //makes jump
+            {
+                jumpMeter.MakeJump();
+                //float jumpMeterSpeed = jumpMeter.jumpMeterSpeed;
+                StartCoroutine(startPlant(0.5f)); //calls planting method 
+
             }
         }
 
-
-        if (playerCamera.enabled && !leaderboardManager.cinematicCamera.gameObject.activeInHierarchy && isRunning)
+        if (playerCamera.enabled && !leaderboardManager.cinematicCamera.gameObject.activeInHierarchy && isRunning) //runs when the player is in the running stage
         {
             runMeter.updateRunMeter();
             if (Input.GetKeyDown(KeyCode.Space) && runMeter.runningBar.transform.parent.gameObject.activeInHierarchy) //updating speed on click
@@ -121,6 +161,7 @@ public class PoleVaultManager : MonoBehaviour
                 isRunning = false; //shows the player is not longer running
                 runMeter.runningBar.transform.parent.gameObject.SetActive(false); //hides running meter
                 player.GetComponentInChildren<Animator>().speed = 0; //stops the player animations
+                jumpMeter.setToRegularSpeed(); //setting the bar speed to normal speed
                 /*runningCamera.enabled = false;
                 jumpingCamera.enabled = true;
                 runningMeter.runningBar.transform.parent.gameObject.SetActive(false); //hide run meter
@@ -146,8 +187,29 @@ public class PoleVaultManager : MonoBehaviour
         }
     }
 
-    private void startPlant() //starts the planting process
+    private void updatePlayerBanner(float mark)
     {
+        currentPlayerBanner = leaderboardManager.getPlayerBanner();
+
+        if (currentJumpNumber == 0)
+        {
+            currentPlayerBanner.mark1 = mark;
+        }
+        else if (currentJumpNumber == 1)
+        {
+            currentPlayerBanner.mark2 = mark;
+        }
+        else if (currentJumpNumber == 2)
+        {
+            currentPlayerBanner.mark3 = mark;
+        }
+
+    }
+
+    IEnumerator startPlant(float delay) //starts the planting process
+    {
+        yield return new WaitForSeconds(delay);
+        jumpMeter.jumpBar.transform.parent.gameObject.SetActive(false);
         isPlanting = true; //showing the player is planting the pole
         player.GetComponentInChildren<Animator>().Play("PolePlanting"); //player plant animation
         poleVaultPole.GetComponent<Animator>().enabled = false; //temp way to make the animation work
@@ -167,6 +229,7 @@ public class PoleVaultManager : MonoBehaviour
         jumpingCamera.enabled = true; //makes the vaulting camera enabled
         player.transform.localPosition = playerLaunchPosition; //makes the player in the right position
         player.transform.localEulerAngles = playerLaunchRotation; //makes the player in the right rotation
+        poleVaultPole.GetComponent<Animator>().speed = 1;
         poleVaultPole.GetComponent<Animator>().Play("VaultStage1"); //makes the pole in the right animation
         StartCoroutine(stage1Vault(1.5f));
     }
@@ -198,9 +261,73 @@ public class PoleVaultManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         player.GetComponent<Rigidbody>().useGravity = true; //makes it so that player can fall
-        player.GetComponent<Rigidbody>().velocity = new Vector3(0, 10, -3); //makes player launch up
+        float power = 10;
+        float powerPercentage = 1 - (Math.Abs(100 - jumpMeter.jumpMeterSpeed) / 100);
+        power *= powerPercentage;
+        power += 5;
+        player.GetComponent<Rigidbody>().velocity = new Vector3(0, power, -3); //makes player launch up
+
     }
 
+    private void afterJump()
+    {
+        leaderboardManager.showCurrentPlayerMarks(currentPlayerBanner, 3); //updates and shows the player leaderboard
+        poleVaultPole.GetComponent<Animator>().SetBool("Launched", false);
+        currentJumpNumber++; //inceases to the next jump
+        if (startingBarHeight.z - bar.transform.position.z > 1) //if scratched
+        {
+            player.GetComponentInChildren<Animator>().Play("Upset"); //Animation for after the jump
+        }
+        else if (prImage.enabled) //if got a personal record
+        {
+            player.GetComponentInChildren<Animator>().Play("Exited"); //Animation for after the jump
+        }
+        else
+        {
+            player.GetComponentInChildren<Animator>().Play("Wave"); //Animation for after the jump
+            currentJumpNumber = 0;
+        }
+        frontCamera.enabled = true;
+        jumpingCamera.enabled = false;
+        player.transform.parent = null;
+        player.transform.position = new Vector3(-2255.1001f, 230.100006f, -242.100006f); //sets the after jump position
+        player.transform.eulerAngles = new Vector3(0, 180, 0);
+        runMeter.runningSpeed = 0; //resets running speed
+        StartCoroutine(waitAfterPersonalBanner(3));
+    }
+
+    IEnumerator waitAfterPersonalBanner(int time)
+    {
+        yield return new WaitForSeconds(time);
+        if (currentJumpNumber == 3)
+        {
+            SceneManager.LoadScene("EndScreen");
+        }
+        player.transform.position = startingPosition;
+        player.GetComponentInChildren<Animator>().Play("PoleRunning");
+        poleVaultPole.GetComponent<Animator>().Play("RunningPosition");
+        poleVaultPole.transform.SetParent(player.GetComponentsInChildren<Transform>()[rightHandTransformPosition]); //sets the parent of the pole to the right hand of the player
+        playerCamera.enabled = true; //shows running camera
+        jumpingCamera.enabled = false; //hides jumping camera
+        frontCamera.enabled = false; //hides the front camera
+        runMeter.runningBar.transform.parent.gameObject.SetActive(true); //shows run meter bar
+        leaderboardManager.hidePersonalBanner(); //hides personal banner
+        isRunning = true; //updates state
+        isPlanting = false; //updates state
+        player.GetComponentsInChildren<Transform>()[1].localEulerAngles = new Vector3(0, 0, 0); //reset rotation
+        player.GetComponentsInChildren<Transform>()[1].localPosition = new Vector3(0, 0, 0); //reset position
+        playerCamera.transform.localPosition = startingCameraPosition; //set the camera in the right position
+        playerCamera.transform.localEulerAngles = startingCameraRotation; //set the camera in the right angle
+        player.GetComponent<Rigidbody>().useGravity = false; //stop player from falling dowm
+        player.GetComponentInChildren<Animator>().SetBool("Pike", false); //reset pike var
+        bar.transform.position = startingBarHeight; //reset bar height
+        bar.transform.localEulerAngles = new Vector3(0, 0, 0); //reset bar rotation
+        foulImage.enabled = false; //hides the image
+        prImage.enabled = false;// hides the image
+        //isFoul = false; //makes the jump not a foul
+        leaderboardManager.showUpdatedLeaderboard();
+
+    }
     private void FixedUpdate() //fixed for speed and running
     {
         if (playerCamera.enabled && (isRunning || isPlanting)) //if running or planting

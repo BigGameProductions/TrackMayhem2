@@ -70,7 +70,7 @@ public class LongJumpManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (runningCamera.enabled && !leaderboardManager.cinematicCamera.gameObject.activeInHierarchy)
+        if (runningCamera.enabled && !leaderboardManager.cinematicCamera.gameObject.activeInHierarchy) //change this so it works for enabled
         {
             runningMeter.updateRunMeter();
             if (Input.GetKeyDown(KeyCode.Space) && runningMeter.runningBar.transform.parent.gameObject.activeInHierarchy) //updating speed on click

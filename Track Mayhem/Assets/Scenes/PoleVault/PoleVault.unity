@@ -513,6 +513,9 @@ MonoBehaviour:
   animationRunningSpeedRatio: 0.01
   playerCamera: {fileID: 2141472719}
   jumpingCamera: {fileID: 80029221}
+  frontCamera: {fileID: 1192622757}
+  barRaise: {fileID: 895712320}
+  bar: {fileID: 188645931}
 --- !u!4 &226226364
 Transform:
   m_ObjectHideFlags: 0
@@ -1034,6 +1037,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7fa885e16294442098e07e2584c273dd, type: 3}
+--- !u!1 &895712320 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3343383013452000032, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
+  m_PrefabInstance: {fileID: 2094132875}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &939124679
 GameObject:
   m_ObjectHideFlags: 0
@@ -1169,7 +1177,7 @@ BoxCollider:
   m_GameObject: {fileID: 987085468}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 0.38269043, y: 0.5585098, z: 0.25811768}
   m_Center: {x: -0.030273438, y: 1.1871223, z: -0.020851135}
@@ -1182,7 +1190,7 @@ BoxCollider:
   m_GameObject: {fileID: 987085468}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 0.105895996, y: 0.33878708, z: 0.13467789}
   m_Center: {x: -0.10140991, y: 0.68377113, z: 0.02609253}
@@ -1195,7 +1203,7 @@ BoxCollider:
   m_GameObject: {fileID: 987085468}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 0.11383057, y: 0.28172302, z: 0.13467789}
   m_Center: {x: 0.10342407, y: 0.71230316, z: 0.02609253}
@@ -1208,7 +1216,7 @@ BoxCollider:
   m_GameObject: {fileID: 987085468}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 0.08441162, y: 0.32969666, z: 0.13467789}
   m_Center: {x: -0.11428833, y: 0.3543434, z: 0.02609253}
@@ -1221,7 +1229,7 @@ BoxCollider:
   m_GameObject: {fileID: 987085468}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 0.11383057, y: 0.32969666, z: 0.13467789}
   m_Center: {x: 0.10342407, y: 0.3543434, z: 0.02609253}
@@ -6367,6 +6375,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 1.7626044
       objectReference: {fileID: 0}
+    - target: {fileID: -3596913501518633897, guid: e447f50c0a4534864bb870e723edf2be, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 6f2d44ec7df4f4275b1742aad180a922, type: 2}
     - target: {fileID: -2639638324218457063, guid: e447f50c0a4534864bb870e723edf2be, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 18.829786
@@ -6565,6 +6577,25 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!1 &1300130220 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7878436149196389204, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
+  m_PrefabInstance: {fileID: 1796680887}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &1300130223
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1300130220}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 0
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -3702037217650275473, guid: 85e5dcf85f8564326a2025740a2ac482, type: 3}
 --- !u!1 &1302085931
 GameObject:
   m_ObjectHideFlags: 0
@@ -8464,11 +8495,7 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: 334d4ffad7bff4024b8176dff9abaf85, type: 2}
     - target: {fileID: 5866666021909216657, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
       propertyPath: m_WarningMessage
-      value: "\nBinding warning: Some generic clip(s) animate transforms that are
-        already bound by a Humanoid avatar. These transforms can only be changed
-        by Humanoid clips.\n\tTransform 'mixamorig1:LeftUpLeg'\n\tTransform 'mixamorig1:RightLeg'\n\tTransform
-        'mixamorig1:RightUpLeg'\n\tTransform 'mixamorig1:LeftLeg'\n\tTransform 'mixamorig1:LeftUpLeg'\n\tTransform
-        'mixamorig1:RightLeg'\n\tTransform 'mixamorig1:RightUpLeg'\n\tTransform 'mixamorig1:LeftLeg'"
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 6525670550456165752, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
       propertyPath: m_LocalPosition.x
@@ -13893,8 +13920,12 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8600842759838800706, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8600842759838800706, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -43.9
+      value: -13.8
       objectReference: {fileID: 0}
     - target: {fileID: 8609346216093978772, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
       propertyPath: m_LocalPosition.y
