@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class PoleVaultManager : MonoBehaviour
 {
     [SerializeField] private GameObject player;
+    [SerializeField] private GameObject basePlayer;
 
     [SerializeField] private ItemStorage itemStorage;
     [SerializeField] private JumpingMeter jumpMeter;
@@ -33,9 +34,11 @@ public class PoleVaultManager : MonoBehaviour
     [SerializeField] private GameObject barRaise; //bar to raise and lower
     [SerializeField] private GameObject bar; //bar to fall
 
-    private Vector3 startingBarHeight;
+    private Vector3 startingBarHeight; //height of the bar to determine if it falls
 
     private int rightHandTransformPosition = 55;
+
+    private float currentBarHeight = 300; //sets the starting height to x inches
 
     private Vector3 startingPosition = new Vector3(-2255.1f, 226.73f, -73.9f); //starting position of player
     private Vector3 startingCameraPosition = new Vector3(0.150004253f, 2.09000158f, -1.94002295f); //position of player camera
@@ -64,7 +67,8 @@ public class PoleVaultManager : MonoBehaviour
     void Start()
     {
 
-        itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform); //inits the runner into the current scene
+        itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform, basePlayer); //inits the runner into the current scene
+        
         poleVaultPole.transform.SetParent(player.GetComponentsInChildren<Transform>()[rightHandTransformPosition]); //sets the parent of the pole to the right hand of the player
         //poleVaultPole.transform.localPosition = polePosition; //sets local position of pole
         //poleVaultPole.transform.localEulerAngles = poleRotaion; //sets local rotation of pole
@@ -78,6 +82,8 @@ public class PoleVaultManager : MonoBehaviour
         player.transform.position = startingPosition; //puts player in starting position
 
         startingBarHeight = bar.transform.position;
+
+        updateBarRaiseHeight(); //sets bar to starting height
 
         foulImage.enabled = false; //hide the foul icon
         prImage.enabled = false; //hides the pr image
@@ -117,15 +123,16 @@ public class PoleVaultManager : MonoBehaviour
                 //player.transform.Translate(0, 0, -3); //testing
                 player.GetComponentInChildren<Animator>().SetBool("Pike", true);
             }
-            if (player.transform.position.y < 230) { //end jump
+            if (player.transform.position.y < 232) { //end jump
                 if (startingBarHeight.z-bar.transform.position.z >1)
                 {
-                    updatePlayerBanner(-10); //code for a miss
+                    updatePlayerBanner(-10000); //code for a miss
                 } else
                 {
-                    updatePlayerBanner(-10000); //code for a make        
+                    updatePlayerBanner(-10); //code for a make        
                 }
                 afterJump();
+
 
             }
 
@@ -261,11 +268,11 @@ public class PoleVaultManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         player.GetComponent<Rigidbody>().useGravity = true; //makes it so that player can fall
-        float power = 10;
+        float power = 5;
         float powerPercentage = 1 - (Math.Abs(100 - jumpMeter.jumpMeterSpeed) / 100);
         power *= powerPercentage;
-        power += 5;
-        player.GetComponent<Rigidbody>().velocity = new Vector3(0, power, -3); //makes player launch up
+        power += 1;
+        player.GetComponent<Rigidbody>().velocity = new Vector3(0, power, -4); //makes player launch up
 
     }
 
@@ -281,11 +288,18 @@ public class PoleVaultManager : MonoBehaviour
         else if (prImage.enabled) //if got a personal record
         {
             player.GetComponentInChildren<Animator>().Play("Exited"); //Animation for after the jump
+            currentJumpNumber = 0;
         }
         else
         {
             player.GetComponentInChildren<Animator>().Play("Wave"); //Animation for after the jump
             currentJumpNumber = 0;
+        }
+        if (currentJumpNumber == 0) //if it needs to move up
+        {
+            //move up 6 inches
+            currentBarHeight += 6;
+            updateBarRaiseHeight();
         }
         frontCamera.enabled = true;
         jumpingCamera.enabled = false;
@@ -294,6 +308,15 @@ public class PoleVaultManager : MonoBehaviour
         player.transform.eulerAngles = new Vector3(0, 180, 0);
         runMeter.runningSpeed = 0; //resets running speed
         StartCoroutine(waitAfterPersonalBanner(3));
+    }
+
+    private void updateBarRaiseHeight() //updates the height of the bar and resets all rotation
+    {
+        bar.transform.localEulerAngles = new Vector3(0, 0, 0); //reset bar rotation
+        bar.transform.localPosition = new Vector3(0, 29.2f, 0);
+        //set the height to the current height
+        barRaise.transform.localPosition = new Vector3(0, 0, (float)(-226.9 + currentBarHeight * PublicData.spacesPerInch*3));
+        leaderboardManager.updateCurrentBarHeight(currentBarHeight);
     }
 
     IEnumerator waitAfterPersonalBanner(int time)
@@ -320,9 +343,8 @@ public class PoleVaultManager : MonoBehaviour
         playerCamera.transform.localEulerAngles = startingCameraRotation; //set the camera in the right angle
         player.GetComponent<Rigidbody>().useGravity = false; //stop player from falling dowm
         player.GetComponentInChildren<Animator>().SetBool("Pike", false); //reset pike var
-        bar.transform.position = startingBarHeight; //reset bar height
-        bar.transform.localEulerAngles = new Vector3(0, 0, 0); //reset bar rotation
         foulImage.enabled = false; //hides the image
+        updateBarRaiseHeight();
         prImage.enabled = false;// hides the image
         //isFoul = false; //makes the jump not a foul
         leaderboardManager.showUpdatedLeaderboard();

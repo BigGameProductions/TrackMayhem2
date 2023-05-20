@@ -22,6 +22,8 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
 
     private PlayerBanner[] currentEventBanners;
 
+    private float currentBarHeight = -10;
+
     [SerializeField] private Sprite[] flags;
 
 
@@ -99,8 +101,20 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
     {
         updateCinematicStage(0);
     }
-    
 
+    private void clearPlayerMarks() //clears all the marks of the player and oppenents
+    {
+        personalBannersMarks.mark1 = -100;
+        personalBannersMarks.mark2 = -100;
+        personalBannersMarks.mark3 = -100;
+
+        foreach (PlayerBanner pb in currentEventBanners)
+        {
+            pb.mark1 = -100;
+            pb.mark2 = -100;
+            pb.mark2 = -100;
+        }
+    }
 
     public void showUpdatedLeaderboard() //shows the updated numbers for all oppenents
     {
@@ -150,6 +164,11 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
         return mark;
     }
 
+    public void updateCurrentBarHeight(float amount)
+    {
+        currentBarHeight = amount;
+    }
+
     //stage same as mode for setLeaderboard
     private void updateCinematicStage(int stage)
     {
@@ -182,13 +201,46 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
             personalBanner.SetActive(true);
         } else if (stage == 4)
         {
-            currentEventBanners = simulateMark(currentEventBanners, eventName, 2, 5); //makes marks for oppenents
+            if (currentBarHeight == -10)
+            {
+                currentEventBanners = simulateMark(currentEventBanners, eventName, 2, 5); //makes marks for oppenents
+            } else
+            {
+                currentEventBanners = simulateBarMark(currentEventBanners); //always sim one
+                if (personalBannersMarks.mark1 == -10) //sims last two if got on first try
+                {
+                    currentEventBanners = simulateBarMark(currentEventBanners);
+                    currentEventBanners = simulateBarMark(currentEventBanners);
+
+                } else if (personalBannersMarks.mark2 == -10) //sim last one if got on second try
+                {
+                    currentEventBanners = simulateBarMark(currentEventBanners);
+                }
+                
+            }
             playerBanners = currentEventBanners;
             PublicData.playerBannerTransfer = currentEventBanners; //sets the end screen leaderboard to match the current one
             PublicData.leaderBoardMode = 4; //sets leaderboard mode for the end screen
         }
 
         setLeaderboard(playerBanners, stage);
+        if (currentEventBanners != null && currentBarHeight != -10 && stage == 4) //checks if it is a bar event and makes sure it is not null
+        {
+            List<PlayerBanner> newBannerList = new List<PlayerBanner>();
+            for (int i = 0; i < currentEventBanners.Length; i++)
+            {
+                if (currentEventBanners[i].mark3 != -10000)
+                {
+                    newBannerList.Add(currentEventBanners[i]); //adds only the passing players to the leaderboard
+                }
+            }
+            currentEventBanners = newBannerList.ToArray(); //converts the list back to the array for use
+            if (personalBannersMarks.mark1 == -10 || personalBannersMarks.mark2 == -10 || personalBannersMarks.mark3 == -10) //if the player has cleared it
+            {
+                clearPlayerMarks(); //clears all amrks for the next height
+            }
+        }
+        
     }
 
     private string[] getEventRecordByEvent(string ev) {
@@ -260,10 +312,39 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
         return 0;
     }
 
-    //-10 is miss
+
+    private PlayerBanner[] simulateBarMark(PlayerBanner[] playerBanners) //simulates one mark for the bar events
+    {
+        foreach (PlayerBanner pb in playerBanners)
+        {
+            if (!pb.isPlayer) //making sure the banner is not for the player
+            {
+                bool make = UnityEngine.Random.Range(0, 4) == 0;
+                if (pb.mark1 == -100)
+                {
+                    pb.mark1 = make ? -10 : -10000;
+                    continue;
+                }
+                if (pb.mark2 == -100 && pb.mark1 != -10)
+                {
+                    pb.mark2 = make ? -10 : -10000;
+                    continue;
+                }
+                if (pb.mark3 == -100 && pb.mark2 != -10 && pb.mark1 != -10)
+                {
+                    pb.mark3 = make ? -10 : -10000;
+                    continue;
+                }
+            }
+
+        }
+        return sortBanners(playerBanners, true, true);
+    }
+
+    //-10 is pass
     //-100 is empty
     //-1000 is foul
-    //-10000 is pass
+    //-10000 is miss
     //simulates marks for the oppenents based on the spread given in the parameters
     private PlayerBanner[] simulateMark(PlayerBanner[] playerBanners, string theEvent, float spreadUp, float spreadDown)
     {
@@ -395,14 +476,22 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
             textBoxes[4].text = markToString(personalBannersMarks.mark1);
             textBoxes[5].text = markToString(personalBannersMarks.mark2);
             textBoxes[6].text = markToString(personalBannersMarks.mark3);
+            if (currentBarHeight != -10)
+            {
+                Debug.Log(personalBanner.GetComponentsInChildren<Transform>(true)[10].gameObject.name);
+                personalBanner.GetComponentsInChildren<Transform>(true)[10].gameObject.SetActive(true);
+                personalBanner.GetComponentsInChildren<Transform>(true)[11].gameObject.SetActive(true);
+                personalBanner.GetComponentsInChildren<Transform>(true)[12].gameObject.SetActive(true);
+                personalBanner.GetComponentsInChildren<Transform>(true)[12].GetComponent<TextMeshProUGUI>().text = markToString(currentBarHeight);
+            }
 
-         } 
+        } 
 
     }
 
     private string markToString(float mark, bool asTime=false)
     {
-        if (mark == -10)
+        if (mark == -10000)
         {
             return "X";
         }
@@ -412,7 +501,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
         } else if (mark == -1000)
         {
             return "FOUL";
-        } else if (mark == -10000)
+        } else if (mark == -10)
         {
             return "O";
         }else

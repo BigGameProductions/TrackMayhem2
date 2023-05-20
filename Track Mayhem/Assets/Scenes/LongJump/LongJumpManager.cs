@@ -220,7 +220,7 @@ public class LongJumpManager : MonoBehaviour
         {
             updatePlayerBanner(-1000);
         } else {
-            float spacesPerInch = (1875.03f - 1864.7f) / 36f; //16 feet minus 19 feet divided by the inches in 3 feet
+            float spacesPerInch = PublicData.spacesPerInch; //16 feet minus 19 feet divided by the inches in 3 feet
             float totalInches = (1930.4792068f + player.transform.position.x) / spacesPerInch; //finds total inches that have been jumped (distance jumped divided by spaces per inch of the sand)
             if (currentJumpNumber == 0) //fix random bugs for jumping distance
             {

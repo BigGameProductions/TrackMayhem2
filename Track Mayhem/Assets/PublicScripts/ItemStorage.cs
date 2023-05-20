@@ -11,9 +11,28 @@ public class ItemStorage : MonoBehaviour
     public RuntimeAnimatorController characterAnimator; //holds the animator for the new character
     //TODO add flags later
 
-    public GameObject initRunner(int id, Transform tf) //class used by all scenes to init the current runner and return in in case of any other changes
+    public GameObject initRunner(int id, Transform tf, GameObject basePlayer=null) //class used by all scenes to init the current runner and return in in case of any other changes
     {
         GameObject childPlayer = Instantiate(characterList[id], tf.transform); //copies the current runner into the scene
+
+        if (basePlayer != null)
+        {
+            List<string> colliderList = new List<string>();
+            colliderList.Add("Head");
+            colliderList.Add("Spine");
+            colliderList.Add("LeftLeg");
+            colliderList.Add("LeftUpLeg");
+            colliderList.Add("RightUpLeg");
+            colliderList.Add("RightLeg");
+            colliderList.Add("LeftArm");
+            colliderList.Add("RightArm");
+            colliderList.Add("LeftForeArm");
+            colliderList.Add("RightForeArm");
+
+            PublicData.addColldiersToRunner(basePlayer, childPlayer, "mixamorig1:", colliderList);
+        }
+        
+
         childPlayer.transform.SetAsFirstSibling();
         Animator childAnimator;
         if (childPlayer.GetComponent<Animator>() == null)
