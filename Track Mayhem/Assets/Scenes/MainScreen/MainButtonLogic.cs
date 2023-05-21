@@ -12,7 +12,13 @@ public class MainButtonLogic : MonoBehaviour
 
     public void PlayEvent()
     {
-        SceneManager.LoadScene("LongJump");
+        if (PublicData.currentSelectedEventIndex == 1)
+        {
+            SceneManager.LoadScene("LongJump");
+        } else
+        {
+            SceneManager.LoadScene("PoleVault");
+        }
     }
 
     public void runnerMenu()

@@ -22,6 +22,8 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
 
     private PlayerBanner[] currentEventBanners;
 
+    private List<PlayerBanner> finalBarHeightsBanners = new List<PlayerBanner>();
+
     private float currentBarHeight = -10;
 
     [SerializeField] private Sprite[] flags;
@@ -48,6 +50,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
 
     private void Start()
     {
+
         //nothing for now
         if (SceneManager.GetActiveScene().name != "EndScreen") //tests to make sure it is an event screen
         {
@@ -90,6 +93,38 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
         return 0;
     }
 
+    public void simRemainingJumps() //simulates and sorts all banners for end display
+    {
+        //getPlayerBanner().bestMark = currentBarHeight;
+        //finalBarHeightsBanners.Add(getPlayerBanner());
+    
+        while (finalBarHeightsBanners.Count < 8 && currentBarHeight < 1200)
+        {
+            simulateBarMark(currentEventBanners); //three jumps
+            simulateBarMark(currentEventBanners);
+            simulateBarMark(currentEventBanners);
+            List<PlayerBanner> newBannerList = new List<PlayerBanner>();
+            for (int i = 0; i < currentEventBanners.Length; i++)
+            {
+                if (currentEventBanners[i].mark3 != -10000)
+                {
+                    newBannerList.Add(currentEventBanners[i]); //adds only the passing players to the leaderboard
+                }
+                else
+                {
+                    currentEventBanners[i].bestMark = currentBarHeight - 6;
+                    finalBarHeightsBanners.Add(currentEventBanners[i]);
+                }
+            }
+            currentEventBanners = newBannerList.ToArray(); //converts the list back to the array for use
+            currentBarHeight += 6;
+            clearPlayerMarks();
+            Debug.Log("One Loop");
+
+        }
+        PublicData.playerBannerTransfer = sortBanners(finalBarHeightsBanners.ToArray(), true);
+        PublicData.leaderBoardMode = 1;
+    }
 
     public void showCurrentPlayerMarks(PlayerBanner marks, int stageNum) //shows the single banner of the player preformace
     {
@@ -102,18 +137,47 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
         updateCinematicStage(0);
     }
 
-    private void clearPlayerMarks() //clears all the marks of the player and oppenents
+    private void clearPlayerMarks() //clears all the marks of the player and oppenents and updates the fails and misses
     {
+        if (personalBannersMarks.mark1 == -10)
+        {
+            personalBannersMarks.lastMakeAttempt = 1;
+        } else if (personalBannersMarks.mark2 == -10)
+        {
+            personalBannersMarks.lastMakeAttempt = 2;
+            personalBannersMarks.totalFails += 1;
+        }
+        else if (personalBannersMarks.mark3 == -10)
+        {
+            personalBannersMarks.lastMakeAttempt = 3;
+            personalBannersMarks.totalFails += 2;
+        }
+
         personalBannersMarks.mark1 = -100;
         personalBannersMarks.mark2 = -100;
         personalBannersMarks.mark3 = -100;
 
         foreach (PlayerBanner pb in currentEventBanners)
         {
+            if (pb.mark1 == -10)
+            {
+                pb.lastMakeAttempt = 1;
+            }
+            else if (pb.mark2 == -10)
+            {
+                pb.lastMakeAttempt = 2;
+                pb.totalFails += 1;
+            }
+            else if (pb.mark3 == -10)
+            {
+                pb.lastMakeAttempt = 3;
+                pb.totalFails += 2;
+            }
             pb.mark1 = -100;
             pb.mark2 = -100;
             pb.mark2 = -100;
         }
+
     }
 
     public void showUpdatedLeaderboard() //shows the updated numbers for all oppenents
@@ -164,6 +228,8 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
         return mark;
     }
 
+    
+
     public void updateCurrentBarHeight(float amount)
     {
         currentBarHeight = amount;
@@ -209,18 +275,24 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
                 currentEventBanners = simulateBarMark(currentEventBanners); //always sim one
                 if (personalBannersMarks.mark1 == -10) //sims last two if got on first try
                 {
+                    getPlayerBanner().makeAttempt = 1;
                     currentEventBanners = simulateBarMark(currentEventBanners);
                     currentEventBanners = simulateBarMark(currentEventBanners);
 
                 } else if (personalBannersMarks.mark2 == -10) //sim last one if got on second try
                 {
+                    getPlayerBanner().makeAttempt = 2;
                     currentEventBanners = simulateBarMark(currentEventBanners);
                 }
                 
             }
             playerBanners = currentEventBanners;
-            PublicData.playerBannerTransfer = currentEventBanners; //sets the end screen leaderboard to match the current one
-            PublicData.leaderBoardMode = 4; //sets leaderboard mode for the end screen
+            if (currentBarHeight == -10) //check for bar event
+            {
+                PublicData.playerBannerTransfer = currentEventBanners; //sets the end screen leaderboard to match the current one
+                PublicData.leaderBoardMode = 4; //sets leaderboard mode for the end screen
+            } 
+            
         }
 
         setLeaderboard(playerBanners, stage);
@@ -232,12 +304,16 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
                 if (currentEventBanners[i].mark3 != -10000)
                 {
                     newBannerList.Add(currentEventBanners[i]); //adds only the passing players to the leaderboard
+                } else
+                {
+                    currentEventBanners[i].bestMark = currentBarHeight - 6;
+                    finalBarHeightsBanners.Add(currentEventBanners[i]);
                 }
             }
             currentEventBanners = newBannerList.ToArray(); //converts the list back to the array for use
             if (personalBannersMarks.mark1 == -10 || personalBannersMarks.mark2 == -10 || personalBannersMarks.mark3 == -10) //if the player has cleared it
             {
-                clearPlayerMarks(); //clears all amrks for the next height
+                clearPlayerMarks(); //clears all marks for the next height
             }
         }
         
@@ -285,7 +361,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
 
         }
         banners[banners.Length - 1] = new PlayerBanner(0, findFlagIndexOfCountry("us"), playerName, personalBests.longJump, isPlayer:true);
-        return sortBanners(banners, true);
+        return sortBanners(banners, true, barEvent:true); //sorting banners based on bar events
     }
 
     //theEvent is the event that is used
@@ -323,22 +399,41 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
                 if (pb.mark1 == -100)
                 {
                     pb.mark1 = make ? -10 : -10000;
+                    if (make)
+                    {
+                        pb.makeAttempt = 1;
+                        pb.mark2 = -100;
+                        pb.mark3 = -100;
+                    }
                     continue;
                 }
                 if (pb.mark2 == -100 && pb.mark1 != -10)
                 {
                     pb.mark2 = make ? -10 : -10000;
+                    if (make)
+                    {
+                        pb.makeAttempt = 2;
+                        pb.mark3 = -100;
+                    }
                     continue;
                 }
                 if (pb.mark3 == -100 && pb.mark2 != -10 && pb.mark1 != -10)
                 {
                     pb.mark3 = make ? -10 : -10000;
+                    if (make) pb.makeAttempt = 3;
                     continue;
                 }
             }
 
         }
-        return sortBanners(playerBanners, true, true);
+        /*foreach (PlayerBanner ppbb in playerBanners)
+        {
+            if (ppbb.isPlayer)
+            {
+                Debug.Log("Has player");
+            }
+        }*/
+        return sortBanners(playerBanners, true, barEvent:true);
     }
 
     //-10 is pass
@@ -377,30 +472,69 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
 
     }
 
-    private PlayerBanner[] sortBanners(PlayerBanner[] banners, bool bigOnTop, bool ofThree=false) //sorts the banners by big or small on the top in the array
+    private PlayerBanner[] sortBanners(PlayerBanner[] banners, bool bigOnTop, bool ofThree=false, bool barEvent=false) //sorts the banners by big or small on the top in the array
     {
         List<PlayerBanner> sortedBanners = new List<PlayerBanner>();
-        sortedBanners.Add(new PlayerBanner(0, 0, "SortingPlaceholder", float.MaxValue)); //placeholder to help sort the items in the array by value
+        if (barEvent)
+        {
+            sortedBanners.Add(new PlayerBanner(0, 0, "SortingPlaceholder", makeAttempt:1, lastMakeAttempt:1, totalFails:0)); //best senario used for sorting
+        } else
+        {
+            sortedBanners.Add(new PlayerBanner(0, 0, "SortingPlaceholder", float.MaxValue)); //placeholder to help sort the items in the array by value
+        }
         foreach (PlayerBanner pb in banners)
         {
             for (int i = 0; i < sortedBanners.Count; i++)
             {
-                if ((ofThree ? Math.Max(Math.Max(pb.mark1, pb.mark2), pb.mark3) : pb.bestMark) < sortedBanners.ElementAt(i).bestMark) //sort my best mark
+                PlayerBanner sb = sortedBanners.ElementAt(i);
+                if (barEvent)
                 {
-                    sortedBanners.Insert(i, pb);
-                    break;
+                    if (pb.makeAttempt == sb.makeAttempt)
+                    {
+                        if (pb.lastMakeAttempt == sb.lastMakeAttempt)
+                        {
+                            if (pb.totalFails >= sb.totalFails)
+                            {
+                                sortedBanners.Insert(i, pb);
+                                break;
+                            }
+                        } else if (pb.lastMakeAttempt > sb.lastMakeAttempt)
+                        {
+                            sortedBanners.Insert(i, pb);
+                            break;
+                        }
+                    } else if (pb.makeAttempt > sb.makeAttempt)
+                    {
+                        sortedBanners.Insert(i, pb);
+                        break;
+                    }
+                } else
+                {
+                    if ((ofThree ? Math.Max(Math.Max(pb.mark1, pb.mark2), pb.mark3) : pb.bestMark) < sortedBanners.ElementAt(i).bestMark) //sort my best mark
+                    {
+                        sortedBanners.Insert(i, pb);
+                        break;
+                    }
                 }
+                
 
 
             }
 
         }
-        sortedBanners.RemoveAt(sortedBanners.Count - 1); // remove the placeholder
+        sortedBanners.RemoveAt(sortedBanners.Count - 1); //remove the placeholder
         PlayerBanner[] newBanners = bigOnTop ? sortedBanners.ToArray().Reverse<PlayerBanner>().ToArray() : sortedBanners.ToArray(); //if bigOnTop then reverse the list to make the biggest in top
         for (int i = 0; i<newBanners.Length; i++)
         {
             newBanners[i].place = i + 1;
         }
+        /*foreach (PlayerBanner ppbb in newBanners)
+        {
+            if (ppbb.isPlayer)
+            {
+                Debug.Log("Has player");
+            }
+        }*/
         return newBanners;
 
     }
@@ -439,7 +573,6 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
             else if (mode == 2)
             {
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[1].gameObject.SetActive(false); //record mark label
-                Debug.Log(leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[2].gameObject.name);
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[3].gameObject.GetComponent<Image>().sprite = flags[playerBanners[i].flagNumber]; //temp
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[5].gameObject.SetActive(true); //record mark label
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[6].gameObject.SetActive(true); //record label mark
@@ -448,7 +581,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
             } else if (mode == 4)
             {
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[1].gameObject.SetActive(false); //record mark label
-                //leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[3].gameObject.GetComponent<Image>().sprite = flags[playerBanners[i].flagNumber]; //temp
+                leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[3].gameObject.GetComponent<Image>().sprite = flags[playerBanners[i].flagNumber]; //temp
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[7].gameObject.SetActive(true); //record label mark
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[8].gameObject.SetActive(true); //record mark label
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[9].gameObject.SetActive(true); //record label mark
@@ -478,7 +611,6 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
             textBoxes[6].text = markToString(personalBannersMarks.mark3);
             if (currentBarHeight != -10)
             {
-                Debug.Log(personalBanner.GetComponentsInChildren<Transform>(true)[10].gameObject.name);
                 personalBanner.GetComponentsInChildren<Transform>(true)[10].gameObject.SetActive(true);
                 personalBanner.GetComponentsInChildren<Transform>(true)[11].gameObject.SetActive(true);
                 personalBanner.GetComponentsInChildren<Transform>(true)[12].gameObject.SetActive(true);

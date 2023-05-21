@@ -15,7 +15,12 @@ public class PlayerBanner
 
     public bool isPlayer;
 
-    public PlayerBanner(int number, int flagNumber, string player, float bestMark=0, bool isPlayer = false, float mark1=-100, float mark2=-100, float mark3=-100)
+    public int makeAttempt;
+    public int lastMakeAttempt;
+    public int totalFails;
+
+
+    public PlayerBanner(int number, int flagNumber, string player, float bestMark = 0, bool isPlayer = false, float mark1 = -100, float mark2 = -100, float mark3 = -100, int makeAttempt = 4, int lastMakeAttempt = 4, int totalFails = 0)
     {
         this.place = number;
         this.flagNumber = flagNumber;
@@ -27,6 +32,11 @@ public class PlayerBanner
         this.mark3 = mark3;
 
         this.isPlayer = isPlayer;
+
+        this.makeAttempt = makeAttempt;
+        this.lastMakeAttempt = lastMakeAttempt;
+        this.totalFails = totalFails;
+
     }
 
     

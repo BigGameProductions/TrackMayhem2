@@ -38,7 +38,7 @@ public class PoleVaultManager : MonoBehaviour
 
     private int rightHandTransformPosition = 55;
 
-    private float currentBarHeight = 300; //sets the starting height to x inches
+    private float currentBarHeight = 120; //sets the starting height to x inches
 
     private Vector3 startingPosition = new Vector3(-2255.1f, 226.73f, -73.9f); //starting position of player
     private Vector3 startingCameraPosition = new Vector3(0.150004253f, 2.09000158f, -1.94002295f); //position of player camera
@@ -124,18 +124,27 @@ public class PoleVaultManager : MonoBehaviour
                 player.GetComponentInChildren<Animator>().SetBool("Pike", true);
             }
             if (player.transform.position.y < 232) { //end jump
-                if (startingBarHeight.z-bar.transform.position.z >1)
-                {
-                    updatePlayerBanner(-10000); //code for a miss
-                } else
-                {
-                    updatePlayerBanner(-10); //code for a make        
-                }
-                afterJump();
+                poleVaultPole.GetComponent<Animator>().SetBool("Launched", false);
+                StartCoroutine(waitForFall(0.5f));
 
 
             }
 
+        }
+       
+        IEnumerator waitForFall(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            if (startingBarHeight.y - bar.transform.position.y > 1.5 || barStraight(bar,1))
+            {
+                Debug.Log(startingBarHeight.y + "" + bar.transform.position.y);
+                updatePlayerBanner(-10000); //code for a miss
+            }
+            else
+            {
+                updatePlayerBanner(-10); //code for a make        
+            }
+            afterJump();
         }
 
         if (jumpMeter.jumpBar.gameObject.transform.parent.gameObject.activeInHierarchy) //about to jump and updates jumping meter
@@ -192,6 +201,23 @@ public class PoleVaultManager : MonoBehaviour
                 StartCoroutine(jumpMeterTimeLimit(3)); //makes a time limit of x seconds for jumping angle*/
             }
         }
+    }
+
+    private bool barStraight(GameObject bar, float range)
+    {
+        if (bar.transform.eulerAngles.x < (0-range) || bar.transform.eulerAngles.x > range)
+        {
+            return false;
+        }
+        if (bar.transform.eulerAngles.y < (0 - range) || bar.transform.eulerAngles.y > range)
+        {
+            return false;
+        }
+        if (bar.transform.eulerAngles.z < (0 - range) || bar.transform.eulerAngles.z > range)
+        {
+            return false;
+        }
+        return true;
     }
 
     private void updatePlayerBanner(float mark)
@@ -281,7 +307,7 @@ public class PoleVaultManager : MonoBehaviour
         leaderboardManager.showCurrentPlayerMarks(currentPlayerBanner, 3); //updates and shows the player leaderboard
         poleVaultPole.GetComponent<Animator>().SetBool("Launched", false);
         currentJumpNumber++; //inceases to the next jump
-        if (startingBarHeight.z - bar.transform.position.z > 1) //if scratched
+        if (startingBarHeight.y - bar.transform.position.y > 1.5 || barStraight(bar, 1)) //if scratched
         {
             player.GetComponentInChildren<Animator>().Play("Upset"); //Animation for after the jump
         }
@@ -315,6 +341,7 @@ public class PoleVaultManager : MonoBehaviour
         bar.transform.localEulerAngles = new Vector3(0, 0, 0); //reset bar rotation
         bar.transform.localPosition = new Vector3(0, 29.2f, 0);
         //set the height to the current height
+        startingBarHeight = bar.transform.position;
         barRaise.transform.localPosition = new Vector3(0, 0, (float)(-226.9 + currentBarHeight * PublicData.spacesPerInch*3));
         leaderboardManager.updateCurrentBarHeight(currentBarHeight);
     }
@@ -324,6 +351,7 @@ public class PoleVaultManager : MonoBehaviour
         yield return new WaitForSeconds(time);
         if (currentJumpNumber == 3)
         {
+            leaderboardManager.simRemainingJumps();
             SceneManager.LoadScene("EndScreen");
         }
         player.transform.position = startingPosition;
