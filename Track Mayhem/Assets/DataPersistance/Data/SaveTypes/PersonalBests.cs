@@ -6,9 +6,11 @@ using UnityEngine;
 public class PersonalBests
 {
     public float longJump;
+    public float polevault;
 
     public PersonalBests() //sets defualts for all event
     {
-        this.longJump = 0; 
+        this.longJump = 0;
+        this.polevault = 0;
     } 
 }

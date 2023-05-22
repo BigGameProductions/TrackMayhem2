@@ -19,6 +19,8 @@ public static class PublicData
 
     public static float spacesPerInch = (1875.03f - 1864.7f) / 36f; //spaces per inch for the game
 
+    public static int pointsToGive = 0;
+
 
 
     public static int currentSelectedEventIndex = 1; //holds the index of the current event according to the records.csv
@@ -48,22 +50,17 @@ public static class PublicData
         for (int i=0; i<baseObject.transform.GetComponentsInChildren<Transform>().Length; i++)
         {
             Transform tf = baseObject.GetComponentsInChildren<Transform>()[i];
-            //Debug.Log(tf.name);
             if (tf.name.Length > baseName.Length)
             {
-                //Debug.Log(tf.name);
                 if (tf.name.Substring(0, baseName.Length) == baseName) //checks root word
                 {
-                    Debug.Log("Got herer"); 
                     if (items.Contains(tf.name.Substring(baseName.Length))) //tests if the object is in the item list
                     {
-                        Debug.Log("Found it");
                         for (int j= 0; j < newObject.GetComponentsInChildren<Transform>().Length; j++)
                         {
                             Transform newTF = newObject.GetComponentsInChildren<Transform>()[j];
                             if (newTF.name == baseName + tf.name.Substring(baseName.Length)) //if the string matches the new object
                             {
-                                Debug.Log(newTF.name);
                                 BoxCollider newColl = newTF.gameObject.AddComponent<BoxCollider>(); //makes the new collider
                                 newColl.size = tf.GetComponent<BoxCollider>().size;
                                 newColl.center = tf.GetComponent<BoxCollider>().center;

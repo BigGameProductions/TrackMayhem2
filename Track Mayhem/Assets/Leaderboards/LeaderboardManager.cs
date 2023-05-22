@@ -15,6 +15,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
     [SerializeField] private float seededMark; //if useSeeded is false determines the base mark to go off of
     [SerializeField] private float seedSpreadDown; //how much the players will be spread from the seed down
     [SerializeField] private float seedSpreadUp; //how much the players will be spread from the seed up
+    [SerializeField] private float seedRoundInches; //round to the nearest of what inch
     [SerializeField] private Image[] leaderboardBanners; //a list of all the leaderboard banners that need to have information on them
     [SerializeField] public Camera cinematicCamera; // the camaera that plays the animations before the event. Used by other classes to determine when to start
     [SerializeField] private GameObject leaderBoardHeader; //the header for the main leaderboard;
@@ -25,6 +26,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
     private List<PlayerBanner> finalBarHeightsBanners = new List<PlayerBanner>();
 
     private float currentBarHeight = -10;
+    private float openingHeight = 0;
 
     [SerializeField] private Sprite[] flags;
 
@@ -112,14 +114,23 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
                 }
                 else
                 {
-                    currentEventBanners[i].bestMark = currentBarHeight - 6;
+                    if (openingHeight == currentBarHeight)
+                    {
+                        currentEventBanners[i].bestMark = -100000; //no height
+
+                    }
+                    else
+                    {
+                        currentEventBanners[i].bestMark = currentBarHeight - 6;
+
+                    }
+
                     finalBarHeightsBanners.Add(currentEventBanners[i]);
                 }
             }
             currentEventBanners = newBannerList.ToArray(); //converts the list back to the array for use
             currentBarHeight += 6;
             clearPlayerMarks();
-            Debug.Log("One Loop");
 
         }
         PublicData.playerBannerTransfer = sortBanners(finalBarHeightsBanners.ToArray(), true);
@@ -230,9 +241,10 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
 
     
 
-    public void updateCurrentBarHeight(float amount)
+    public void updateCurrentBarHeight(float amount, float isOpeningHeight)
     {
         currentBarHeight = amount;
+        openingHeight = isOpeningHeight;
     }
 
     //stage same as mode for setLeaderboard
@@ -259,7 +271,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
             playerBanners = new PlayerBanner[] {
             new PlayerBanner(0, findFlagIndexOfCountry(currentRecordInfo[4]), currentRecordInfo[1], float.Parse(currentRecordInfo[2])),
             new PlayerBanner(0, 0, "World", 98),
-            new PlayerBanner(0, findFlagIndexOfCountry("us"), playerName, personalBests.longJump)
+            new PlayerBanner(0, findFlagIndexOfCountry("us"), playerName, getMarkForEvent(SceneManager.GetActiveScene().name))
              };
         } else if (stage == 3) //current player jump
         {
@@ -306,7 +318,14 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
                     newBannerList.Add(currentEventBanners[i]); //adds only the passing players to the leaderboard
                 } else
                 {
-                    currentEventBanners[i].bestMark = currentBarHeight - 6;
+                    if (openingHeight == currentBarHeight-6)
+                    {
+                        currentEventBanners[i].bestMark = -100000; //no height
+                    }
+                    else
+                    {
+                        currentEventBanners[i].bestMark = currentBarHeight - 12;
+                    }
                     finalBarHeightsBanners.Add(currentEventBanners[i]);
                 }
             }
@@ -360,7 +379,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
             banners[i] = new PlayerBanner(i, flagNum, name, roundToNearest(0.25f, personalBest)); //round personal bests to only two places
 
         }
-        banners[banners.Length - 1] = new PlayerBanner(0, findFlagIndexOfCountry("us"), playerName, personalBests.longJump, isPlayer:true);
+        banners[banners.Length - 1] = new PlayerBanner(0, findFlagIndexOfCountry("us"), playerName, getMarkForEvent(SceneManager.GetActiveScene().name), isPlayer:true);
         return sortBanners(banners, true, barEvent:true); //sorting banners based on bar events
     }
 
@@ -374,7 +393,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
         {
             basedSeed = getMarkForEvent(theEvent);
         }
-        return UnityEngine.Random.Range((float)basedSeed - seedSpreadDown, basedSeed + seedSpreadUp + 1f);
+        return roundToNearest(seedRoundInches, UnityEngine.Random.Range((float)basedSeed - seedSpreadDown, basedSeed + seedSpreadUp + 1f));
         
     }
 
@@ -382,8 +401,11 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
     {
         if (theEvent == "LongJump")
         {
-            return personalBests.longJump;
+            return PublicData.gameData.personalBests.longJump;
 
+        } else if (theEvent == "PoleVault")
+        {
+            return PublicData.gameData.personalBests.polevault;
         }
         return 0;
     }
@@ -395,7 +417,30 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
         {
             if (!pb.isPlayer) //making sure the banner is not for the player
             {
-                bool make = UnityEngine.Random.Range(0, 4) == 0;
+                bool make; //adjusted depending on seeded height
+                if(pb.bestMark-currentBarHeight > 24)
+                {
+                    make = UnityEngine.Random.Range(0, 5) != 0;
+                } else if (pb.bestMark - currentBarHeight > 12)
+                {
+                    make = UnityEngine.Random.Range(0, 4) != 0;
+
+                }
+                else if (pb.bestMark - currentBarHeight > 0)
+                {
+                    make = UnityEngine.Random.Range(0, 3) != 0;
+
+                } else if (pb.bestMark - currentBarHeight > -12)
+                {
+                    make = UnityEngine.Random.Range(0, 2) == 0;
+                } else if (pb.bestMark - currentBarHeight > -24)
+                {
+                    make = UnityEngine.Random.Range(0, 8) == 0;
+                } else
+                {
+                    make = UnityEngine.Random.Range(0, 12) == 0;
+
+                }
                 if (pb.mark1 == -100)
                 {
                     pb.mark1 = make ? -10 : -10000;
@@ -440,6 +485,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
     //-100 is empty
     //-1000 is foul
     //-10000 is miss
+    //-100000 is NH
     //simulates marks for the oppenents based on the spread given in the parameters
     private PlayerBanner[] simulateMark(PlayerBanner[] playerBanners, string theEvent, float spreadUp, float spreadDown)
     {
@@ -636,7 +682,11 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
         } else if (mark == -10)
         {
             return "O";
-        }else
+        } else if (mark == -100000)
+        {
+            return "NH";
+        }
+        else
         {
             if (asTime)
             {

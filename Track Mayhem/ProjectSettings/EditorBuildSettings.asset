@@ -26,4 +26,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/MainScreen/ChestOpening/ChestOpening.unity
     guid: a044b3420932e445c9dd6212587f6ed3
+  - enabled: 1
+    path: Assets/Scenes/PoleVault/PoleVault.unity
+    guid: cb17d9ed264874d5794ead0b1b5f1670
   m_configObjects: {}

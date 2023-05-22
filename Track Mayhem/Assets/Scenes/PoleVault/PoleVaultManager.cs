@@ -22,6 +22,9 @@ public class PoleVaultManager : MonoBehaviour
     [SerializeField] private float runningSpeedRatio; //stores the ratio for running compared to runningSpeed
     [SerializeField] private float animationRunningSpeedRatio; //stores the ratio for animation speed compared to runningSpeed
 
+    private bool passedBar = false; //if the player has passed the current height
+    private float maxPlayerHeight = 0; //max height the player jumping
+
     Vector3 tempPos = new Vector3(3.6730001f, -1.17499995f, -0.213f);
     Vector3 temprot = new Vector3(57.1805916f, 299.280121f, 330.898041f);
 
@@ -38,7 +41,8 @@ public class PoleVaultManager : MonoBehaviour
 
     private int rightHandTransformPosition = 55;
 
-    private float currentBarHeight = 120; //sets the starting height to x inches
+    private float openingHeight = 240;
+    private float currentBarHeight = 0; //sets the starting height to x inches
 
     private Vector3 startingPosition = new Vector3(-2255.1f, 226.73f, -73.9f); //starting position of player
     private Vector3 startingCameraPosition = new Vector3(0.150004253f, 2.09000158f, -1.94002295f); //position of player camera
@@ -67,6 +71,7 @@ public class PoleVaultManager : MonoBehaviour
     void Start()
     {
 
+        currentBarHeight = openingHeight;
         itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform, basePlayer); //inits the runner into the current scene
         
         poleVaultPole.transform.SetParent(player.GetComponentsInChildren<Transform>()[rightHandTransformPosition]); //sets the parent of the pole to the right hand of the player
@@ -111,12 +116,18 @@ public class PoleVaultManager : MonoBehaviour
         }
         if (poleVaultPole.GetComponent<Animator>().GetBool("Launched")) //when the player is launched in the air
         {
+            if (player.transform.position.y > maxPlayerHeight)
+            {
+                maxPlayerHeight = player.transform.position.y;
+            }
+            float speedRatio = (PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel + 2 * PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel) / 30;
             if (Input.GetKeyDown(KeyCode.Space) && player.GetComponentInChildren<Animator>().GetBool("Pike"))
             {
-                player.GetComponentInChildren<Animator>().speed = 1;
+                player.GetComponentInChildren<Animator>().speed = (float)(0.75 + (1.25*speedRatio)); //anaimation speed
                 player.GetComponentInChildren<Animator>().Play("Pike");
             } else if (Input.GetKeyDown(KeyCode.Space))
             {
+                player.GetComponentInChildren<Animator>().speed = (float)(0.75 + (1.25 * speedRatio)); //anaimation speed
                 player.GetComponentInChildren<Animator>().Play("LegBack");
                 //player.transform.localEulerAngles = playerPikeRotation;
                // player.GetComponentInChildren<Transform>().localEulerAngles = new Vector3(0, 270, 0);
@@ -135,7 +146,8 @@ public class PoleVaultManager : MonoBehaviour
         IEnumerator waitForFall(float delay)
         {
             yield return new WaitForSeconds(delay);
-            if (startingBarHeight.y - bar.transform.position.y > 1.5 || barStraight(bar,1))
+            passedBar = !(startingBarHeight.y - bar.transform.position.y > 1.5 || barStraight(bar, 1) || maxPlayerHeight+2.5 < bar.transform.position.y);
+            if (!passedBar)
             {
                 Debug.Log(startingBarHeight.y + "" + bar.transform.position.y);
                 updatePlayerBanner(-10000); //code for a miss
@@ -170,6 +182,16 @@ public class PoleVaultManager : MonoBehaviour
                     leaderboardManager.hidePersonalBanner();
                 }
             }
+            if (player.transform.position.z < -194)
+            {
+                isRunning = false; //stops running speed
+                isPlanting = true; //makes planting fail
+                foulImage.enabled = true; //show foul
+                runMeter.runningBar.transform.parent.gameObject.SetActive(false); //hide run meter
+                StartCoroutine(foulRun(1)); //wait x seconds then end jump
+                
+            }
+
             
             if (Input.GetKeyDown(KeyCode.P)) //if the player presses the jump button
             {
@@ -201,6 +223,15 @@ public class PoleVaultManager : MonoBehaviour
                 StartCoroutine(jumpMeterTimeLimit(3)); //makes a time limit of x seconds for jumping angle*/
             }
         }
+    }
+
+    IEnumerator foulRun(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        poleVaultPole.transform.parent = null;
+        updatePlayerBanner(-10000);
+        afterJump();
+        
     }
 
     private bool barStraight(GameObject bar, float range)
@@ -250,21 +281,32 @@ public class PoleVaultManager : MonoBehaviour
         poleVaultPole.transform.localPosition = tempPos; //sets local position of pole
         poleVaultPole.transform.localEulerAngles = temprot; //sets local rotation of pole
         StartCoroutine(startVault(1));
+
     }
 
     IEnumerator startVault(float delay) //starts the initial pole bend
     {
         yield return new WaitForSeconds(delay);
-        poleVaultPole.GetComponent<Animator>().enabled = true;
-        poleVaultPole.transform.parent = null; //makes the parent root of scene so it moves independently
-        player.transform.parent = poleGrip.transform; //makes the player follow the pole grip
-        playerCamera.enabled = false; //makes the running camera not enabled
-        jumpingCamera.enabled = true; //makes the vaulting camera enabled
-        player.transform.localPosition = playerLaunchPosition; //makes the player in the right position
-        player.transform.localEulerAngles = playerLaunchRotation; //makes the player in the right rotation
-        poleVaultPole.GetComponent<Animator>().speed = 1;
-        poleVaultPole.GetComponent<Animator>().Play("VaultStage1"); //makes the pole in the right animation
-        StartCoroutine(stage1Vault(1.5f));
+        if (player.transform.position.z > -189)
+        {
+            foulImage.enabled = true;
+            poleVaultPole.transform.parent = null;
+            updatePlayerBanner(-10000);
+            afterJump();
+        } else
+        {
+            poleVaultPole.GetComponent<Animator>().enabled = true;
+            poleVaultPole.transform.parent = null; //makes the parent root of scene so it moves independently
+            player.transform.parent = poleGrip.transform; //makes the player follow the pole grip
+            playerCamera.enabled = false; //makes the running camera not enabled
+            jumpingCamera.enabled = true; //makes the vaulting camera enabled
+            player.transform.localPosition = playerLaunchPosition; //makes the player in the right position
+            player.transform.localEulerAngles = playerLaunchRotation; //makes the player in the right rotation
+            poleVaultPole.GetComponent<Animator>().speed = 1;
+            poleVaultPole.GetComponent<Animator>().Play("VaultStage1"); //makes the pole in the right animation
+            StartCoroutine(stage1Vault(1.5f));
+        }
+        
     }
 
     IEnumerator stage1Vault(float delay) //stage on of the vault and waits for player input
@@ -294,25 +336,49 @@ public class PoleVaultManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         player.GetComponent<Rigidbody>().useGravity = true; //makes it so that player can fall
-        float power = 5;
-        float powerPercentage = 1 - (Math.Abs(100 - jumpMeter.jumpMeterSpeed) / 100);
-        power *= powerPercentage;
-        power += 1;
-        player.GetComponent<Rigidbody>().velocity = new Vector3(0, power, -4); //makes player launch up
+        float jumpPowerScale = 0.4f; //scale to balence the jumping power
+        float runPowerScale = 1;
+        float runningPower = runPowerScale*PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel; //power of running temp 
+        float runPowerPercentage; //defualt to max power
+        float averageSpeed = runMeter.getAverageSpeed(); //gets average running speed
+        float inPitSpeed = -5; //default for the pit
+        float maxPitChange = 3; //max change from default on each side
+        if (averageSpeed <= 8500) //sets percentage based on distance from 0 to 8500. 8500 is considered the perfect run
+        {
+            runPowerPercentage = averageSpeed / 8500;
+            inPitSpeed += maxPitChange * (1 - runPowerPercentage); //less in the pit
+        }
+        else //sets from 0 to 4500 for the top part
+        {
+            runPowerPercentage = 1 - ((averageSpeed - 8500) / 4500);
+            //inPitSpeed -= maxPitChange * (1 - runPowerPercentage); //more in the pit
+        }
+        runningPower *= runPowerPercentage; //max 20
+        float jumpingPower = jumpPowerScale*(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel + PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel + PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel);
+        //max 15
+        float jumpPercentage = 1 - (Math.Abs(100 - jumpMeter.jumpMeterSpeed) / 100);
+        float power = (runningPower + ((jumpingPower*jumpPercentage)*2))/3; //jump is 2/3 jump and 1/3 run  
+        power += 1; //default power
+        player.GetComponent<Rigidbody>().velocity = new Vector3(0, power, inPitSpeed); //makes player launch up
+
 
     }
+
+   
 
     private void afterJump()
     {
         leaderboardManager.showCurrentPlayerMarks(currentPlayerBanner, 3); //updates and shows the player leaderboard
         poleVaultPole.GetComponent<Animator>().SetBool("Launched", false);
         currentJumpNumber++; //inceases to the next jump
-        if (startingBarHeight.y - bar.transform.position.y > 1.5 || barStraight(bar, 1)) //if scratched
+        if (!passedBar) //if scratched
         {
             player.GetComponentInChildren<Animator>().Play("Upset"); //Animation for after the jump
         }
-        else if (prImage.enabled) //if got a personal record
+        else if (currentBarHeight > PublicData.gameData.personalBests.polevault) //if got a personal record
         {
+            prImage.enabled = true;
+            PublicData.gameData.personalBests.polevault = currentBarHeight;
             player.GetComponentInChildren<Animator>().Play("Exited"); //Animation for after the jump
             currentJumpNumber = 0;
         }
@@ -343,7 +409,7 @@ public class PoleVaultManager : MonoBehaviour
         //set the height to the current height
         startingBarHeight = bar.transform.position;
         barRaise.transform.localPosition = new Vector3(0, 0, (float)(-226.9 + currentBarHeight * PublicData.spacesPerInch*3));
-        leaderboardManager.updateCurrentBarHeight(currentBarHeight);
+        leaderboardManager.updateCurrentBarHeight(currentBarHeight, openingHeight); //updates the height and if it is opening height
     }
 
     IEnumerator waitAfterPersonalBanner(int time)
@@ -374,6 +440,8 @@ public class PoleVaultManager : MonoBehaviour
         foulImage.enabled = false; //hides the image
         updateBarRaiseHeight();
         prImage.enabled = false;// hides the image
+        passedBar = false;
+        maxPlayerHeight = 0;
         //isFoul = false; //makes the jump not a foul
         leaderboardManager.showUpdatedLeaderboard();
 
@@ -388,7 +456,11 @@ public class PoleVaultManager : MonoBehaviour
             }
             player.transform.Translate(new Vector3(0, 0, runMeter.runningSpeed * runningSpeedRatio)); //making character move according to run meter
            if (isRunning) player.GetComponentInChildren<Animator>().speed = runMeter.runningSpeed * animationRunningSpeedRatio; //making the animation match the sunning speed
-            runMeter.updateTimeElapsed();
+           if (isRunning)
+            {
+                runMeter.updateTimeElapsed();
+
+            }
         }
     }
 }

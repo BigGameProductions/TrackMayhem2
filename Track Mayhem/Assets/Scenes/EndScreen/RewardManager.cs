@@ -18,10 +18,10 @@ public class RewardManager : MonoBehaviour
                 player = pb;
             }
         }
-        PublicData.gameData.allRunners.ElementAt(indexOfCurrentRunner()).increasePoints(pointsList[player.place]); //applies the points awarded to the given runner
+        PublicData.pointsToGive = pointsList[player.place]; //applies the points awarded to the given runner
     }
 
-    private int indexOfCurrentRunner() //find the current index of the runner in the runner array in game data
+   /* private int indexOfCurrentRunner() //find the current index of the runner in the runner array in game data
     {
         for (int i=0; i<PublicData.gameData.allRunners.Count;i++) //loops through runners
         {
@@ -31,5 +31,5 @@ public class RewardManager : MonoBehaviour
             }
         }
         return 0;
-    }
+    }*/
 }

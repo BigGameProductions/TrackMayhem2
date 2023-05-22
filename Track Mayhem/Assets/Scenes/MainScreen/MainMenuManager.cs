@@ -9,6 +9,8 @@ using System;
 public class MainMenuManager : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI currentRunnerPoints;
+    [SerializeField] private Slider pointSlider;
+    [SerializeField] private Image rankImage;
     [SerializeField] private TextMeshProUGUI tempEventName;
     [SerializeField] private ItemStorage itemStorage;
     [SerializeField] private GameObject player;
@@ -17,11 +19,51 @@ public class MainMenuManager : MonoBehaviour
 
     [SerializeField] private GameObject[] chestSlots;
 
+    private int[] rankList = new int[] //list of all rank amounts
+    {
+        10,30,50,100,200,350,500,700,900,1100,1300,1500
+    };
+
     // Start is called before the first frame update
     void Start()
     {
         itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform);
-        currentRunnerPoints.text = PublicData.gameData.allRunners.ElementAt(indexOfCurrentRunner()).points.ToString();
+        if (PublicData.pointsToGive > 0)
+        {
+            PublicData.gameData.allRunners.ElementAt(indexOfCurrentRunner()).increasePoints(PublicData.pointsToGive);
+        }
+
+        string currentPoints = PublicData.gameData.allRunners.ElementAt(indexOfCurrentRunner()).points.ToString();
+        string nextRankAmount = "/";
+        int rankIndex = 0;
+        for (int i=0; i<rankList.Length; i++)
+        {
+            if (Int32.Parse(currentPoints) < rankList[i])
+            {
+                nextRankAmount += rankList[i].ToString();
+                rankIndex = i;
+                if (Int32.Parse(currentPoints) - PublicData.pointsToGive < rankList[i-1])
+                {
+                    PublicData.gameData.trainingCards += (i / 2) + 1;
+                }
+                break;
+            }
+        }
+        PublicData.pointsToGive = 0;
+        currentRunnerPoints.text = currentPoints + nextRankAmount;
+        if (Int32.Parse(currentPoints) < 10)
+        {
+            pointSlider.maxValue = 10;
+            pointSlider.value = Int32.Parse(currentPoints);
+        } else if (Int32.Parse(currentPoints) > 1500)
+        {
+            pointSlider.maxValue = 1;
+            pointSlider.value = 1;
+        } else
+        {
+            pointSlider.maxValue = rankList[rankIndex] - rankList[rankIndex - 1];
+            pointSlider.value = Int32.Parse(currentPoints) - rankList[rankIndex - 1];
+        }
         tempEventName.text = PublicData.recordsInfo.ElementAt(PublicData.currentSelectedEventIndex + 1)[0];
         PublicData.gameData.chestSlots[0] = new ChestInfo(1, true);
         PublicData.gameData.chestSlots[1] = new ChestInfo(2, true);

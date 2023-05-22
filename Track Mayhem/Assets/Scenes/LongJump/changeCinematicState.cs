@@ -23,7 +23,7 @@ public class changeCinematicState : StateMachineBehaviour
     {
        if (endCamera)
         {
-            animator.gameObject.GetComponent<Camera>().enabled = false;
+            animator.gameObject.GetComponent<Camera>().gameObject.SetActive(false);
             animator.enabled = false;
             animator.SetInteger("Stage", 0);
         } 

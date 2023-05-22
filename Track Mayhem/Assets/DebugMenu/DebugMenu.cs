@@ -19,5 +19,23 @@ public class DebugMenu : MonoBehaviour
 
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.Z)) //resets all runners info
+        {
+            foreach (RunnerInformation ri in PublicData.gameData.allRunners)
+            {
+                if (ri.runnerId==1)
+                {
+                    ri.speedLevel = 10;
+                    ri.strengthLevel = 10;
+                    ri.agilityLevel = 10;
+                    ri.flexabilityLevel = 10;
+                }
+
+
+                
+
+            }
+        }
     }
 }

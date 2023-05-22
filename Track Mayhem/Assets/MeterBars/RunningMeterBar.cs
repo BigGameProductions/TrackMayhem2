@@ -69,6 +69,7 @@ public class RunningMeterBar : MonoBehaviour
     {
         if (runningSpeed == 0)
         {
+            Debug.Log("XERO");
             totalRunningSpeed = 0;
             timeElapsedRunning = 0;
         }
