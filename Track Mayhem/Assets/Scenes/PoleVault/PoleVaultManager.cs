@@ -19,6 +19,8 @@ public class PoleVaultManager : MonoBehaviour
     [SerializeField] private GameObject poleVaultPole; //the main pole that is used for the event
     [SerializeField] private GameObject poleGrip; //part of the pole that is being held onto
 
+    private LeaderboardFunctions leadF = new LeaderboardFunctions();
+
     [SerializeField] private float runningSpeedRatio; //stores the ratio for running compared to runningSpeed
     [SerializeField] private float animationRunningSpeedRatio; //stores the ratio for animation speed compared to runningSpeed
 
@@ -41,7 +43,7 @@ public class PoleVaultManager : MonoBehaviour
 
     private int rightHandTransformPosition = 55;
 
-    private float openingHeight = 240;
+    private float openingHeight = 120;
     private float currentBarHeight = 0; //sets the starting height to x inches
 
     private Vector3 startingPosition = new Vector3(-2255.1f, 226.73f, -73.9f); //starting position of player
@@ -70,7 +72,6 @@ public class PoleVaultManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
         currentBarHeight = openingHeight;
         itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform, basePlayer); //inits the runner into the current scene
         
@@ -377,6 +378,9 @@ public class PoleVaultManager : MonoBehaviour
         }
         else if (currentBarHeight > PublicData.gameData.personalBests.polevault) //if got a personal record
         {
+
+            leadF.SetLeaderBoardEntry(2, PublicData.gameData.playerName, (int)(currentBarHeight * 100), PublicData.gameData.countryCode + "," + PublicData.currentRunnerUsing);
+            leadF.checkForOwnPlayer(2, 20); //checks to make sure it can stay in the top 20
             prImage.enabled = true;
             PublicData.gameData.personalBests.polevault = currentBarHeight;
             player.GetComponentInChildren<Animator>().Play("Exited"); //Animation for after the jump

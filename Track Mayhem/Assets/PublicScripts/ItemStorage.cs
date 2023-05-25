@@ -9,7 +9,21 @@ public class ItemStorage : MonoBehaviour
     public Avatar mainCharacterAvatar; //holds the avatar that all peoplle are based on
 
     public RuntimeAnimatorController characterAnimator; //holds the animator for the new character
-    //TODO add flags later
+
+    public Sprite[] flags; //this is all the sprites for all the flags
+
+
+    public int findFlagIndexOfCountry(string code) //find the index of flags given the country code
+    {
+        for (int i = 0; i < flags.Length; i++)
+        {
+            if (flags[i].name == code.ToLower())
+            {
+                return i;
+            }
+        }
+        return 0;
+    }
 
     public GameObject initRunner(int id, Transform tf, GameObject basePlayer=null) //class used by all scenes to init the current runner and return in in case of any other changes
     {

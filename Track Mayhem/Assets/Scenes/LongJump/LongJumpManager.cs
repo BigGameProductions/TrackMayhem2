@@ -24,6 +24,8 @@ public class LongJumpManager : MonoBehaviour
     [SerializeField] private float powerToAnimationSpeedRatio;
     [SerializeField] private float pullInLegPower;
 
+    private LeaderboardFunctions leadF = new LeaderboardFunctions(); 
+
     private int currentJumpNumber = 0; //stores the amount of jumps that player has taken
     PlayerBanner currentPlayerBanner; //stores the current player data in a banner class
 
@@ -231,6 +233,8 @@ public class LongJumpManager : MonoBehaviour
             }
             if (totalInches > leaderboardManager.getMarkForEvent("LongJump")) //checks for a new personal record
             {
+                leadF.SetLeaderBoardEntry(1, PublicData.gameData.playerName, (int)(leaderboardManager.roundToNearest(0.25f, totalInches) * 100), PublicData.gameData.countryCode + "," + PublicData.currentRunnerUsing);
+                leadF.checkForOwnPlayer(1, 20); //checks to make sure it can stay in the top 20
                 prImage.enabled = true; //shows the pr banner
                 PublicData.gameData.personalBests.longJump = totalInches;
 

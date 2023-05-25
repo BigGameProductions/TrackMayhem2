@@ -21,6 +21,7 @@ public class MainButtonLogic : MonoBehaviour
         }
     }
 
+
     public void runnerMenu()
     {
         SceneManager.LoadScene("RunnersMenu");
@@ -29,6 +30,11 @@ public class MainButtonLogic : MonoBehaviour
     public void mainMenu()
     {
         SceneManager.LoadScene("MainScreen");
+    }
+
+    public void leaderboardDisplay()
+    {
+        SceneManager.LoadScene("Leaderboard");
     }
 
     public void showRunnerInfo()

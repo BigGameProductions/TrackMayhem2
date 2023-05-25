@@ -28,7 +28,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
     private float currentBarHeight = -10;
     private float openingHeight = 0;
 
-    [SerializeField] private Sprite[] flags;
+    [SerializeField] private ItemStorage itemStorage;
 
 
     private PersonalBests personalBests; //store personals bests for seeding
@@ -83,17 +83,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
         
     }
 
-    private int findFlagIndexOfCountry(string code) //find the index of flags given the country code
-    {
-        for (int i = 0; i < flags.Length;i++)
-        {
-            if (flags[i].name == code.ToLower())
-            {
-                return i;
-            }
-        }
-        return 0;
-    }
+    
 
     public void simRemainingJumps() //simulates and sorts all banners for end display
     {
@@ -269,9 +259,9 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
         {
             string[] currentRecordInfo = getEventRecordByEvent(eventName);
             playerBanners = new PlayerBanner[] {
-            new PlayerBanner(0, findFlagIndexOfCountry(currentRecordInfo[4]), currentRecordInfo[1], float.Parse(currentRecordInfo[2])),
+            new PlayerBanner(0, itemStorage.findFlagIndexOfCountry(currentRecordInfo[4]), currentRecordInfo[1], float.Parse(currentRecordInfo[2])),
             new PlayerBanner(0, 0, "World", 98),
-            new PlayerBanner(0, findFlagIndexOfCountry("us"), playerName, getMarkForEvent(SceneManager.GetActiveScene().name))
+            new PlayerBanner(0, itemStorage.findFlagIndexOfCountry(PublicData.gameData.countryCode), playerName, getMarkForEvent(SceneManager.GetActiveScene().name))
              };
         } else if (stage == 3) //current player jump
         {
@@ -379,7 +369,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
             banners[i] = new PlayerBanner(i, flagNum, name, roundToNearest(0.25f, personalBest)); //round personal bests to only two places
 
         }
-        banners[banners.Length - 1] = new PlayerBanner(0, findFlagIndexOfCountry("us"), playerName, getMarkForEvent(SceneManager.GetActiveScene().name), isPlayer:true);
+        banners[banners.Length - 1] = new PlayerBanner(0, itemStorage.findFlagIndexOfCountry(PublicData.gameData.countryCode), playerName, getMarkForEvent(SceneManager.GetActiveScene().name), isPlayer:true);;
         return sortBanners(banners, true, barEvent:true); //sorting banners based on bar events
     }
 
@@ -613,13 +603,13 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
             if (mode == 1)
             {
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[4].gameObject.SetActive(true); //best mark label
-                leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[3].gameObject.GetComponent<Image>().sprite = flags[playerBanners[i].flagNumber]; //temp
+                leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[3].gameObject.GetComponent<Image>().sprite = itemStorage.flags[playerBanners[i].flagNumber]; //temp
                 textBoxes[2].text = markToString(playerBanners[i].bestMark); //best mark text box
             }
             else if (mode == 2)
             {
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[1].gameObject.SetActive(false); //record mark label
-                leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[3].gameObject.GetComponent<Image>().sprite = flags[playerBanners[i].flagNumber]; //temp
+                leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[3].gameObject.GetComponent<Image>().sprite = itemStorage.flags[playerBanners[i].flagNumber]; //temp
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[5].gameObject.SetActive(true); //record mark label
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[6].gameObject.SetActive(true); //record label mark
                 textBoxes[3].text = markToString(playerBanners[i].bestMark); //setting record marks
@@ -627,7 +617,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
             } else if (mode == 4)
             {
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[1].gameObject.SetActive(false); //record mark label
-                leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[3].gameObject.GetComponent<Image>().sprite = flags[playerBanners[i].flagNumber]; //temp
+                leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[3].gameObject.GetComponent<Image>().sprite = itemStorage.flags[playerBanners[i].flagNumber]; //temp
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[7].gameObject.SetActive(true); //record label mark
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[8].gameObject.SetActive(true); //record mark label
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[9].gameObject.SetActive(true); //record label mark
@@ -645,7 +635,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
         if (mode == 3)
         {
             TextMeshProUGUI[] textBoxes = personalBanner.GetComponentsInChildren<TextMeshProUGUI>(true);
-            personalBanner.GetComponentsInChildren<RectTransform>(true)[3].gameObject.GetComponent<Image>().sprite = flags[personalBannersMarks.flagNumber]; //temp
+            personalBanner.GetComponentsInChildren<RectTransform>(true)[3].gameObject.GetComponent<Image>().sprite = itemStorage. flags[personalBannersMarks.flagNumber]; //temp
             for (int j = 4; j < personalBanner.GetComponentsInChildren<RectTransform>(true).Length; j++)
             {
                 if (j <=6 || j>9) personalBanner.GetComponentsInChildren<RectTransform>(true)[j].gameObject.SetActive(false); //make the banner empty
