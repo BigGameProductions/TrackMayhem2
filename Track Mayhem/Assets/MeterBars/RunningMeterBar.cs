@@ -35,6 +35,8 @@ public class RunningMeterBar : MonoBehaviour
 
     public float getAverageSpeed()
     {
+
+        if (timeElapsedRunning == 0) return 0; //prevents NaN error
         return totalRunningSpeed / timeElapsedRunning;
     }
 
@@ -69,7 +71,6 @@ public class RunningMeterBar : MonoBehaviour
     {
         if (runningSpeed == 0)
         {
-            Debug.Log("XERO");
             totalRunningSpeed = 0;
             timeElapsedRunning = 0;
         }

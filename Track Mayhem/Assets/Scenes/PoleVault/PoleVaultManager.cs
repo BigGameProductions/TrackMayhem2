@@ -21,6 +21,12 @@ public class PoleVaultManager : MonoBehaviour
 
     private LeaderboardFunctions leadF = new LeaderboardFunctions();
 
+    [SerializeField] private GameObject runButton;
+    [SerializeField] private GameObject jumpButton;
+
+    private bool runPressed;
+    private bool jumpPressed;
+
     [SerializeField] private float runningSpeedRatio; //stores the ratio for running compared to runningSpeed
     [SerializeField] private float animationRunningSpeedRatio; //stores the ratio for animation speed compared to runningSpeed
 
@@ -72,6 +78,7 @@ public class PoleVaultManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
         currentBarHeight = openingHeight;
         itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform, basePlayer); //inits the runner into the current scene
         
@@ -95,7 +102,19 @@ public class PoleVaultManager : MonoBehaviour
         prImage.enabled = false; //hides the pr image
     }
 
-    
+    public void buttonPressed(int code)
+    {
+        if (code == 0)
+        {
+            runPressed = true;
+        }
+        else if (code == 1)
+        {
+            jumpPressed = true;
+        }
+    }
+
+
 
     // Update is called once per frame
     void Update()
@@ -122,12 +141,14 @@ public class PoleVaultManager : MonoBehaviour
                 maxPlayerHeight = player.transform.position.y;
             }
             float speedRatio = (PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel + 2 * PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel) / 30;
-            if (Input.GetKeyDown(KeyCode.Space) && player.GetComponentInChildren<Animator>().GetBool("Pike"))
+            if ((Input.GetKeyDown(KeyCode.Space) || jumpPressed) && player.GetComponentInChildren<Animator>().GetBool("Pike"))
             {
+                jumpPressed = false;
                 player.GetComponentInChildren<Animator>().speed = (float)(0.75 + (1.25*speedRatio)); //anaimation speed
                 player.GetComponentInChildren<Animator>().Play("Pike");
-            } else if (Input.GetKeyDown(KeyCode.Space))
+            } else if (Input.GetKeyDown(KeyCode.Space) || jumpPressed)
             {
+                jumpPressed = false;
                 player.GetComponentInChildren<Animator>().speed = (float)(0.75 + (1.25 * speedRatio)); //anaimation speed
                 player.GetComponentInChildren<Animator>().Play("LegBack");
                 //player.transform.localEulerAngles = playerPikeRotation;
@@ -163,8 +184,9 @@ public class PoleVaultManager : MonoBehaviour
         if (jumpMeter.jumpBar.gameObject.transform.parent.gameObject.activeInHierarchy) //about to jump and updates jumping meter
         {
             jumpMeter.updateJumpMeter();
-            if (Input.GetKeyDown(KeyCode.Space)) //makes jump
+            if (Input.GetKeyDown(KeyCode.Space) || jumpPressed) //makes jump
             {
+                jumpPressed = false;
                 jumpMeter.MakeJump();
                 //float jumpMeterSpeed = jumpMeter.jumpMeterSpeed;
                 StartCoroutine(startPlant(0.5f)); //calls planting method 
@@ -175,8 +197,9 @@ public class PoleVaultManager : MonoBehaviour
         if (playerCamera.enabled && !leaderboardManager.cinematicCamera.gameObject.activeInHierarchy && isRunning) //runs when the player is in the running stage
         {
             runMeter.updateRunMeter();
-            if (Input.GetKeyDown(KeyCode.Space) && runMeter.runningBar.transform.parent.gameObject.activeInHierarchy) //updating speed on click
+            if ((Input.GetKeyDown(KeyCode.Space) || runPressed) && runMeter.runningBar.transform.parent.gameObject.activeInHierarchy) //updating speed on click
             {
+                runPressed = false;
                 runMeter.increaseHeight();
                 if (leaderboardManager.leaderBoardVisble()) //hides the leaderboard if the player clicks
                 {
@@ -194,8 +217,10 @@ public class PoleVaultManager : MonoBehaviour
             }
 
             
-            if (Input.GetKeyDown(KeyCode.P)) //if the player presses the jump button
+            if (Input.GetKeyDown(KeyCode.P) || jumpPressed) //if the player presses the jump button
             {
+                jumpPressed = false;
+                runButton.SetActive(false);
                 jumpMeter.jumpBar.transform.parent.gameObject.SetActive(true);
                 isRunning = false; //shows the player is not longer running
                 runMeter.runningBar.transform.parent.gameObject.SetActive(false); //hides running meter
@@ -369,6 +394,7 @@ public class PoleVaultManager : MonoBehaviour
 
     private void afterJump()
     {
+        jumpButton.SetActive(false); //hides jump button for after jump
         leaderboardManager.showCurrentPlayerMarks(currentPlayerBanner, 3); //updates and shows the player leaderboard
         poleVaultPole.GetComponent<Animator>().SetBool("Launched", false);
         currentJumpNumber++; //inceases to the next jump
@@ -446,6 +472,8 @@ public class PoleVaultManager : MonoBehaviour
         prImage.enabled = false;// hides the image
         passedBar = false;
         maxPlayerHeight = 0;
+        runButton.SetActive(true);
+        jumpButton.SetActive(true);
         //isFoul = false; //makes the jump not a foul
         leaderboardManager.showUpdatedLeaderboard();
 

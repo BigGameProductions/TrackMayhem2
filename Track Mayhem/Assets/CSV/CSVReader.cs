@@ -9,7 +9,7 @@ public class CSVReader //reads the csv files and puts the output in the game dat
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void OnBeforeSceneLoadRuntimeMethod() //makes the method happen on start of any scene
     {
-        string filePath = Path.Combine("Assets", Path.Combine("CSV", "characters.csv"));
+        string filePath = Path.Combine(Application.streamingAssetsPath, "characters.csv");
         List<string[]> csvInformation = new List<string[]>();
         StreamReader strReader = new StreamReader(filePath); //gets csv file
         bool endOfFile = false;
@@ -25,7 +25,7 @@ public class CSVReader //reads the csv files and puts the output in the game dat
             csvInformation.Add(dataValues);
         }
         PublicData.charactersInfo = csvInformation; //sets the information in public data for public use in the game
-        filePath = Path.Combine("Assets", Path.Combine("CSV", "names.csv"));
+        filePath = Path.Combine(Application.streamingAssetsPath, "names.csv");
         csvInformation = new List<string[]>();
         strReader = new StreamReader(filePath); //gets csv file
         endOfFile = false;
@@ -41,7 +41,7 @@ public class CSVReader //reads the csv files and puts the output in the game dat
             csvInformation.Add(dataValues);
         }
         PublicData.namesInfo = csvInformation; //sets the information in public data for public use in the game
-        filePath = Path.Combine("Assets", Path.Combine("CSV", "records.csv"));
+        filePath = Path.Combine(Application.streamingAssetsPath, "records.csv");
         csvInformation = new List<string[]>();
         strReader = new StreamReader(filePath); //gets csv file
         endOfFile = false;

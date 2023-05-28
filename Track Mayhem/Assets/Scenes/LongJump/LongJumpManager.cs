@@ -24,6 +24,12 @@ public class LongJumpManager : MonoBehaviour
     [SerializeField] private float powerToAnimationSpeedRatio;
     [SerializeField] private float pullInLegPower;
 
+    private bool runPressed;
+    private bool jumpPressed;
+
+    [SerializeField] private GameObject jumpButton;
+    [SerializeField] private GameObject runButton;
+
     private LeaderboardFunctions leadF = new LeaderboardFunctions(); 
 
     private int currentJumpNumber = 0; //stores the amount of jumps that player has taken
@@ -69,14 +75,26 @@ public class LongJumpManager : MonoBehaviour
 
     }
 
+    public void buttonPressed(int code)
+    {
+        if (code == 0)
+        {
+            runPressed = true;
+        } else if (code == 1)
+        {
+            jumpPressed = true;
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
         if (runningCamera.enabled && !leaderboardManager.cinematicCamera.gameObject.activeInHierarchy) //change this so it works for enabled
         {
             runningMeter.updateRunMeter();
-            if (Input.GetKeyDown(KeyCode.Space) && runningMeter.runningBar.transform.parent.gameObject.activeInHierarchy) //updating speed on click
+            if ((Input.GetKeyDown(KeyCode.Space) || runPressed) && runningMeter.runningBar.transform.parent.gameObject.activeInHierarchy) //updating speed on click
             {
+                runPressed = false;
                 runningMeter.increaseHeight();
                 if (leaderboardManager.leaderBoardVisble()) //hides the leaderboard if the player clicks
                 {
@@ -90,8 +108,10 @@ public class LongJumpManager : MonoBehaviour
                 foulImage.enabled = true;
                 StartCoroutine(runThroughWait(1.5f));
             }
-            if (Input.GetKeyDown(KeyCode.P)) //if the player presses the jump button
+            if (Input.GetKeyDown(KeyCode.P) || jumpPressed) //if the player presses the jump button
             {
+                jumpPressed = false;
+                runButton.SetActive(false);
                 runningCamera.enabled = false;
                 jumpingCamera.enabled = true;
                 runningMeter.runningBar.transform.parent.gameObject.SetActive(false); //hide run meter
@@ -116,8 +136,9 @@ public class LongJumpManager : MonoBehaviour
         if (jumpMeter.jumpBar.gameObject.transform.parent.gameObject.activeInHierarchy) //about to jump
         {
             jumpMeter.updateJumpMeter();
-            if (Input.GetKeyDown(KeyCode.Space)) //makes jump
+            if (Input.GetKeyDown(KeyCode.Space) || jumpPressed) //makes jump
             {
+                jumpPressed = false;
                 jumpMeter.MakeJump();
                 float jumpMeterSpeed = jumpMeter.jumpMeterSpeed;
                 if (player.transform.position.x > -1895.73) //testing got jumping foul
@@ -141,8 +162,9 @@ public class LongJumpManager : MonoBehaviour
         }
         if (player.GetComponent<Rigidbody>().useGravity) //if in jumping animation
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space) || jumpPressed)
             {
+                jumpPressed = false;
                 float playerHeight = player.transform.position.y;
                 if (playerHeight<227.4 && playerHeight>225) //checks if the leg pull is within an optimal range to work
                 {
@@ -265,6 +287,7 @@ public class LongJumpManager : MonoBehaviour
 
     private void afterJump()
     {
+        jumpButton.SetActive(false);
         leaderboardManager.showCurrentPlayerMarks(currentPlayerBanner, 3); //updates and shows the player leaderboard
         currentJumpNumber++; //inceases to the next jump
         if (isFoul) //if scratched
@@ -303,6 +326,8 @@ public class LongJumpManager : MonoBehaviour
         foulImage.enabled = false; //hides the image
         prImage.enabled = false;// hides the image
         isFoul = false; //makes the jump not a foul
+        runButton.SetActive(true);
+        jumpButton.SetActive(true);
         leaderboardManager.showUpdatedLeaderboard();
     }
 
@@ -312,6 +337,7 @@ public class LongJumpManager : MonoBehaviour
         jumpMeter.jumpBar.gameObject.transform.parent.gameObject.SetActive(false); //sets the jump meter to hiding
         float powerPercent = 1; //percent of max power used
         float averageSpeed = runningMeter.getAverageSpeed(); //gets average running speed
+        Debug.Log(averageSpeed);
         if (averageSpeed <= 8500) //sets percentage based on distance from 0 to 8500. 8500 is considered the perfect run
         {
             powerPercent = averageSpeed / 8500;
