@@ -141,7 +141,8 @@ public class RunnerInfoDisplay : MonoBehaviour
 
     public void hidePopup()
     {
-        popup.gameObject.SetActive(false);
+        popup.gameObject.SetActive(false); //hides the popup
+        disableBuyButtons(true); //makes buy buttons able to be clicked
     }
     
     //0 is plus
@@ -173,6 +174,7 @@ public class RunnerInfoDisplay : MonoBehaviour
         string[] att = PublicData.charactersInfo.ElementAt(info.runnerId + 1); //gets the characters.csv traits
         int upgradeNumber = PublicData.upgradeLevelForTrait(num, info, att); //gets price of the current trait in points
         popup.gameObject.SetActive(true); //shows popup
+        disableBuyButtons(false); //makes but buttons not clickable
         int level = 0; //level of upgrade
         switch (num)
         {
@@ -255,8 +257,30 @@ public class RunnerInfoDisplay : MonoBehaviour
         
     }
 
-    
+    //true for enabled and false for disabled buy buttons
+    private void disableBuyButtons(bool set)
+    {
+        foreach (Transform tf in mainCanvas.transform) //sets all the text boxes to appropriate values
+        {
+            if (tf.name == "Upgrades") //hides the upgrade buttons for locked runners
+            {
+                foreach (Transform tff in tf.transform)
+                {
+                    foreach (Transform tfff in tff.transform)
+                    {
+                        if (tfff.name == "UpgradeButton")
+                        {
+                            tfff.GetComponent<Button>().enabled = set;
+                        }
 
+                    }
+                }
+            }
+        }
+        
+
+
+    }
     private void setUpgradeButons(Transform tf, int amount, bool level) //takes a transform and loops through all the upgrade boxes to decide what is highlighted. Level decides if the highlight is for the current level
     {
         for (int i=0; i<tf.childCount; i++) //loops through all boxes

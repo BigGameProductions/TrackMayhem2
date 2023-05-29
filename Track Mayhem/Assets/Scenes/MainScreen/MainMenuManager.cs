@@ -22,6 +22,11 @@ public class MainMenuManager : MonoBehaviour
 
     [SerializeField] private Color[] rankColors;
 
+    [SerializeField] private Color[] chestColors;
+
+    [SerializeField] private Material[] chestMats;
+
+
     private int[] rankList = new int[] //list of all rank amounts
     {
         10,30,50,100,200,350,500,700,900,1100,1300,1500,2000,2500
@@ -112,9 +117,13 @@ public class MainMenuManager : MonoBehaviour
         {
             if (PublicData.gameData.chestSlots[i] != null) //makes sure there is a chest to find
             {
-                if (!PublicData.gameData.chestSlots[i].placeHolder) //checks if it is a placeholde 
+                if (!PublicData.gameData.chestSlots[i].placeHolder) //checks if it is a placeholder
                 {
-                    chestSlots[i].GetComponentsInChildren<RectTransform>(true)[1].gameObject.SetActive(true); //shows chest if there is one
+                    chestSlots[i].GetComponentsInChildren<Transform>(true)[1].gameObject.SetActive(true); //shows chest if there is one
+                } else
+                {
+                    chestSlots[i].GetComponentsInChildren<Transform>(true)[1].gameObject.SetActive(false); //shows chest if there is one
+                    chestMats[i].color = chestColors[PublicData.gameData.chestSlots[i].chestID];
                 }
             }
             

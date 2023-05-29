@@ -20,7 +20,7 @@ public class DebugMenu : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.Z)) //resets all runners info
+        if (Input.GetKeyDown(KeyCode.Z)) //maxes out best person
         {
             foreach (RunnerInformation ri in PublicData.gameData.allRunners)
             {
