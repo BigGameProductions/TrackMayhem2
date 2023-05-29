@@ -12,8 +12,18 @@ public class RunnerInfoDisplay : MonoBehaviour
     [SerializeField] private GameObject player;
     [SerializeField] private ItemStorage itemStorage;
 
-    [SerializeField] private int upgradeStartPrice;
-    [SerializeField] private float upgradeScale;
+    [SerializeField] private GameObject popup;
+    [SerializeField] private TextMeshProUGUI resultText;
+
+    [SerializeField] private TextMeshProUGUI coinsText;
+    [SerializeField] private TextMeshProUGUI upgradePointsText;
+    [SerializeField] private TextMeshProUGUI TCText;
+
+    [SerializeField] private Image TCImage;
+
+    [SerializeField] private Button buyButton;
+
+
 
     private void Start()
     {
@@ -73,16 +83,39 @@ public class RunnerInfoDisplay : MonoBehaviour
                         {
                             if (info.unlocked)
                             {
-                                int upgradeAmount = upgradeLevelForTrait(count, info, att);
-                                if (upgradeAmount == -1 || info.upgradePoints < upgradeAmount) //test if the trait is not max and the player can afford to upgrade it
+                                int level = 0; //sets the gold amount
+                                switch (count)
+                                {
+                                    case 0:
+                                        level = info.speedLevel;
+                                        break;
+                                    case 1:
+                                        level = info.strengthLevel;
+                                        break;
+                                    case 2:
+                                        level = info.agilityLevel;
+                                        break;
+                                    case 3:
+                                        level = info.flexabilityLevel;
+                                        break;
+
+                                }
+                                int upgradeAmount = PublicData.upgradeLevelForTrait(count, info, att);
+                                tfff.GetComponent<Button>().enabled = true; //disables the user from clicking max level
+                                if (level == 10)
                                 {
                                     tfff.GetComponent<Button>().enabled = false; //disables the user from clicking max level
-                                    tfff.GetComponentInChildren<TextMeshProUGUI>().text = "No"; //shows the upgrade cannot happen
+                                    setButtonIcon(2, tfff);
                                 }
-                                else
+                                else if (info.upgradePoints < upgradeAmount || (PublicData.usesTrainingCard(count, info, att) && PublicData.gameData.trainingCards < 1) || PublicData.gameData.tokens < PublicData.getGoldAmountForLevel(level))
                                 {
-                                    tfff.GetComponentInChildren<TextMeshProUGUI>().text = "Yes"; //shows the uprgade can happen
+                                    setButtonIcon(0, tfff);
+                                } else
+                                {
+                                    setButtonIcon(1, tfff);
                                 }
+                                //tfff.GetComponentInChildren<TextMeshProUGUI>().text = PublicData.getGoldAmountForLevel(level).ToString();
+
 
                                 Slider sl = tfff.GetComponentInChildren<Slider>();
                                 sl.maxValue = upgradeAmount; //temp as "max" will throw an error //TODO
@@ -106,71 +139,119 @@ public class RunnerInfoDisplay : MonoBehaviour
         }
     }
 
-    private int upgradeLevelForTrait(int count, RunnerInformation ri, string[] att) //returns the number of the points needed for the current upgrade
+    public void hidePopup()
     {
-        int level = 0; //gets the level for the current trait
-        if (count == 0)
-        {
-            level = ri.speedLevel;
-        }
-        if (count == 1)
-        {
-            level = ri.strengthLevel;
-        }
-        if (count == 2)
-        {
-            level = ri.agilityLevel;
-        }
-        if (count == 3)
-        {
-            level = ri.flexabilityLevel;
-        }
-        if (level == 10)
-        {
-            return -1;
-        }
-        if (level >= Int32.Parse(att[3+count])) //tests if it is below at or above the max standards for the runner
-        {
-            return (level - Int32.Parse(att[3 + count]) + 1); //returnst he amount of training tokens needed to go beyond the players ability
-        } else
-        {
-            int finalResult = upgradeStartPrice; //sets the starting price
-            for (int i = 0; i < level; i++)
-            {
-                finalResult = (int)(finalResult * upgradeScale); //scales the price by the scale factor
-            }
-            return finalResult;
-        }
-        
-
+        popup.gameObject.SetActive(false);
     }
+    
+    //0 is plus
+    //1 is arrow
+    //2 is max
+    private void setButtonIcon(int status, Transform tf) //makes the icon for the buy button show
+    {
+        foreach (Transform tff in tf)
+        {
+            if (tff.name == "UpgradePrice")
+            {
+                tff.gameObject.SetActive(status == 2);
+            }
+            if (tff.name == "Arrow")
+            {
+                tff.gameObject.SetActive(status == 1);
+            }
+            if (tff.name == "Plus")
+            {
+                tff.gameObject.SetActive(status == 0);
+            }
+        }
+    }
+
 
     public void upgradeCharacter(int num) //num is the index of the trait that is being upgraded
     {
         RunnerInformation info = PublicData.getCharactersInfo(PublicData.currentRunnerOn); //gets the gamedata traits
         string[] att = PublicData.charactersInfo.ElementAt(info.runnerId + 1); //gets the characters.csv traits
-        int upgradeNumber = upgradeLevelForTrait(num, info, att); //gets price of the current trait in points
-        if (info.upgradePoints >= upgradeNumber)
+        int upgradeNumber = PublicData.upgradeLevelForTrait(num, info, att); //gets price of the current trait in points
+        popup.gameObject.SetActive(true); //shows popup
+        int level = 0; //level of upgrade
+        switch (num)
         {
-            info.upgradePoints -= upgradeNumber;
-            if (num == 0)
-            {
-                PublicData.getCharactersInfo(PublicData.currentRunnerOn).speedLevel++;
-            }
-            if (num == 1)
-            {
-                PublicData.getCharactersInfo(PublicData.currentRunnerOn).strengthLevel++;
-            }
-            if (num == 2)
-            {
-                PublicData.getCharactersInfo(PublicData.currentRunnerOn).agilityLevel++;
-            }
-            if (num == 3)
-            {
-                PublicData.getCharactersInfo(PublicData.currentRunnerOn).flexabilityLevel++;
-            }
-            updateBoxes();
+            case 0:
+                level = info.speedLevel;
+                break;
+            case 1:
+                level = info.strengthLevel;
+                break;
+            case 2:
+                level = info.agilityLevel;
+                break;
+            case 3:
+                level = info.flexabilityLevel;
+                break;
+
         }
+        string name = "Speed"; //sets the gold amount
+        switch (num)
+        {
+            case 1:
+                name = "Strength";
+                break;
+            case 2:
+                name = "Agility";
+                break;
+            case 3:
+                name = "Flexability";
+                break;
+
+        }
+        resultText.text = name + " Level " + (level + 1);
+        coinsText.text = PublicData.getGoldAmountForLevel(num).ToString(); //shows coins needed
+        upgradePointsText.text = PublicData.upgradeLevelForTrait(num, info, att).ToString(); //shows upgrade point amount
+        if (PublicData.usesTrainingCard(num, info, att)) //shows training cards if needed
+        {
+            TCImage.enabled = true;
+            TCText.enabled = true;
+        } else
+        {
+            TCImage.enabled = false;
+            TCText.enabled = false;
+        }
+        buyButton.interactable = true;
+        //check if it can be used
+        if (info.upgradePoints < upgradeNumber || (PublicData.usesTrainingCard(num, info, att) && PublicData.gameData.trainingCards<1) || PublicData.gameData.tokens < PublicData.getGoldAmountForLevel(level))
+        {
+            buyButton.interactable = false;
+        }
+        buyButton.onClick.AddListener(() =>  //sets up the buying button to buy things
+        {
+            hidePopup();
+            if (info.upgradePoints >= upgradeNumber)
+            {
+                if (PublicData.usesTrainingCard(num, info, att)) //subtracts trining cards if used
+                {
+                    PublicData.gameData.trainingCards--;
+                }
+                info.upgradePoints -= upgradeNumber;
+                if (num == 0)
+                {
+                    PublicData.getCharactersInfo(PublicData.currentRunnerOn).speedLevel++;
+                }
+                if (num == 1)
+                {
+                    PublicData.getCharactersInfo(PublicData.currentRunnerOn).strengthLevel++;
+                }
+                if (num == 2)
+                {
+                    PublicData.getCharactersInfo(PublicData.currentRunnerOn).agilityLevel++;
+                }
+                if (num == 3)
+                {
+                    PublicData.getCharactersInfo(PublicData.currentRunnerOn).flexabilityLevel++;
+                }
+                updateBoxes();
+            }
+        });
+        
         
     }
 

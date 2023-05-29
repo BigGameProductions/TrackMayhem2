@@ -67,19 +67,19 @@ public class RunnersDisplay : MonoBehaviour
                 {
                     if (tff.name == "Speed")
                     {
-                        setUpdateIcon(tff, info.speedLevel);
+                        setUpdateIcon(tff, info.speedLevel, info);
                     }
                     if (tff.name == "Strength")
                     {
-                        setUpdateIcon(tff, info.strengthLevel);
+                        setUpdateIcon(tff, info.strengthLevel, info);
                     }
                     if (tff.name == "Agility")
                     {
-                        setUpdateIcon(tff, info.agilityLevel);
+                        setUpdateIcon(tff, info.agilityLevel, info);
                     }
                     if (tff.name == "Flexability")
                     {
-                        setUpdateIcon(tff, info.flexabilityLevel);
+                        setUpdateIcon(tff, info.flexabilityLevel, info);
                     }
                     if (!info.unlocked)
                     {
@@ -95,13 +95,44 @@ public class RunnersDisplay : MonoBehaviour
    
     
 
-    private void setUpdateIcon(Transform tf, int num) //sets the upgrade level of a trait to a specific level
+    private void setUpdateIcon(Transform tf, int num, RunnerInformation info) //sets the upgrade level of a trait to a specific level
     {
+        string[] att = PublicData.charactersInfo.ElementAt(info.runnerId + 1); //gets the characters.csv traits
         foreach (Transform tff in tf)
         {
             if (tff.name == "UpgradeLevel")
             {
                 tff.GetComponent<TextMeshProUGUI>().text = num.ToString();
+            }
+            if (tff.name == "UpgradeImage")
+            {
+                int count = 0;
+                switch (tf.name)
+                {
+                    case "Strength":
+                        count = 1;
+                        break;
+                    case "Agility":
+                        count = 2;
+                        break;
+                    case "Flexability":
+                        count = 3;
+                        break;
+                }
+                Color setColor = Color.white;
+                if (info.upgradePoints >= PublicData.upgradeLevelForTrait(count, info, att))
+                {
+                    setColor = Color.cyan;
+                    if (PublicData.gameData.tokens >= PublicData.getGoldAmountForLevel(num))
+                    {
+                        setColor = Color.green;
+                    }
+                }
+                if (num == 10)
+                {
+                    setColor = Color.yellow;
+                }
+                tff.GetComponent<Image>().color = setColor;
             }
         }
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,12 @@ public static class PublicData
 
     public static int pointsToGive = 0;
 
+
+    private static int upgradeStartPrice = 100; //starting price for upgrades
+    private static float upgradeScale = 3; //upgrage multiplication scale
+
+    private static int startGoldPrice = 50; //starting price of gold
+    private static float upgradeGoldScale = 3; //scale of the gold for the upgrade price
 
 
     public static int currentSelectedEventIndex = 1; //holds the index of the current event according to the records.csv
@@ -73,6 +80,83 @@ public static class PublicData
             
         }
         return newObject;
+    }
+
+    //used to support runners information and runners display
+    public static int upgradeLevelForTrait(int count, RunnerInformation ri, string[] att) //returns the number of the points needed for the current upgrade
+    {
+        int level = 0; //gets the level for the current trait
+        if (count == 0)
+        {
+            level = ri.speedLevel;
+        }
+        if (count == 1)
+        {
+            level = ri.strengthLevel;
+        }
+        if (count == 2)
+        {
+            level = ri.agilityLevel;
+        }
+        if (count == 3)
+        {
+            level = ri.flexabilityLevel;
+        }
+        if (level == 10)
+        {
+            return -1;
+        }
+       
+        
+        int finalResult = upgradeStartPrice; //sets the starting price
+        for (int i = 0; i < level; i++)
+        {
+            finalResult = (int)(finalResult * upgradeScale); //scales the price by the scale factor
+        }
+        return finalResult;
+        
+
+
+    }
+
+    public static bool usesTrainingCard(int count, RunnerInformation ri, string[] att)
+    {
+        int level = 0; //gets the level for the current trait
+        if (count == 0)
+        {
+            level = ri.speedLevel;
+        }
+        if (count == 1)
+        {
+            level = ri.strengthLevel;
+        }
+        if (count == 2)
+        {
+            level = ri.agilityLevel;
+        }
+        if (count == 3)
+        {
+            level = ri.flexabilityLevel;
+        }
+        if (level == 10)
+        {
+            return false;
+        }
+        if (level >= Int32.Parse(att[3 + count])) //tests if it is below at or above the max standards for the runner
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public static int getGoldAmountForLevel(int level)
+    {
+        int finalResult = startGoldPrice; //sets the starting price
+        for (int i = 0; i < level; i++)
+        {
+            finalResult = (int)(finalResult * upgradeGoldScale); //scales the price by the scale factor
+        }
+        return finalResult;
     }
 
 
