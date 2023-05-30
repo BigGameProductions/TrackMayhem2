@@ -48,6 +48,8 @@ MonoBehaviour:
   - {fileID: 919132149155446097, guid: e6d2ea6fc64b740bb9e9b05008c7151b, type: 3}
   - {fileID: 919132149155446097, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
   - {fileID: 919132149155446097, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
+  - {fileID: 919132149155446097, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
+  - {fileID: 919132149155446097, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
   mainCharacterAvatar: {fileID: 9000000, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
   characterAnimator: {fileID: 9100000, guid: 334d4ffad7bff4024b8176dff9abaf85, type: 2}
   flags:
@@ -305,3 +307,9 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 6e646b60f0e514a9bb5a4dae117ba378, type: 3}
   - {fileID: 21300000, guid: e0c7d4abcd4414d51a9ca89be4caea0b, type: 3}
   - {fileID: 21300000, guid: b71acdf763a924a3080441f2598ded6b, type: 3}
+  chestColors:
+  - {r: 0, g: 1, b: 0.11850643, a: 1}
+  - {r: 0.5754717, g: 0.31469133, b: 0.16015486, a: 1}
+  - {r: 1, g: 0.8440448, b: 0.0990566, a: 1}
+  - {r: 0.70375204, g: 0, b: 1, a: 1}
+  - {r: 1, g: 0, b: 0, a: 1}

@@ -10,11 +10,21 @@ public class ChestOpeningManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI titleText;
     [SerializeField] private TextMeshProUGUI numText;
 
-    private int stage = 0;
+    [SerializeField] private ItemStorage itemStorage;
+    [SerializeField] private Material chestColor;
+
+    [SerializeField] private GameObject chest;
+
+    [SerializeField] private Camera mainCamera;
+
+    private int stage = -2;
 
     // Start is called before the first frame update
     void Start()
     {
+        chestColor.color = itemStorage.chestColors[PublicData.currentBoxOpening];
+        titleText.enabled = false;
+        numText.enabled = false;
         nextStage();
     }
 
@@ -27,10 +37,27 @@ public class ChestOpeningManager : MonoBehaviour
         }
     }
 
+    IEnumerator chestTransition(float delay) //makes the delay automatic is nothing is pressed
+    {
+        yield return new WaitForSeconds(delay);
+        if (chest.activeInHierarchy)
+        {
+            nextStage();
+        }
+    }
+
     private void nextStage()
     {
+        if (stage == -1)
+        {
+            StartCoroutine(chestTransition(0.8f));
+            chest.GetComponent<Animator>().Play("Chest_Open_Close");
+        }
         if (stage == 0) //token stage
         {
+            titleText.enabled = true;
+            numText.enabled = true;
+            chest.SetActive(false);
             titleText.text = "Tokens";
             int tokenAmount = UnityEngine.Random.Range(100, 4000);
             PublicData.gameData.tokens += tokenAmount;
@@ -48,6 +75,7 @@ public class ChestOpeningManager : MonoBehaviour
         if (stage == 3) //charatcer or over stage
         {
             int chance = UnityEngine.Random.Range(0, 100);
+            chance = 5; //temp
             if (chance >=0 && chance < 15)
             {
                titleText.text = "Unlocked";
@@ -72,6 +100,9 @@ public class ChestOpeningManager : MonoBehaviour
             if (chance >= 15)
             {
                 SceneManager.LoadScene("MainScreen");
+            } else
+            {
+                mainCamera.GetComponent<Animator>().Play("CharacterUnlock");
             }
         }
         if (stage == 4) //over stage

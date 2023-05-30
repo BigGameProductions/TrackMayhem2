@@ -9,7 +9,7 @@ public class ChestInfo
 
     public int chestID; //the id level of the chest determines how good the chest is
 
-    public bool placeHolder;
+    public bool placeHolder = false; //if false then it does not exist
 
     //id 0 = starter chest garuntee char
     //id 1 = basic chest

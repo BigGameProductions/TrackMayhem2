@@ -19,6 +19,22 @@ public class RewardManager : MonoBehaviour
             }
         }
         PublicData.pointsToGive = pointsList[player.place]; //applies the points awarded to the given runner
+
+        //temp
+        addChest(3);
+        //temp
+    }
+
+    private void addChest(int level) //adds a chest to the player of a specific level
+    {
+        for (int i=0; i<PublicData.gameData.chestSlots.Length; i++)
+        {
+            if (PublicData.gameData.chestSlots[i] == null)
+            {
+                PublicData.gameData.chestSlots[i] = new ChestInfo(level, true);
+                break; //only one spot can get a chest
+            }
+        }
     }
 
    /* private int indexOfCurrentRunner() //find the current index of the runner in the runner array in game data

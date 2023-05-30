@@ -204,6 +204,7 @@ MonoBehaviour:
   mainCharacterAvatar: {fileID: 0}
   characterAnimator: {fileID: 0}
   flags: []
+  chestColors: []
 --- !u!1 &148805720
 GameObject:
   m_ObjectHideFlags: 0
@@ -239,7 +240,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000557421}
+  m_AnchoredPosition: {x: 0, y: 0.00004807526}
   m_SizeDelta: {x: 13.7323, y: 740.6049}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &243315552
@@ -428,7 +429,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 100
+    m_Left: 60
     m_Right: 0
     m_Top: 30
     m_Bottom: 0
@@ -558,8 +559,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1.278, y: 2.7691}
-  m_SizeDelta: {x: 60.2243, y: 55.5382}
+  m_AnchoredPosition: {x: -0.0000019073, y: 0.000013113}
+  m_SizeDelta: {x: 40, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &597022522
 MonoBehaviour:
@@ -916,7 +917,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 100
+    m_Left: 60
     m_Right: 0
     m_Top: 30
     m_Bottom: 0
@@ -1154,10 +1155,10 @@ RectTransform:
   m_Father: {fileID: 1173471085}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -354, y: 141}
-  m_SizeDelta: {x: 70, y: 70}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 30.8, y: -31.200012}
+  m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1723278787
 MonoBehaviour:

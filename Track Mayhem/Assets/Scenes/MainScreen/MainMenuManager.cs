@@ -22,9 +22,10 @@ public class MainMenuManager : MonoBehaviour
 
     [SerializeField] private Color[] rankColors;
 
-    [SerializeField] private Color[] chestColors;
-
     [SerializeField] private Material[] chestMats;
+
+    [SerializeField] private Image playerFlag;
+    [SerializeField] private TextMeshProUGUI playerName;
 
 
     private int[] rankList = new int[] //list of all rank amounts
@@ -35,6 +36,25 @@ public class MainMenuManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //PublicData.gameData.chestSlots = new ChestInfo[4];
+        //PublicData.gameData.chestSlots[0] = new ChestInfo(1, true);
+        //making profile button appear
+        //make chests hide is not real
+        for (int i=0; i<PublicData.gameData.chestSlots.Length; i++)
+        {
+            if (PublicData.gameData.chestSlots[i] != null)
+            {
+                if (!PublicData.gameData.chestSlots[i].placeHolder)
+                {
+                    PublicData.gameData.chestSlots[i] = null;
+                }
+            }
+            
+        }
+        //make chests hide if not real
+        playerFlag.sprite = itemStorage.flags[itemStorage.findFlagIndexOfCountry(PublicData.gameData.countryCode)];
+        playerName.text = PublicData.gameData.playerName;
+        //making profile button appear
         itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform);
         if (PublicData.pointsToGive > 0)
         {
@@ -78,8 +98,6 @@ public class MainMenuManager : MonoBehaviour
         Debug.Log(rankColor);
         rankImage.color = new Color((byte)255.0 *rankColor.r, (byte)255.0 *rankColor.g, (byte)255.0 *rankColor.b); //copies all properties of color
         tempEventName.text = PublicData.recordsInfo.ElementAt(PublicData.currentSelectedEventIndex + 1)[0];
-        PublicData.gameData.chestSlots[0] = new ChestInfo(1, true);
-        PublicData.gameData.chestSlots[1] = new ChestInfo(2, true);
         setChests();
         updateCurrency();
     }
@@ -117,16 +135,13 @@ public class MainMenuManager : MonoBehaviour
         {
             if (PublicData.gameData.chestSlots[i] != null) //makes sure there is a chest to find
             {
-                if (!PublicData.gameData.chestSlots[i].placeHolder) //checks if it is a placeholder
-                {
-                    chestSlots[i].GetComponentsInChildren<Transform>(true)[1].gameObject.SetActive(true); //shows chest if there is one
-                } else
-                {
-                    chestSlots[i].GetComponentsInChildren<Transform>(true)[1].gameObject.SetActive(false); //shows chest if there is one
-                    chestMats[i].color = chestColors[PublicData.gameData.chestSlots[i].chestID];
-                }
+                chestSlots[i].GetComponentsInChildren<Transform>(true)[1].gameObject.SetActive(true); //shows chest if there is one
+                chestMats[i].color = itemStorage.chestColors[PublicData.gameData.chestSlots[i].chestID];
+            } else
+            {
+                chestSlots[i].GetComponentsInChildren<Transform>(true)[1].gameObject.SetActive(false); //shows chest if there is one
             }
-            
+
         }
     }
 

@@ -12,6 +12,8 @@ public class ItemStorage : MonoBehaviour
 
     public Sprite[] flags; //this is all the sprites for all the flags
 
+    public Color[] chestColors; //this is the colors for all the chest rarities
+
 
     public int findFlagIndexOfCountry(string code) //find the index of flags given the country code
     {
