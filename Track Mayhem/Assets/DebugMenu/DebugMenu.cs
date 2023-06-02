@@ -5,6 +5,12 @@ using UnityEngine;
 public class DebugMenu : MonoBehaviour
 { 
 
+    public void restGame()
+    {
+        PublicData.gameData = new GameData();
+        Application.Quit();
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -34,6 +40,20 @@ public class DebugMenu : MonoBehaviour
 
 
                 
+
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.Q)) //maxes out best person
+        {
+            foreach (RunnerInformation ri in PublicData.gameData.allRunners)
+            {
+                if (ri.runnerId != 0 && ri.runnerId != 1)
+                {
+                    ri.unlocked = false;
+                }
+
+
+
 
             }
         }

@@ -34,7 +34,7 @@ public class GameData
         this.futureChests = new List<ChestInfo>();
 
         //start characters
-        allRunners.Add(new RunnerInformation(0));
-        allRunners.Add(new RunnerInformation(1));
+        allRunners.Add(new RunnerInformation(0, true));
+        allRunners.Add(new RunnerInformation(1, true));
     }
 }

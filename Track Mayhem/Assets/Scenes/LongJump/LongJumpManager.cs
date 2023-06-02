@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Linq;
+using TMPro;
 
 public class LongJumpManager : MonoBehaviour
 {
@@ -49,10 +50,14 @@ public class LongJumpManager : MonoBehaviour
     [SerializeField] RunningMeterBar runningMeter;
     [SerializeField] JumpingMeter jumpMeter;
 
+    [SerializeField] private Canvas controlsCanvas;
+
     
     // Start is called before the first frame update
     void Start()
     {
+        controlsCanvas.enabled = false;
+        jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Takeoff";
         itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform); //inits the runner into the current scene
         
 
@@ -91,6 +96,10 @@ public class LongJumpManager : MonoBehaviour
     {
         if (runningCamera.enabled && !leaderboardManager.cinematicCamera.gameObject.activeInHierarchy) //change this so it works for enabled
         {
+            if (controlsCanvas.enabled == false)
+            {
+                controlsCanvas.enabled = true;
+            }
             runningMeter.updateRunMeter();
             if ((Input.GetKeyDown(KeyCode.Space) || runPressed) && runningMeter.runningBar.transform.parent.gameObject.activeInHierarchy) //updating speed on click
             {
@@ -110,34 +119,43 @@ public class LongJumpManager : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.P) || jumpPressed) //if the player presses the jump button
             {
-                jumpPressed = false;
-                runButton.SetActive(false);
-                runningCamera.enabled = false;
-                jumpingCamera.enabled = true;
-                runningMeter.runningBar.transform.parent.gameObject.SetActive(false); //hide run meter
-                player.GetComponentInChildren<Animator>().speed = 0; //make running animation stop
-                jumpMeter.jumpBar.gameObject.transform.parent.gameObject.SetActive(true); //sets the jump meter to showing
-                jumpMeter.setToRegularSpeed(); //setting the bar speed to normal speed
-                float averageSpeed = runningMeter.getAverageSpeed();
-                if (averageSpeed > 7500 && averageSpeed < 9500)
+                if (!isFoul)
                 {
-                    jumpSparkle.startColor = Color.green;
-                } else if (averageSpeed > 6000 && averageSpeed < 10500)
-                {
-                    jumpSparkle.startColor = Color.yellow;
-                } else
-                {
-                    jumpSparkle.startColor = Color.red;
+                    jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Jump";
+                    jumpPressed = false;
+                    runButton.SetActive(false);
+                    runningCamera.enabled = false;
+                    jumpingCamera.enabled = true;
+                    runningMeter.runningBar.transform.parent.gameObject.SetActive(false); //hide run meter
+                    player.GetComponentInChildren<Animator>().speed = 0; //make running animation stop
+                    jumpMeter.jumpBar.gameObject.transform.parent.gameObject.SetActive(true); //sets the jump meter to showing
+                    jumpMeter.setToRegularSpeed(); //setting the bar speed to normal speed
+                    float averageSpeed = runningMeter.getAverageSpeed();
+                    if (averageSpeed > 7500 && averageSpeed < 9500)
+                    {
+                        jumpSparkle.startColor = Color.green;
+                    }
+                    else if (averageSpeed > 6000 && averageSpeed < 10500)
+                    {
+                        jumpSparkle.startColor = Color.yellow;
+                    }
+                    else
+                    {
+                        jumpSparkle.startColor = Color.red;
+                    }
+                    jumpSparkle.Play();
+                    StartCoroutine(jumpMeterTimeLimit(3)); //makes a time limit of x seconds for jumping angle
                 }
-                jumpSparkle.Play();
-                StartCoroutine(jumpMeterTimeLimit(3)); //makes a time limit of x seconds for jumping angle
             }
+                
         }
         if (jumpMeter.jumpBar.gameObject.transform.parent.gameObject.activeInHierarchy) //about to jump
         {
             jumpMeter.updateJumpMeter();
             if (Input.GetKeyDown(KeyCode.Space) || jumpPressed) //makes jump
             {
+                jumpButton.SetActive(false); //hides button until pike
+                jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Pike";
                 jumpPressed = false;
                 jumpMeter.MakeJump();
                 float jumpMeterSpeed = jumpMeter.jumpMeterSpeed;
@@ -178,9 +196,7 @@ public class LongJumpManager : MonoBehaviour
                     player.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0); //makes the player stop the jump
                 }
                 player.GetComponentInChildren<Animator>().Play("LegPull"); //pulls in legs
-
-
-
+                jumpButton.SetActive(false);
 
             }
             if (player.transform.position.y<224.9)
@@ -328,6 +344,7 @@ public class LongJumpManager : MonoBehaviour
         isFoul = false; //makes the jump not a foul
         runButton.SetActive(true);
         jumpButton.SetActive(true);
+        jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Takeoff";
         leaderboardManager.showUpdatedLeaderboard();
     }
 
@@ -355,6 +372,7 @@ public class LongJumpManager : MonoBehaviour
         player.GetComponentInChildren<Animator>().speed = power * powerToAnimationSpeedRatio;
         player.GetComponent<Rigidbody>().velocity = new Vector3(power, power*0.6f, 0); //make charcter jump
         player.GetComponent<Rigidbody>().useGravity = true;
+        jumpButton.SetActive(true); //allows pike
     }
 
     private void FixedUpdate()

@@ -53,12 +53,9 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
     private void Start()
     {
 
-        //nothing for now
         if (SceneManager.GetActiveScene().name != "EndScreen") //tests to make sure it is an event screen
         {
-            //temp
-            cinematicCamera.GetComponent<Animator>().speed = 10;
-            //temp
+            cinematicCamera.GetComponent<Animator>().speed = 1;
         } else
         {
             currentEventBanners = PublicData.playerBannerTransfer;
@@ -78,6 +75,13 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
             {
                 animationStage = cinematicCamera.GetComponent<Animator>().GetInteger("Stage"); //update the current stage
                 updateCinematicStage(animationStage); //update the leaderboard
+            }
+            if (Input.GetMouseButtonDown(0)) //if clicked
+            {
+                if (animationStage < 3 && animationStage != 0) //if the stage in the begginging
+                {
+                    cinematicCamera.GetComponent<Animator>().SetBool("Skip", true); //skip the stage
+                }
             }
         }
         

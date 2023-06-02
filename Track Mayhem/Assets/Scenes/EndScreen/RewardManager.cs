@@ -7,6 +7,10 @@ public class RewardManager : MonoBehaviour
 {
     int[] pointsList = new int[] { 0, 10, 8, 6, 5, 4, 3, 2, 1 }; //array of points that are given for each place in the compeition
 
+    [SerializeField] private GameObject chest;
+    [SerializeField] private Material chestColor;
+    [SerializeField] private ItemStorage itemStorage;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -20,9 +24,21 @@ public class RewardManager : MonoBehaviour
         }
         PublicData.pointsToGive = pointsList[player.place]; //applies the points awarded to the given runner
 
-        //temp
-        addChest(3);
-        //temp
+        if (PublicData.gameData.futureChests.Count <=5) //when the list is low enough to be refilled
+        {
+            makeFutureChests(10); //add more chests to the list
+        }
+        if (player.place < 4) //if top three positions
+        {
+            addChest(PublicData.gameData.futureChests.ElementAt(0).chestID); //adds the chest from the chest list to player
+            chest.SetActive(true); //shows the visible chest
+            chestColor.color = itemStorage.chestColors[PublicData.gameData.futureChests.ElementAt(0).chestID]; //sets the visible chest color
+            PublicData.gameData.futureChests.RemoveAt(0); //removes the first item so all the chests shift
+        }
+        else
+        {
+            chest.SetActive(false); //hide the visibles chest as the player did not win anything
+        }
     }
 
     private void addChest(int level) //adds a chest to the player of a specific level
@@ -34,6 +50,29 @@ public class RewardManager : MonoBehaviour
                 PublicData.gameData.chestSlots[i] = new ChestInfo(level, true);
                 break; //only one spot can get a chest
             }
+        }
+    }
+
+    private void makeFutureChests(int count)
+    {
+        for (int i = 0; i<count; i++)
+        {
+            int chestId = 1;
+            int chance = UnityEngine.Random.Range(0, 100);
+            if (chance > 70 && chance < 85)
+            {
+                chestId = 2;
+            }
+            else if (chance > 85 && chance < 95)
+            {
+                chestId = 3;
+            }
+            else if (chance > 95)
+            {
+                chestId = 4;
+            }
+            PublicData.gameData.futureChests.Add(new ChestInfo(chestId, true));
+            
         }
     }
 

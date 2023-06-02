@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class PoleVaultManager : MonoBehaviour
 {
@@ -75,10 +76,13 @@ public class PoleVaultManager : MonoBehaviour
     bool isRunning = true; //shows if the player is in running form
     bool isPlanting = false; //shows if the player is planting the pole
 
+    [SerializeField] private Canvas controlsCanvas;
+
     // Start is called before the first frame update
     void Start()
     {
-
+        controlsCanvas.enabled = false;
+        jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Plant";
         currentBarHeight = openingHeight;
         itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform, basePlayer); //inits the runner into the current scene
         
@@ -130,8 +134,12 @@ public class PoleVaultManager : MonoBehaviour
                 inCinematic = false;
                 leaderboardManager.cinematicCamera.gameObject.SetActive(false);
                 playerCamera.enabled = true;
-                runMeter.runningBar.transform.parent.gameObject.SetActive(true);
-
+            }
+        } else
+        {
+            if (controlsCanvas.enabled == false)
+            {
+                controlsCanvas.enabled = true;
             }
         }
         if (poleVaultPole.GetComponent<Animator>().GetBool("Launched")) //when the player is launched in the air
@@ -146,8 +154,10 @@ public class PoleVaultManager : MonoBehaviour
                 jumpPressed = false;
                 player.GetComponentInChildren<Animator>().speed = (float)(0.75 + (1.25*speedRatio)); //anaimation speed
                 player.GetComponentInChildren<Animator>().Play("Pike");
+                jumpButton.SetActive(false);
             } else if (Input.GetKeyDown(KeyCode.Space) || jumpPressed)
             {
+                jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Pike";
                 jumpPressed = false;
                 player.GetComponentInChildren<Animator>().speed = (float)(0.75 + (1.25 * speedRatio)); //anaimation speed
                 player.GetComponentInChildren<Animator>().Play("LegBack");
@@ -186,6 +196,8 @@ public class PoleVaultManager : MonoBehaviour
             jumpMeter.updateJumpMeter();
             if (Input.GetKeyDown(KeyCode.Space) || jumpPressed) //makes jump
             {
+                jumpButton.SetActive(false); //hides button until curl and pike
+                jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Curl";
                 jumpPressed = false;
                 jumpMeter.MakeJump();
                 //float jumpMeterSpeed = jumpMeter.jumpMeterSpeed;
@@ -214,40 +226,43 @@ public class PoleVaultManager : MonoBehaviour
                 runMeter.runningBar.transform.parent.gameObject.SetActive(false); //hide run meter
                 StartCoroutine(foulRun(1)); //wait x seconds then end jump
                 
+            } else  {
+                if (Input.GetKeyDown(KeyCode.P) || jumpPressed) //if the player presses the jump button
+                {
+                    jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Jump";
+                    jumpPressed = false;
+                    runButton.SetActive(false);
+                    jumpMeter.jumpBar.transform.parent.gameObject.SetActive(true);
+                    isRunning = false; //shows the player is not longer running
+                    runMeter.runningBar.transform.parent.gameObject.SetActive(false); //hides running meter
+                    player.GetComponentInChildren<Animator>().speed = 0; //stops the player animations
+                    jumpMeter.setToRegularSpeed(); //setting the bar speed to normal speed
+                    /*runningCamera.enabled = false;
+                    jumpingCamera.enabled = true;
+                    runningMeter.runningBar.transform.parent.gameObject.SetActive(false); //hide run meter
+                    player.GetComponentInChildren<Animator>().speed = 0; //make running animation stop
+                    jumpMeter.jumpBar.gameObject.transform.parent.gameObject.SetActive(true); //sets the jump meter to showing
+                    jumpMeter.setToRegularSpeed(); //setting the bar speed to normal  speed
+                    float averageSpeed = runningMeter.getAverageSpeed();
+                    if (averageSpeed > 7500 && averageSpeed < 9500)
+                    {
+                        jumpSparkle.startColor = Color.green;
+                    }
+                    else if (averageSpeed > 6000 && averageSpeed < 10500)
+                    {
+                        jumpSparkle.startColor = Color.yellow;
+                    }
+                    else
+                    {
+                        jumpSparkle.startColor = Color.red;
+                    }
+                    jumpSparkle.Play();
+                    StartCoroutine(jumpMeterTimeLimit(3)); //makes a time limit of x seconds for jumping angle*/
+                }
             }
 
             
-            if (Input.GetKeyDown(KeyCode.P) || jumpPressed) //if the player presses the jump button
-            {
-                jumpPressed = false;
-                runButton.SetActive(false);
-                jumpMeter.jumpBar.transform.parent.gameObject.SetActive(true);
-                isRunning = false; //shows the player is not longer running
-                runMeter.runningBar.transform.parent.gameObject.SetActive(false); //hides running meter
-                player.GetComponentInChildren<Animator>().speed = 0; //stops the player animations
-                jumpMeter.setToRegularSpeed(); //setting the bar speed to normal speed
-                /*runningCamera.enabled = false;
-                jumpingCamera.enabled = true;
-                runningMeter.runningBar.transform.parent.gameObject.SetActive(false); //hide run meter
-                player.GetComponentInChildren<Animator>().speed = 0; //make running animation stop
-                jumpMeter.jumpBar.gameObject.transform.parent.gameObject.SetActive(true); //sets the jump meter to showing
-                jumpMeter.setToRegularSpeed(); //setting the bar speed to normal  speed
-                float averageSpeed = runningMeter.getAverageSpeed();
-                if (averageSpeed > 7500 && averageSpeed < 9500)
-                {
-                    jumpSparkle.startColor = Color.green;
-                }
-                else if (averageSpeed > 6000 && averageSpeed < 10500)
-                {
-                    jumpSparkle.startColor = Color.yellow;
-                }
-                else
-                {
-                    jumpSparkle.startColor = Color.red;
-                }
-                jumpSparkle.Play();
-                StartCoroutine(jumpMeterTimeLimit(3)); //makes a time limit of x seconds for jumping angle*/
-            }
+            
         }
     }
 
@@ -361,6 +376,7 @@ public class PoleVaultManager : MonoBehaviour
     IEnumerator addUpForce(float delay) //adds delay to when the player in lauched up
     {
         yield return new WaitForSeconds(delay);
+        jumpButton.SetActive(true); //allows curl to happen
         player.GetComponent<Rigidbody>().useGravity = true; //makes it so that player can fall
         float jumpPowerScale = 0.4f; //scale to balence the jumping power
         float runPowerScale = 1;
@@ -429,6 +445,7 @@ public class PoleVaultManager : MonoBehaviour
         player.transform.position = new Vector3(-2255.1001f, 230.100006f, -242.100006f); //sets the after jump position
         player.transform.eulerAngles = new Vector3(0, 180, 0);
         runMeter.runningSpeed = 0; //resets running speed
+        jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Plant";
         StartCoroutine(waitAfterPersonalBanner(3));
     }
 

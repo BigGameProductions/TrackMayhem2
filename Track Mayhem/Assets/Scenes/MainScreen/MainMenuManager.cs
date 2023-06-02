@@ -40,6 +40,12 @@ public class MainMenuManager : MonoBehaviour
         //PublicData.gameData.chestSlots[0] = new ChestInfo(1, true);
         //making profile button appear
         //make chests hide is not real
+        //temp
+        PublicData.gameData.allRunners[0].unlocked = true;
+        PublicData.gameData.allRunners[0].unlocked = true;
+        //temp
+
+
         for (int i=0; i<PublicData.gameData.chestSlots.Length; i++)
         {
             if (PublicData.gameData.chestSlots[i] != null)
@@ -70,10 +76,14 @@ public class MainMenuManager : MonoBehaviour
             {
                 nextRankAmount += rankList[i].ToString();
                 rankIndex = i;
-                if (Int32.Parse(currentPoints) - PublicData.pointsToGive < rankList[i-1])
+                if (i!= 0)
                 {
-                    PublicData.gameData.trainingCards += (i / 2) + 1;
+                    if (Int32.Parse(currentPoints) - PublicData.pointsToGive < rankList[i - 1])
+                    {
+                        PublicData.gameData.trainingCards += (i / 2) + 1;
+                    }
                 }
+                
                 break;
             }
         }

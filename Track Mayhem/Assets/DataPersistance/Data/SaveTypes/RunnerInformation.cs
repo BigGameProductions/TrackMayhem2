@@ -16,7 +16,7 @@ public class RunnerInformation
 
     public bool unlocked;
 
-    public RunnerInformation(int id)
+    public RunnerInformation(int id, bool unlocked)
     {
         this.runnerId = id;
         this.speedLevel = 0;
@@ -25,7 +25,7 @@ public class RunnerInformation
         this.flexabilityLevel = 0;
         this.points = 0;
         this.upgradePoints = 0;
-        this.unlocked = false;
+        this.unlocked = unlocked;
     }
 
     public void increasePoints(int num)

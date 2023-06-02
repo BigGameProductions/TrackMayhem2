@@ -43,7 +43,7 @@ public static class PublicData
                 return runnerData.ElementAt(i);
             }
         }
-        PublicData.gameData.allRunners.Add(new RunnerInformation(id)); //if it can't find one then it makes a new character with the same id
+        PublicData.gameData.allRunners.Add(new RunnerInformation(id, false)); //if it can't find one then it makes a new character with the same id
         return getCharactersInfo(id); //returns the new character
 
     }
