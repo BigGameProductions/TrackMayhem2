@@ -401,6 +401,10 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
         {
             return PublicData.gameData.personalBests.polevault;
         }
+        else if (theEvent == "100m")
+        {
+            return PublicData.gameData.personalBests.hundredMeter;
+        }
         return 0;
     }
 
