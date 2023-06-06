@@ -39,6 +39,8 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
 
     private PlayerBanner personalBannersMarks; //stores the given set of marks for the event
 
+    private bool useTime; //shows if time is being used for the current event
+
     public void LoadData(GameData data)
     {
         this.personalBests = data.personalBests; //load the personal bests
@@ -58,6 +60,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
             cinematicCamera.GetComponent<Animator>().speed = 1;
         } else
         {
+            useTime = PublicData.usesTime;
             currentEventBanners = PublicData.playerBannerTransfer;
             setLeaderboard(currentEventBanners, PublicData.leaderBoardMode); //shows the leaderboard sorted
         }
@@ -87,7 +90,27 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
         
     }
 
-    
+    public void getOtherRunnersTime()
+    {
+        currentEventBanners = simulateRunMark(currentEventBanners, "HundredMeter", seedSpreadUp, seedSpreadDown);
+    }
+
+    public void addPlayerTime(float time)
+    {
+        foreach (PlayerBanner pb in currentEventBanners)
+        {
+            if (pb.isPlayer) //making sure the banner is not for the player
+            {
+                pb.bestMark = (float)Math.Round(time, 2); //rounds to the nearest two places for leaderboard
+            }
+
+        }
+        PublicData.playerBannerTransfer = sortBanners(currentEventBanners, false);
+        PublicData.leaderBoardMode = 1;
+        PublicData.usesTime = true;
+    }
+
+
 
     public void simRemainingJumps() //simulates and sorts all banners for end display
     {
@@ -265,7 +288,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
             playerBanners = new PlayerBanner[] {
             new PlayerBanner(0, itemStorage.findFlagIndexOfCountry(currentRecordInfo[4]), currentRecordInfo[1], float.Parse(currentRecordInfo[2])),
             new PlayerBanner(0, 0, "World", 98),
-            new PlayerBanner(0, itemStorage.findFlagIndexOfCountry(PublicData.gameData.countryCode), playerName, getMarkForEvent(SceneManager.GetActiveScene().name))
+            new PlayerBanner(0, itemStorage.findFlagIndexOfCountry(PublicData.gameData.countryCode), playerName, getMarkForEvent(eventName))
              };
         } else if (stage == 3) //current player jump
         {
@@ -339,6 +362,10 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
             {
                 if (PublicData.recordsInfo.ElementAt(i)[0] == ev) //checks if the event matches
                 {
+                    if (PublicData.recordsInfo.ElementAt(i)[3] == "FALSE") //checks for time or feet
+                    {
+                        useTime = true; //sets it to time
+                    }
                     return PublicData.recordsInfo.ElementAt(i); //returns the attributes of the record
                 }
             }
@@ -370,7 +397,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
                 basedSeed = seededMark;
                 personalBest = seedTimesForEvent(eventName, useSeeded, seedSpreadDown, seedSpreadUp);
             }
-            banners[i] = new PlayerBanner(i, flagNum, name, roundToNearest(0.25f, personalBest)); //round personal bests to only two places
+            banners[i] = new PlayerBanner(i, flagNum, name, useTime ? personalBest:roundToNearest(0.25f, personalBest)); //round personal bests to only two places except times
 
         }
         banners[banners.Length - 1] = new PlayerBanner(0, itemStorage.findFlagIndexOfCountry(PublicData.gameData.countryCode), playerName, getMarkForEvent(SceneManager.GetActiveScene().name), isPlayer:true);;
@@ -387,8 +414,15 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
         {
             basedSeed = getMarkForEvent(theEvent);
         }
-        return roundToNearest(seedRoundInches, UnityEngine.Random.Range((float)basedSeed - seedSpreadDown, basedSeed + seedSpreadUp + 1f));
-        
+        float finalMark = roundToNearest(seedRoundInches, UnityEngine.Random.Range((float)basedSeed - seedSpreadDown, basedSeed + seedSpreadUp + 1f));
+        if (useTime)
+        {
+            return finalMark / 100.0f; //converts hundreths of second to seconds
+        } else
+        {
+            return finalMark;
+        }
+
     }
 
     public float getMarkForEvent(string theEvent) //returns the player mark in the save files for the given event
@@ -401,8 +435,9 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
         {
             return PublicData.gameData.personalBests.polevault;
         }
-        else if (theEvent == "100m")
+        else if (theEvent == "HundredMeter")
         {
+            Debug.Log(PublicData.gameData.personalBests.hundredMeter);
             return PublicData.gameData.personalBests.hundredMeter;
         }
         return 0;
@@ -516,6 +551,22 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
 
     }
 
+    private PlayerBanner[] simulateRunMark(PlayerBanner[] playerBanners, string theEvent, float spreadUp, float spreadDown)
+    {
+        foreach (PlayerBanner pb in playerBanners)
+        {
+            if (!pb.isPlayer) //making sure the banner is not for the player
+            {
+                pb.bestMark = UnityEngine.Random.Range((float)pb.bestMark - spreadDown/100, pb.bestMark + spreadUp/100 + 1f);
+                pb.bestMark = (float)Math.Round(pb.bestMark, 2); //make the speed go only 2 digits out
+            }
+
+        }
+        return sortBanners(playerBanners, true, true);
+
+    }
+
+
     private PlayerBanner[] sortBanners(PlayerBanner[] banners, bool bigOnTop, bool ofThree=false, bool barEvent=false) //sorts the banners by big or small on the top in the array
     {
         List<PlayerBanner> sortedBanners = new List<PlayerBanner>();
@@ -567,6 +618,26 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
 
         }
         sortedBanners.RemoveAt(sortedBanners.Count - 1); //remove the placeholder
+        List<PlayerBanner> removedBanners = new List<PlayerBanner>();
+        for (int i=0; i<sortedBanners.Count; i++)
+        {
+            if (sortedBanners.ElementAt(i).bestMark == 0) //if it is a fs or fault
+            {
+                removedBanners.Add(sortedBanners.ElementAt(i)); //adds to remove list
+                sortedBanners.RemoveAt(i); //removes it
+                i--; //keeps index in line
+            }
+        }
+        foreach (PlayerBanner playerB in removedBanners) //adds removed banners in back or front for reverse
+        {
+            if (bigOnTop) //if reversing the list
+            {
+                sortedBanners.Insert(0,playerB);
+            } else
+            {
+                sortedBanners.Add(playerB);
+            }
+        }
         PlayerBanner[] newBanners = bigOnTop ? sortedBanners.ToArray().Reverse<PlayerBanner>().ToArray() : sortedBanners.ToArray(); //if bigOnTop then reverse the list to make the biggest in top
         for (int i = 0; i<newBanners.Length; i++)
         {
@@ -612,7 +683,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
             {
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[4].gameObject.SetActive(true); //best mark label
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[3].gameObject.GetComponent<Image>().sprite = itemStorage.flags[playerBanners[i].flagNumber]; //temp
-                textBoxes[2].text = markToString(playerBanners[i].bestMark); //best mark text box
+                textBoxes[2].text = markToString(playerBanners[i].bestMark, useTime); //best mark text box
             }
             else if (mode == 2)
             {
@@ -620,7 +691,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[3].gameObject.GetComponent<Image>().sprite = itemStorage.flags[playerBanners[i].flagNumber]; //temp
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[5].gameObject.SetActive(true); //record mark label
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[6].gameObject.SetActive(true); //record label mark
-                textBoxes[3].text = markToString(playerBanners[i].bestMark); //setting record marks
+                textBoxes[3].text = markToString(playerBanners[i].bestMark, useTime); //setting record marks
 
             } else if (mode == 4)
             {
@@ -629,9 +700,9 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[7].gameObject.SetActive(true); //record label mark
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[8].gameObject.SetActive(true); //record mark label
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[9].gameObject.SetActive(true); //record label mark
-                textBoxes[4].text = markToString(playerBanners[i].mark1);
-                textBoxes[5].text = markToString(playerBanners[i].mark2);
-                textBoxes[6].text = markToString(playerBanners[i].mark3);
+                textBoxes[4].text = useTime? "":markToString(playerBanners[i].mark1);
+                textBoxes[5].text = markToString(playerBanners[i].mark2, useTime);
+                textBoxes[6].text = useTime ? "":markToString(playerBanners[i].mark3);
 
             }
 
@@ -650,9 +721,9 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
                 //j==0 is the main banner
                 // j <= 6; j > 9 is the bound for the items that are needed
             }
-            textBoxes[4].text = markToString(personalBannersMarks.mark1);
-            textBoxes[5].text = markToString(personalBannersMarks.mark2);
-            textBoxes[6].text = markToString(personalBannersMarks.mark3);
+            textBoxes[4].text = useTime ? "":markToString(personalBannersMarks.mark1, useTime); //hides if time
+            textBoxes[5].text = markToString(personalBannersMarks.mark2, useTime);
+            textBoxes[6].text = useTime ? "":markToString(personalBannersMarks.mark3, useTime); //hides if time
             if (currentBarHeight != -10)
             {
                 personalBanner.GetComponentsInChildren<Transform>(true)[10].gameObject.SetActive(true);
@@ -688,7 +759,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
         {
             if (asTime)
             {
-                return mark.ToString();
+                return mark == 0 ? "FS" : Math.Round(mark, 2).ToString();
             } else
             {
                 return ((int)mark / 12) + "' " + Math.Round(mark % 12, 2) + "''";
@@ -701,7 +772,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
 }
 
 //TODO Animations for the leaderboard
-//TODO flags for the leaderboard
-//TODO Make names list for players
+//TODO Make zeros on end of
+//TODO make 0 not FS for first play
 
 //TODO add fouls for simulated oppenents

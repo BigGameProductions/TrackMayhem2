@@ -379,8 +379,13 @@ public class LongJumpManager : MonoBehaviour
     {
         if (runningCamera.enabled)
         {
-            player.transform.Translate(new Vector3(0, 0, runningMeter.runningSpeed * runningSpeedRatio)); //making character move according to run meter
-            player.GetComponentInChildren<Animator>().speed = runningMeter.runningSpeed * animationRunningSpeedRatio; //making the animation match the sunning speed
+            float speed = runningMeter.runningSpeed;
+            if (speed > PublicData.averageSpeedDuringRun)
+            {
+                speed = PublicData.averageSpeedDuringRun - (speed - PublicData.averageSpeedDuringRun); //makes it so over slows you down
+            }
+            player.transform.Translate(new Vector3(0, 0, speed * runningSpeedRatio)); //making character move according to run meter
+            player.GetComponentInChildren<Animator>().speed = speed * animationRunningSpeedRatio; //making the animation match the sunning speed
             runningMeter.updateTimeElapsed();
         }
     }

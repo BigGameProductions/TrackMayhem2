@@ -8,6 +8,7 @@ public static class PublicData
 {
     public static PlayerBanner[] playerBannerTransfer; //transfers the leaderboard to other scenes
     public static int leaderBoardMode; //tranfers the mode of the leaderboard to the end screen
+    public static bool usesTime; //shows of the leaderboard uses time or feet
 
     public static List<string[]> charactersInfo; //holds info of characters.csv
     public static List<string[]> recordsInfo; //holds the info of records.csv
@@ -19,6 +20,7 @@ public static class PublicData
     public static int currentBoxOpening = 0; //the id of the current chest that is being opened between main menu and opening scene
 
     public static float spacesPerInch = (1875.03f - 1864.7f) / 36f; //spaces per inch for the game
+    public static float averageSpeedDuringRun = 175; //the speed of the green bar during the run
 
     public static int pointsToGive = 0;
 

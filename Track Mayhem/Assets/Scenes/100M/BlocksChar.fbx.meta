@@ -4,11 +4,17 @@ ModelImporter:
   serializedVersion: 21202
   internalIDToNameTable:
   - first:
+      74: -6842666708266138392
+    second: Armature|Armature.001|mixamo.com|Layer0
+  - first:
       74: 871566583773788088
     second: Armature|BlockStart
   - first:
       74: 1235302755513275661
     second: Armature|BlockStartUp
+  - first:
+      74: 8141992157680281399
+    second: Armature|RunningLean
   externalObjects: {}
   materials:
     materialImportMode: 2

@@ -503,8 +503,13 @@ public class PoleVaultManager : MonoBehaviour
             {
                 runMeter.updateRunMeter();
             }
-            player.transform.Translate(new Vector3(0, 0, runMeter.runningSpeed * runningSpeedRatio)); //making character move according to run meter
-           if (isRunning) player.GetComponentInChildren<Animator>().speed = runMeter.runningSpeed * animationRunningSpeedRatio; //making the animation match the sunning speed
+            float speed = runMeter.runningSpeed;
+            if (speed > PublicData.averageSpeedDuringRun)
+            {
+                speed = PublicData.averageSpeedDuringRun - (speed - PublicData.averageSpeedDuringRun); //makes it so over slows you down
+            }
+            player.transform.Translate(new Vector3(0, 0, speed * runningSpeedRatio)); //making character move according to run meter
+           if (isRunning) player.GetComponentInChildren<Animator>().speed = speed * animationRunningSpeedRatio; //making the animation match the sunning speed
            if (isRunning)
             {
                 runMeter.updateTimeElapsed();
