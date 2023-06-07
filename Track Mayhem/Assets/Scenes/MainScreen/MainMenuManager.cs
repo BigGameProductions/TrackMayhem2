@@ -27,6 +27,8 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private Image playerFlag;
     [SerializeField] private TextMeshProUGUI playerName;
 
+    private LeaderboardFunctions leadF = new LeaderboardFunctions();
+
 
     private int[] rankList = new int[] //list of all rank amounts
     {
@@ -44,6 +46,8 @@ public class MainMenuManager : MonoBehaviour
         PublicData.gameData.allRunners[0].unlocked = true;
         PublicData.gameData.allRunners[0].unlocked = true;
         //temp
+
+        leadF.setMainLeaderboardVariables(); //TODO add to logo screen so it goes off once
 
 
         for (int i=0; i<PublicData.gameData.chestSlots.Length; i++)
@@ -111,6 +115,7 @@ public class MainMenuManager : MonoBehaviour
         setChests();
         updateCurrency();
     }
+
 
     private int indexOfCurrentRunner() //find the current index of the runner in the runner array in game data
     {

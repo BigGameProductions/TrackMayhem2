@@ -110,6 +110,33 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
         PublicData.usesTime = true;
     }
 
+    public void addMarkLabelToPlayer(int idLabel) //adds a mark label to the current player
+    {
+        foreach (PlayerBanner pb in currentEventBanners)
+        {
+            if (pb.isPlayer)
+            {
+                pb.markLabelID = idLabel;
+            }
+        }
+    }
+
+    public PlayerBanner[] getPlayersInLaneOrder() //seeds current banners into running lanes
+    {
+        PlayerBanner[] returnList = new PlayerBanner[8];
+        currentEventBanners = sortBanners(currentEventBanners, false);
+        returnList[0] = currentEventBanners[6];
+        returnList[1] = currentEventBanners[4];
+        returnList[2] = currentEventBanners[2];
+        returnList[3] = currentEventBanners[0];
+        returnList[4] = currentEventBanners[1];
+        returnList[5] = currentEventBanners[3];
+        returnList[6] = currentEventBanners[5];
+        returnList[7] = currentEventBanners[7];
+        return returnList;
+
+    }
+
 
 
     public void simRemainingJumps() //simulates and sorts all banners for end display
@@ -208,6 +235,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
 
     }
 
+
     public void showUpdatedLeaderboard() //shows the updated numbers for all oppenents
     {
         updateCinematicStage(4); //show the updated leaderboard
@@ -288,7 +316,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
             playerBanners = new PlayerBanner[] {
             new PlayerBanner(0, itemStorage.findFlagIndexOfCountry(currentRecordInfo[4]), currentRecordInfo[1], float.Parse(currentRecordInfo[2])),
             new PlayerBanner(0, 0, "World", 98),
-            new PlayerBanner(0, itemStorage.findFlagIndexOfCountry(PublicData.gameData.countryCode), playerName, getMarkForEvent(eventName))
+            new PlayerBanner(0, itemStorage.findFlagIndexOfCountry(PublicData.gameData.countryCode), playerName, getMarkForEvent(eventName, true))
              };
         } else if (stage == 3) //current player jump
         {
@@ -318,8 +346,8 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
             playerBanners = currentEventBanners;
             if (currentBarHeight == -10) //check for bar event
             {
-                PublicData.playerBannerTransfer = currentEventBanners; //sets the end screen leaderboard to match the current one
-                PublicData.leaderBoardMode = 4; //sets leaderboard mode for the end screen
+                PublicData.playerBannerTransfer = sortBanners(convertAttemptsToBestMark(currentEventBanners), true); //sets the end screen leaderboard to match the current one
+                PublicData.leaderBoardMode = 1; //sets leaderboard mode for the end screen
             } 
             
         }
@@ -353,6 +381,24 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
             }
         }
         
+    }
+
+    private PlayerBanner[] convertAttemptsToBestMark(PlayerBanner[] playerBanners)
+    {
+        foreach (PlayerBanner pb in playerBanners)
+        {
+            if (pb.mark1 != -100 && pb.mark2 != -100 && pb.mark3 != -100)
+            {
+                float bestAttempt = Math.Max(pb.mark1, Math.Max(pb.mark2, pb.mark3));
+                if (bestAttempt > pb.bestMark && !pb.isPlayer)
+                {
+                    pb.markLabelID = 3; //set pr for oppenent
+                }
+                pb.bestMark = bestAttempt;
+            }
+
+        }
+        return playerBanners;
     }
 
     private string[] getEventRecordByEvent(string ev) {
@@ -400,8 +446,9 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
             banners[i] = new PlayerBanner(i, flagNum, name, useTime ? personalBest:roundToNearest(0.25f, personalBest)); //round personal bests to only two places except times
 
         }
-        banners[banners.Length - 1] = new PlayerBanner(0, itemStorage.findFlagIndexOfCountry(PublicData.gameData.countryCode), playerName, getMarkForEvent(SceneManager.GetActiveScene().name), isPlayer:true);;
-        return sortBanners(banners, true, barEvent:true); //sorting banners based on bar events
+        banners[banners.Length - 1] = new PlayerBanner(0, itemStorage.findFlagIndexOfCountry(PublicData.gameData.countryCode), playerName, getMarkForEvent(SceneManager.GetActiveScene().name, true), isPlayer:true);;
+        Debug.Log(useTime + ":" + currentBarHeight);
+        return sortBanners(banners, !useTime, currentBarHeight!=-10); //sorting banners based on bar events
     }
 
     //theEvent is the event that is used
@@ -412,7 +459,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
     {
         if (useSeeded)
         {
-            basedSeed = getMarkForEvent(theEvent);
+            basedSeed = getMarkForEvent(theEvent, true);
         }
         float finalMark = roundToNearest(seedRoundInches, UnityEngine.Random.Range((float)basedSeed - seedSpreadDown, basedSeed + seedSpreadUp + 1f));
         if (useTime)
@@ -425,20 +472,19 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
 
     }
 
-    public float getMarkForEvent(string theEvent) //returns the player mark in the save files for the given event
+    public float getMarkForEvent(string theEvent, bool character) //returns the player mark in the save files for the given event
     {
         if (theEvent == "LongJump")
         {
-            return PublicData.gameData.personalBests.longJump;
+            return character ? PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.longJump:PublicData.gameData.personalBests.longJump;
 
         } else if (theEvent == "PoleVault")
         {
-            return PublicData.gameData.personalBests.polevault;
+            return character ? PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.polevault:PublicData.gameData.personalBests.polevault;
         }
         else if (theEvent == "HundredMeter")
         {
-            Debug.Log(PublicData.gameData.personalBests.hundredMeter);
-            return PublicData.gameData.personalBests.hundredMeter;
+            return character ? PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hundredMeter:PublicData.gameData.personalBests.hundredMeter;
         }
         return 0;
     }
@@ -473,6 +519,10 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
                 {
                     make = UnityEngine.Random.Range(0, 12) == 0;
 
+                }
+                if (pb.bestMark-currentBarHeight < 0 && make) //if oppenent has had a pr
+                {
+                    pb.markLabelID = 3; //set pr in the player banner
                 }
                 if (pb.mark1 == -100)
                 {
@@ -557,8 +607,14 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
         {
             if (!pb.isPlayer) //making sure the banner is not for the player
             {
-                pb.bestMark = UnityEngine.Random.Range((float)pb.bestMark - spreadDown/100, pb.bestMark + spreadUp/100 + 1f);
-                pb.bestMark = (float)Math.Round(pb.bestMark, 2); //make the speed go only 2 digits out
+                float newMark = UnityEngine.Random.Range((float)pb.bestMark - spreadDown / 100, pb.bestMark + spreadUp / 100 + 1f);
+                newMark = (float)Math.Round(newMark, 2); //make the speed go only 2 digits out
+                if (newMark < pb.bestMark)
+                {
+                    pb.markLabelID = 3;
+                }
+                pb.bestMark = newMark;
+                
             }
 
         }
@@ -683,6 +739,14 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
             {
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[4].gameObject.SetActive(true); //best mark label
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[3].gameObject.GetComponent<Image>().sprite = itemStorage.flags[playerBanners[i].flagNumber]; //temp
+                if (playerBanners[i].markLabelID != -1)
+                {
+                    leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[6].gameObject.GetComponent<Image>().sprite = itemStorage.labelSprites[playerBanners[i].markLabelID];
+                    leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[6].gameObject.GetComponent<Image>().gameObject.SetActive(true);
+                } else
+                {
+                    leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[6].gameObject.GetComponent<Image>().gameObject.SetActive(false);
+                }
                 textBoxes[2].text = markToString(playerBanners[i].bestMark, useTime); //best mark text box
             }
             else if (mode == 2)
@@ -691,6 +755,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[3].gameObject.GetComponent<Image>().sprite = itemStorage.flags[playerBanners[i].flagNumber]; //temp
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[5].gameObject.SetActive(true); //record mark label
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[6].gameObject.SetActive(true); //record label mark
+                leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[6].GetComponent<Image>().sprite = itemStorage.labelSprites[i]; //sets mark labels to each character
                 textBoxes[3].text = markToString(playerBanners[i].bestMark, useTime); //setting record marks
 
             } else if (mode == 4)

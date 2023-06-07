@@ -427,12 +427,19 @@ public class PoleVaultManager : MonoBehaviour
             PublicData.gameData.personalBests.polevault = currentBarHeight;
             player.GetComponentInChildren<Animator>().Play("Exited"); //Animation for after the jump
             currentJumpNumber = 0;
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.polevault = currentBarHeight;
+            leaderboardManager.addMarkLabelToPlayer(3);
+        } else if (currentBarHeight > PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.polevault)
+        {
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.polevault = currentBarHeight;
+            leaderboardManager.addMarkLabelToPlayer(2);
         }
         else
         {
             player.GetComponentInChildren<Animator>().Play("Wave"); //Animation for after the jump
             currentJumpNumber = 0;
         }
+        PersonalBests characterPB = PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests;
         if (currentJumpNumber == 0) //if it needs to move up
         {
             //move up 6 inches
@@ -518,3 +525,5 @@ public class PoleVaultManager : MonoBehaviour
         }
     }
 }
+
+//TODO fix no height bugs

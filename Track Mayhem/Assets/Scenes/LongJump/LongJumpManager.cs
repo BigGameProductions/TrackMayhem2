@@ -269,13 +269,18 @@ public class LongJumpManager : MonoBehaviour
             {
                 totalInches += 5;
             }
-            if (totalInches > leaderboardManager.getMarkForEvent("LongJump")) //checks for a new personal record
+            if (totalInches > PublicData.gameData.personalBests.longJump) //checks for a new personal record
             {
                 leadF.SetLeaderBoardEntry(1, PublicData.gameData.playerName, (int)(leaderboardManager.roundToNearest(0.25f, totalInches) * 100), PublicData.gameData.countryCode + "," + PublicData.currentRunnerUsing);
                 leadF.checkForOwnPlayer(1, 20); //checks to make sure it can stay in the top 20
                 prImage.enabled = true; //shows the pr banner
                 PublicData.gameData.personalBests.longJump = totalInches;
+                leaderboardManager.addMarkLabelToPlayer(3);
 
+            } else if (totalInches > PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.longJump)
+            {
+                PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.longJump = totalInches;
+                leaderboardManager.addMarkLabelToPlayer(2);
             }
             updatePlayerBanner(leaderboardManager.roundToNearest(0.25f, totalInches));
         }

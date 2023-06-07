@@ -29,10 +29,12 @@ public class hundredMeterController : MonoBehaviour
 
     [SerializeField] private GameObject[] competitorsList;
 
-    private float[] competitorsSpeedList = new float[7]; //speed of all the competitors
-    private float[] competitorsAccelSpeedList = new float[7]; //acceleration of all the competitors
-    private float[] competitorsStartSpeedList = new float[7]; //max speed of all the competitors
-    private float[] competitorsMaxSpeedList = new float[7]; //max speed of all the competitors
+    [SerializeField] private float[] laneZValues;
+
+    private float[] competitorsSpeedList = new float[8]; //speed of all the competitors
+    private float[] competitorsAccelSpeedList = new float[8]; //acceleration of all the competitors
+    private float[] competitorsStartSpeedList = new float[8]; //start speed of all the competitors
+    private float[] competitorsMaxSpeedList = new float[8]; //max speed of all the competitors
 
 
     bool isRunning = false; //if gun has gone off
@@ -71,15 +73,29 @@ public class hundredMeterController : MonoBehaviour
         {
             if (!runButton.gameObject.activeInHierarchy)
             {
-                runButton.gameObject.SetActive(true);
-                runningMeter.runningBar.transform.parent.gameObject.SetActive(true);
+                runButton.gameObject.SetActive(true); //show controls
+                runningMeter.runningBar.transform.parent.gameObject.SetActive(true); //show controls
+                PlayerBanner[] laneOrders = leaderboardManager.getPlayersInLaneOrder();
+                for (int i=0; i<laneOrders.Length; i++)
+                {
+                    if (laneOrders[i].isPlayer)
+                    {
+                        player.transform.position = competitorsList[i].transform.position - new Vector3(-2.3f,0,0);
+                        competitorsList[i].SetActive(false);
+                    }
+                }
             }
             runningMeter.updateRunMeter();
-            if (isRunning && player.transform.position.x <= -2163.52)
+            if (isRunning && player.transform.position.x <= -2161.52)
             {
                 finished = true;
                 StartCoroutine(waitAfterFinish(2));
             }
+            /*if (isRunning && competitorsList[3].transform.position.x <= -2161.52)
+            {
+                Debug.Log("Lane 4 " + eventTimer + ":" + leaderboardManager.getPlayersInLaneOrder()[3].bestMark);
+                finished = true;
+            }*/
             if (isRunning && player.transform.position.x < -2125 && !finished && !usedLean)
             {
                 jumpButton.gameObject.SetActive(true);
@@ -128,11 +144,14 @@ public class hundredMeterController : MonoBehaviour
             setText.text = "Set";
             foreach (GameObject go in competitorsList) //gets all competitors up in the set position
             {
-                go.GetComponentInChildren<Animator>().Play("BlockStartUp");
+                if (go.activeInHierarchy) //stop animator warning
+                {
+                    go.GetComponentInChildren<Animator>().Play("BlockStartUp");
+                }
             }
             player.GetComponentInChildren<Animator>().Play("BlockStartUp");
             leaderboardManager.getOtherRunnersTime(); //gets the time for the other runners
-            StartCoroutine(showGo(UnityEngine.Random.Range(1.0f, 3.0f)));
+            StartCoroutine(showGo(UnityEngine.Random.Range(1.0f, 2.5f)));
         }
         
     }
@@ -147,6 +166,7 @@ public class hundredMeterController : MonoBehaviour
             for (int i=0; i<competitorsList.Length;i++)
             {
                 StartCoroutine(oppenentBlockStart(UnityEngine.Random.Range(0.1f, 0.5f), i));
+                //StartCoroutine(oppenentBlockStart(0.2f, i));
             }
 
         }
@@ -156,10 +176,17 @@ public class hundredMeterController : MonoBehaviour
     IEnumerator oppenentBlockStart(float delay, int index)
     {
         yield return new WaitForSeconds(delay);
-        competitorsList[index].GetComponentInChildren<Animator>().Play("Running");
-        competitorsMaxSpeedList[index] = 150;
-        competitorsAccelSpeedList[index] = 3;
-        competitorsStartSpeedList[index] = 100;
+        if (competitorsList[index].activeInHierarchy) //stop animator warning
+        {
+            competitorsList[index].GetComponentInChildren<Animator>().Play("Running");
+            float time = leaderboardManager.getPlayersInLaneOrder()[index].bestMark;
+            //float time = 13.87f;
+            time -= delay;
+            competitorsMaxSpeedList[index] = (275.05f / ((0.75f * time) / 0.02f)) / runningSpeedRatio;//spaces per second was 0.55
+            competitorsAccelSpeedList[index] = time/6; //was 0.4
+            competitorsStartSpeedList[index] = 90;
+        }
+        
     }
 
     IEnumerator foulRun(float delay)
@@ -187,18 +214,29 @@ public class hundredMeterController : MonoBehaviour
             player.GetComponentInChildren<Animator>().speed = speed * animationRunningSpeedRatio; //making the animation match the sunning speed
             for (int i=0; i<competitorsList.Length; i++)
             {
-                if (competitorsMaxSpeedList[i] != competitorsSpeedList[i]) //if not max speed
+                //float time = 13.87f;
+                float time = leaderboardManager.getPlayersInLaneOrder()[i].bestMark;
+                if (competitorsMaxSpeedList[i] != competitorsSpeedList[i] && competitorsList[i].transform.position.x > -2122.37) //if not max speed
                 {
                     if (eventTimer >= competitorsAccelSpeedList[i]) //if past max speed on time
                     {
+                        competitorsMaxSpeedList[i] = ((2161.52f + competitorsList[i].transform.position.x) / ((time - eventTimer) / 0.02f)) / runningSpeedRatio;//spaces per second was 0.55
                         competitorsSpeedList[i] = competitorsMaxSpeedList[i]; //set to max speed
-                    } else
-                    {
-                        competitorsSpeedList[i] = competitorsStartSpeedList[i] + ((competitorsMaxSpeedList[i]-competitorsStartSpeedList[i])/competitorsAccelSpeedList[i])*eventTimer; //acceleration
                     }
+                    else
+                    {
+                        competitorsSpeedList[i] = competitorsStartSpeedList[i] + (competitorsMaxSpeedList[i]*eventTimer*eventTimer)/((time/6)*(time/6)); //acceleration
+                    }
+                } else if (competitorsList[i].transform.position.x <= -2122.37)
+                {
+                    competitorsSpeedList[i] = competitorsMaxSpeedList[i] + 0;
                 }
                 competitorsList[i].transform.Translate(new Vector3(0, 0, competitorsSpeedList[i] * runningSpeedRatio)); //making character move according to run meter
                 competitorsList[i].GetComponentInChildren<Animator>().speed = competitorsSpeedList[i] * animationRunningSpeedRatio; //making the animation match the sunning speed
+                if (competitorsList[i].transform.position.x > -2161.52 && competitorsList[i].transform.position.x < -2157 && competitorsList[i].GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Running"))
+                {
+                    competitorsList[i].GetComponentInChildren<Animator>().Play("RunningLean");
+                }
             }
             if (!finished)
             {
@@ -216,13 +254,21 @@ public class hundredMeterController : MonoBehaviour
         yield return new WaitForSeconds(delay);
         currentPlayerBanner = leaderboardManager.getPlayerBanner();
         currentPlayerBanner.mark2 = eventTimer;
-        leaderboardManager.showCurrentPlayerMarks(currentPlayerBanner, 3); //updates and shows the player leaderboard
-        leaderboardManager.addPlayerTime(eventTimer); //adds player to the banners
+        PersonalBests characterPB = PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests;
         if (eventTimer < PublicData.gameData.personalBests.hundredMeter || PublicData.gameData.personalBests.hundredMeter == 0) //if pr or first time doing it
         {
-            PublicData.gameData.personalBests.hundredMeter = eventTimer; //sets pr 
+            PublicData.gameData.personalBests.hundredMeter = eventTimer; //sets pr
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hundredMeter = eventTimer; //sets cb too
             prImage.enabled = true; //shows pr image
+            leaderboardManager.addMarkLabelToPlayer(3);
+
+        } else if (eventTimer < characterPB.hundredMeter || characterPB.hundredMeter == 0)
+        {
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hundredMeter = eventTimer;
+            leaderboardManager.addMarkLabelToPlayer(2);
         }
+        leaderboardManager.showCurrentPlayerMarks(currentPlayerBanner, 3); //updates and shows the player leaderboard
+        leaderboardManager.addPlayerTime(eventTimer); //adds player to the banners
         StartCoroutine(showEndScreen(3));
 
     }

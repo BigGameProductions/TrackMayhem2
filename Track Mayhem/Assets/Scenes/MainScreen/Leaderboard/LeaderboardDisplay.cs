@@ -24,45 +24,46 @@ public class LeaderboardDisplay : MonoBehaviour
 
     [SerializeField] GameObject cover;
 
-    LeaderboardFunctions leadF = new LeaderboardFunctions(); //makes a leaderboard functions class for getting the leadrboard
 
     int currentEvent = 0;
 
     // Start is called before the first frame update
     void Start()
     {
-        cover.GetComponent<Image>().enabled = true;
-        leadF.GetLeaderboard(1);
+        //cover.GetComponent<Image>().enabled = true;
         currentEvent = 1;
         eventTitle.text = "LongJump";
+        leaderBoardData = PublicData.gameData.leaderboardList[currentEvent];
+        updateLeaderboard(leaderBoardData);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (leadF.isUpdate)
+        /*if (leadF.isUpdate)
         {
             cover.GetComponent<Image>().enabled = false; //TODO make error message when there is no connection //TODO offline records
             leadF.isUpdate = false;
             leaderBoardData = leadF.leaderboardData;
             updateLeaderboard(leaderBoardData);
-        }
+        }*/
     }
 
 
     public void showEventLeaderboard(int eventCode)
     {
-        cover.GetComponent<Image>().enabled = true;
-        leadF.GetLeaderboard(eventCode);
+        //cover.GetComponent<Image>().enabled = true;
+        leaderBoardData = PublicData.gameData.leaderboardList[eventCode];
         currentEvent = eventCode; 
         eventTitle.text = PublicData.recordsInfo.ElementAt(eventCode + 1)[0]; //sets the current event title
+        updateLeaderboard(leaderBoardData);
     }
 
     private void updateLeaderboard(string[][] data) //updates leaderboard witht he current data
     {
         for (int i=0; i<10; i++) //of ten places
         {
-            Names.GetComponentsInChildren<TextMeshProUGUI>()[i].text = data[0][i]; //sets the right namexw
+            Names.GetComponentsInChildren<TextMeshProUGUI>()[i].text = data[0][i]; //sets the right name
             if (data[2][i] != null) 
             {
                 Runners.GetComponentsInChildren<TextMeshProUGUI>()[i].text = PublicData.charactersInfo.ElementAt(Int32.Parse(data[2][i].Split(",")[1])+1)[1]; //gets the runner name

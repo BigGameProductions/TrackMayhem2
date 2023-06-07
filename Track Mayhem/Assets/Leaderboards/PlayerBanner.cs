@@ -19,6 +19,8 @@ public class PlayerBanner
     public int lastMakeAttempt;
     public int totalFails;
 
+    public int markLabelID = -1;
+
 
     public PlayerBanner(int number, int flagNumber, string player, float bestMark = 0, bool isPlayer = false, float mark1 = -100, float mark2 = -100, float mark3 = -100, int makeAttempt = 4, int lastMakeAttempt = 4, int totalFails = 0)
     {

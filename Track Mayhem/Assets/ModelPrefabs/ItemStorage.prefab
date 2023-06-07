@@ -313,3 +313,8 @@ MonoBehaviour:
   - {r: 1, g: 0.8440448, b: 0.0990566, a: 1}
   - {r: 0.70375204, g: 0, b: 1, a: 1}
   - {r: 1, g: 0, b: 0, a: 1}
+  labelSprites:
+  - {fileID: 21300000, guid: 03460d07016bc42128ce526e587d038f, type: 3}
+  - {fileID: 21300000, guid: 93e1d67f2194e40d298792741bbd80e6, type: 3}
+  - {fileID: 21300000, guid: 28c477d045b7841578f1176169e1b9c4, type: 3}
+  - {fileID: 21300000, guid: 728351c9346ae4719ba71f07b3188fc5, type: 3}
