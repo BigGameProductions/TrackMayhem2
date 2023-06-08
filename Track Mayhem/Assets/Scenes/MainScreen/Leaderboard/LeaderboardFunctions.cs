@@ -13,7 +13,7 @@ public class LeaderboardFunctions
         "4a734ebe10d0abc558de1c91369b39325736237422b30a50875532c9206432d9"
     };
 
-    public string[][][] mainLeaderboard = new string[11][][];
+    public string[][][] mainLeaderboard = new string[12][][];
     public bool isUpdate = false;
 
     private int currentEventOn = 0;
@@ -39,16 +39,30 @@ public class LeaderboardFunctions
             if (currentEventOn != 3)
             {
                 GetLeaderboard(currentEventOn); //gets the next event
+            } else
+            {
+                //set save leaderboard
+                for (int i=0; i<mainLeaderboard.Length; i++)
+                {
+                    if (i<3)
+                    {
+                        SerializationLeaderboardTypes tempSave = new SerializationLeaderboardTypes();
+                        tempSave.set(0, mainLeaderboard[i][0]);
+                        tempSave.set(1, mainLeaderboard[i][1]);
+                        tempSave.set(2, mainLeaderboard[i][2]);
+                        tempSave.set(3, mainLeaderboard[i][3]);
+
+                        PublicData.gameData.saveLeaderboard.set(i, tempSave); //TODO add to save manager taking the saved leaderboard and making it on the game data
+                    }
+                    
+                }
+                PublicData.gameData.leaderboardList = mainLeaderboard;
             }
             
         }));
 
     }
 
-    private void setPublicVariable(string[][] data)
-    {
-        
-    }
 
     public void SetLeaderBoardEntry(int eventCode, string name, int mark, string extra)
     {
@@ -89,8 +103,10 @@ public class LeaderboardFunctions
             {
                 Debug.Log("No connection");
             }
+
         });
     }
+
 
     private DateTime UnixTimeStampToDateTime(long unixTimeStamp) //converts the unix time to the date time for display
     {

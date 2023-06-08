@@ -223,6 +223,8 @@ public class PoleVaultManager : MonoBehaviour
                 isRunning = false; //stops running speed
                 isPlanting = true; //makes planting fail
                 foulImage.enabled = true; //show foul
+                runButton.SetActive(false);
+                jumpButton.SetActive(false);
                 runMeter.runningBar.transform.parent.gameObject.SetActive(false); //hide run meter
                 StartCoroutine(foulRun(1)); //wait x seconds then end jump
                 
@@ -376,7 +378,6 @@ public class PoleVaultManager : MonoBehaviour
     IEnumerator addUpForce(float delay) //adds delay to when the player in lauched up
     {
         yield return new WaitForSeconds(delay);
-        jumpButton.SetActive(true); //allows curl to happen
         player.GetComponent<Rigidbody>().useGravity = true; //makes it so that player can fall
         float jumpPowerScale = 0.4f; //scale to balence the jumping power
         float runPowerScale = 1;
@@ -402,11 +403,19 @@ public class PoleVaultManager : MonoBehaviour
         float power = (runningPower + ((jumpingPower*jumpPercentage)*2))/3; //jump is 2/3 jump and 1/3 run  
         power += 1; //default power
         player.GetComponent<Rigidbody>().velocity = new Vector3(0, power, inPitSpeed); //makes player launch up
+        StartCoroutine(waitUntilCurlReady(0.05f));
 
 
     }
 
-   
+    IEnumerator waitUntilCurlReady(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        jumpButton.SetActive(true); //allows curl to happen
+
+    }
+
+
 
     private void afterJump()
     {
@@ -417,6 +426,12 @@ public class PoleVaultManager : MonoBehaviour
         if (!passedBar) //if scratched
         {
             player.GetComponentInChildren<Animator>().Play("Upset"); //Animation for after the jump
+        }
+        else if (currentBarHeight > Int32.Parse(PublicData.gameData.leaderboardList[2][1][0]) / 100.0f) //game record
+        {
+            PublicData.gameData.personalBests.polevault = currentBarHeight;
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.polevault = currentBarHeight;
+            leaderboardManager.addMarkLabelToPlayer(1);
         }
         else if (currentBarHeight > PublicData.gameData.personalBests.polevault) //if got a personal record
         {

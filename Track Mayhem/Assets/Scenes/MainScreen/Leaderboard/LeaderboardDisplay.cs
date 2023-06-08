@@ -64,10 +64,10 @@ public class LeaderboardDisplay : MonoBehaviour
         for (int i=0; i<10; i++) //of ten places
         {
             Names.GetComponentsInChildren<TextMeshProUGUI>()[i].text = data[0][i]; //sets the right name
-            if (data[2][i] != null) 
+            if (data[2][i] != null && data[2][i] != "") 
             {
                 Runners.GetComponentsInChildren<TextMeshProUGUI>()[i].text = PublicData.charactersInfo.ElementAt(Int32.Parse(data[2][i].Split(",")[1])+1)[1]; //gets the runner name
-                Scores.GetComponentsInChildren<TextMeshProUGUI>()[i].text = getMark(Int32.Parse(data[1][i]), PublicData.recordsInfo.ElementAt(currentEvent + 1)[3] == "FAlSE"); //sets the right mark
+                Scores.GetComponentsInChildren<TextMeshProUGUI>()[i].text = getMark(Int32.Parse(data[1][i]), PublicData.recordsInfo.ElementAt(currentEvent + 1)[3] == "FALSE"); //sets the right mark
                 Countries.GetComponentsInChildren<Image>()[i].sprite = itemStorage.flags[itemStorage.findFlagIndexOfCountry(data[2][i].Split(",")[0])]; //sets the flag to the player
 
             }

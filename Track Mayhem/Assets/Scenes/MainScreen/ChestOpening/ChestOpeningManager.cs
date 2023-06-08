@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using System;
 
 public class ChestOpeningManager : MonoBehaviour
 {
@@ -19,7 +20,17 @@ public class ChestOpeningManager : MonoBehaviour
 
     [SerializeField] private GameObject playerController;
 
+    [SerializeField] private GameObject counterImage;
+
+    [SerializeField] private TextMeshProUGUI itemCount;
+
+    private int maxStage;
+
     private int stage = -2;
+
+    private List<int> usedIDList = new List<int>();
+
+    private bool hasChar = false; //tells if the box will unlock a new character
 
     // Start is called before the first frame update
     void Start()
@@ -27,6 +38,13 @@ public class ChestOpeningManager : MonoBehaviour
         chestColor.color = itemStorage.chestColors[PublicData.currentBoxOpening];
         titleText.enabled = false;
         numText.enabled = false;
+        maxStage = Int32.Parse(PublicData.chestInfo.ElementAt(PublicData.currentBoxOpening+1)[3]) + 1;
+        counterImage.SetActive(false);
+        int chance = UnityEngine.Random.Range(0, 100);
+        if (getUnlockedCharacterCount() != PublicData.gameData.allRunners.Count && chance < Int32.Parse(PublicData.chestInfo.ElementAt(PublicData.currentBoxOpening + 1)[6]))
+        {
+            hasChar = true;
+        }
         nextStage();
     }
 
@@ -35,7 +53,7 @@ public class ChestOpeningManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0)) //changes stage when mouse is pressed
         {
-            if (stage == 4)
+            if (stage == maxStage+1)
             {
                 if (mainCamera.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("CharacterUnlock3"))
                 {
@@ -60,6 +78,8 @@ public class ChestOpeningManager : MonoBehaviour
 
     private void nextStage()
     {
+        itemCount.text = (maxStage - stage - 1 + (hasChar?1:0)).ToString();
+        string[] currentChestData = PublicData.chestInfo.ElementAt(PublicData.currentBoxOpening+1);
         if (stage == -1)
         {
             StartCoroutine(chestTransition(0.8f));
@@ -67,82 +87,89 @@ public class ChestOpeningManager : MonoBehaviour
         }
         if (stage == 0) //token stage
         {
+            counterImage.SetActive(true);
             titleText.enabled = true;
             numText.enabled = true;
             chest.SetActive(false);
             titleText.text = "Tokens";
-            int tokenAmount = UnityEngine.Random.Range(100, 4000);
+            int tokenAmount = UnityEngine.Random.Range(Int32.Parse(currentChestData[1]), Int32.Parse(currentChestData[2]) + 1);
             PublicData.gameData.tokens += tokenAmount;
             numText.text = tokenAmount.ToString();
         }
-        if (stage == 1 || stage == 2) //character points stage
+        if (stage > 0 && stage < maxStage) //character points stage
         {
-            RunnerInformation character = getRandomCharacter();
+            RunnerInformation character;
+            do //stops duplicates characters unless needed
+            {
+                character = getRandomCharacter();
+            } while (usedIDList.Contains(character.runnerId) && usedIDList.Count != getUnlockedCharacterCount());
+            usedIDList.Add(character.runnerId);
+            if (usedIDList.Count == getUnlockedCharacterCount())
+            {
+                usedIDList = new List<int>();
+            }
             string[] att = PublicData.charactersInfo[character.runnerId + 1];
-            int upgradePoints = UnityEngine.Random.Range(50, 200);
+            int upgradePoints = UnityEngine.Random.Range(Int32.Parse(currentChestData[4]), Int32.Parse(currentChestData[5]) + 1);
             character.upgradePoints += upgradePoints; //adds points to character
             titleText.text = att[1] + " Points";
             numText.text = upgradePoints.ToString();
         }
-        if (stage == 3) //charatcer or over stage
+        if (stage == maxStage) //charatcer or over stage
         {
-            int chance = UnityEngine.Random.Range(0, 100);
-            if (chance >= 15)
+            if (!hasChar) //if a runner will be unlocked
             {
                 SceneManager.LoadScene("MainScreen");
             } else
             {
+                counterImage.SetActive(false);
                 titleText.text = "";
                 numText.text = "";
                 mainCamera.GetComponent<Animator>().Play("CharacterUnlock");
                 playerController.SetActive(false);
-                List<RunnerInformation> chanceList = new List<RunnerInformation>();
-                foreach (RunnerInformation ri in PublicData.gameData.allRunners)
-                {
-                    if (!ri.unlocked)
-                    {
-                        chanceList.Add(ri);
-                    }
-
-                }
-                RunnerInformation unlockedRunner = chanceList.ElementAt(UnityEngine.Random.Range(0, chanceList.Count));//temp adding character
-                unlockedRunner.unlocked = true;
-                StartCoroutine(showCharacterUnlock(7, chance, unlockedRunner));
+                StartCoroutine(showCharacterUnlock(7));
 
             }
         }
-        if (stage == 4) //over stage
+        if (stage == maxStage+1) //over stage
         {
             SceneManager.LoadScene("MainScreen");
         }
         stage++;
     }
 
-    IEnumerator showCharacterUnlock(float delay, int chance, RunnerInformation ri)
+    IEnumerator showCharacterUnlock(float delay)
     {
         yield return new WaitForSeconds(delay);
         playerController.SetActive(true);
-        if (chance >= 0 && chance < 15)
+        //all the chances for characters
+        int commonChance = Int32.Parse(PublicData.chestInfo.ElementAt(PublicData.currentBoxOpening+1)[7]);
+        int rareChance = Int32.Parse(PublicData.chestInfo.ElementAt(PublicData.currentBoxOpening + 1)[8]);
+        int epicChance = Int32.Parse(PublicData.chestInfo.ElementAt(PublicData.currentBoxOpening + 1)[9]);
+        int legendaryChance = Int32.Parse(PublicData.chestInfo.ElementAt(PublicData.currentBoxOpening + 1)[10]);
+        int chance = UnityEngine.Random.Range(1, 101);
+        int rarity = 0;
+        titleText.text = "Unlocked";
+        if (chance < commonChance + 1)
         {
-            titleText.text = "Unlocked";
-            numText.text = "Rare";
+            rarity = 0;
 
         }
-        if (chance >= 0 && chance < 10)
+        else if (chance > commonChance && chance < commonChance+rareChance+1)
         {
-            titleText.text = "Unlocked";
-            numText.text = "Epic";
+            rarity = 1;
+
         }
-        if (chance >= 0 && chance < 5)
+        else if (chance > commonChance+rareChance && chance < commonChance+rareChance+epicChance+1)
         {
-            titleText.text = "Unlocked";
-            numText.text = "Mythic";
+            rarity = 2;
+
         }
-        if (chance >= 0 && chance < 3)
+        else if (chance > commonChance+rareChance+epicChance)
         {
-            titleText.text = "Unlocked";
-            numText.text = "Legendary";
+            rarity = 3;
+
         }
+        RunnerInformation ri = unlockCharacterOfRarity(rarity);
         numText.text = PublicData.charactersInfo.ElementAt(ri.runnerId + 1)[1];
     }
 
@@ -154,5 +181,77 @@ public class ChestOpeningManager : MonoBehaviour
             character = PublicData.gameData.allRunners.ElementAt(UnityEngine.Random.Range(0, PublicData.gameData.allRunners.Count));
         } while (!character.unlocked); //makes sure the player has the runner that is randomly being selected
         return character;
+    }
+
+    private int getUnlockedCharacterCount()
+    {
+        int i = 0;
+        foreach(RunnerInformation ri in PublicData.gameData.allRunners)
+        {
+            if (ri.unlocked)
+            {
+                i++;
+            }
+        }
+        return i;
+    }
+
+    //1 is common
+    //2 is rare
+    //3 is epic
+    //4 is legendary
+    private int getTotalLeftOfRarity(int rarity)
+    {
+        List<string> rarityList = new List<string>();
+        rarityList.Add("Common");
+        rarityList.Add("Rare");
+        rarityList.Add("Epic");
+        rarityList.Add("Legendary");
+        int i = 0;
+        foreach (RunnerInformation ri in PublicData.gameData.allRunners)
+        {
+            if (!ri.unlocked)
+            {
+                if (rarityList.IndexOf(PublicData.charactersInfo.ElementAt(ri.runnerId)[7]) == rarity)
+                {
+                    i++;
+                }
+            }
+        }
+        return i;
+
+    }
+
+    private RunnerInformation unlockCharacterOfRarity(int rarity) //unlocks the character of a specific rarity
+    {
+        if (getTotalLeftOfRarity(rarity) == 0)
+        {
+            if (rarity == 0 || ((rarity == 1 || rarity == 2) && getTotalLeftOfRarity(rarity-1)==0)) //makes the flow of unlocking work if all of one rarity is unlocked
+            {
+                return unlockCharacterOfRarity(rarity + 1);
+            } else
+            {
+                return unlockCharacterOfRarity(rarity - 1);
+            }
+        } else
+        {
+            List<string> rarityList = new List<string>();
+            rarityList.Add("Common");
+            rarityList.Add("Rare");
+            rarityList.Add("Epic");
+            rarityList.Add("Legendary");
+            List<RunnerInformation> chanceList = new List<RunnerInformation>();
+            foreach (RunnerInformation ri in PublicData.gameData.allRunners)
+            {
+                if (!ri.unlocked && rarityList.IndexOf(PublicData.charactersInfo.ElementAt(ri.runnerId)[7]) == rarity)
+                {
+                    chanceList.Add(ri);
+                }
+
+            }
+            RunnerInformation unlockedRunner = chanceList.ElementAt(UnityEngine.Random.Range(0, chanceList.Count)); //get random character in the rarity
+            unlockedRunner.unlocked = true;
+            return unlockedRunner;
+        }
     }
 }

@@ -57,6 +57,22 @@ public class CSVReader //reads the csv files and puts the output in the game dat
             csvInformation.Add(dataValues);
         }
         PublicData.recordsInfo = csvInformation; //sets the information in public data for public use in the game
+        filePath = Path.Combine(Application.streamingAssetsPath, "chests.csv");
+        csvInformation = new List<string[]>();
+        strReader = new StreamReader(filePath); //gets csv file
+        endOfFile = false;
+        while (!endOfFile)
+        {
+            string dataString = strReader.ReadLine(); //reads csv
+            if (dataString == null) //ends when the file is empty
+            {
+                endOfFile = true;
+                break;
+            }
+            var dataValues = dataString.Split(","); //splits up csv
+            csvInformation.Add(dataValues);
+        }
+        PublicData.chestInfo = csvInformation; //sets the information in public data for public use in the game
     }
 
 

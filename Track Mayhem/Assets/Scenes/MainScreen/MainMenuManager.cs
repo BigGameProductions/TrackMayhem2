@@ -39,7 +39,7 @@ public class MainMenuManager : MonoBehaviour
     void Start()
     {
         //PublicData.gameData.chestSlots = new ChestInfo[4];
-        //PublicData.gameData.chestSlots[0] = new ChestInfo(1, true);
+        PublicData.gameData.chestSlots[0] = new ChestInfo(4, true);
         //making profile button appear
         //make chests hide is not real
         //temp
@@ -47,7 +47,6 @@ public class MainMenuManager : MonoBehaviour
         PublicData.gameData.allRunners[0].unlocked = true;
         //temp
 
-        leadF.setMainLeaderboardVariables(); //TODO add to logo screen so it goes off once
 
 
         for (int i=0; i<PublicData.gameData.chestSlots.Length; i++)
@@ -109,8 +108,9 @@ public class MainMenuManager : MonoBehaviour
         //set rank text
         rankText.text = "Rank " + (rankIndex+1);
         Color rankColor = rankColors[(rankIndex+1)/3]; //TODO fix
-        Debug.Log(rankColor);
-        rankImage.color = new Color((byte)255.0 *rankColor.r, (byte)255.0 *rankColor.g, (byte)255.0 *rankColor.b); //copies all properties of color
+        rankColor.a = 1;
+        rankImage.color = rankColor;
+        //rankImage.color = new Color((byte)255.0 *rankColor.r, (byte)255.0 *rankColor.g, (byte)255.0 *rankColor.b); //copies all properties of color
         tempEventName.text = PublicData.recordsInfo.ElementAt(PublicData.currentSelectedEventIndex + 1)[0];
         setChests();
         updateCurrency();

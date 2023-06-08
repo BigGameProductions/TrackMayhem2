@@ -4,20 +4,20 @@ using UnityEngine;
 [System.Serializable]
 public class SerializationLeaderboard
 {
-    public SerializationLeaderboardTypes[] hundredMeter;
-    public SerializationLeaderboardTypes[] longjump;
-    public SerializationLeaderboardTypes[] polevault;
-    public SerializationLeaderboardTypes[] shotput;
-    public SerializationLeaderboardTypes[] javalin;
-    public SerializationLeaderboardTypes[] fourhundred;
-    public SerializationLeaderboardTypes[] discus;
-    public SerializationLeaderboardTypes[] highjump;
-    public SerializationLeaderboardTypes[] hurdles;
-    public SerializationLeaderboardTypes[] mile;
-    public SerializationLeaderboardTypes[] decathalon;
-    public SerializationLeaderboardTypes[] points;
+    public SerializationLeaderboardTypes hundredMeter;
+    public SerializationLeaderboardTypes longjump;
+    public SerializationLeaderboardTypes polevault;
+    public SerializationLeaderboardTypes shotput;
+    public SerializationLeaderboardTypes javalin;
+    public SerializationLeaderboardTypes fourhundred;
+    public SerializationLeaderboardTypes discus;
+    public SerializationLeaderboardTypes highjump;
+    public SerializationLeaderboardTypes hurdles;
+    public SerializationLeaderboardTypes mile;
+    public SerializationLeaderboardTypes decathalon;
+    public SerializationLeaderboardTypes points;
 
-    public SerializationLeaderboardTypes[] get(int i)
+    public SerializationLeaderboardTypes get(int i)
     {
         if (i==0)
         {
@@ -70,7 +70,7 @@ public class SerializationLeaderboard
         return null;
     }
 
-    public void set(int i, SerializationLeaderboardTypes[] data)
+    public void set(int i, SerializationLeaderboardTypes data)
     {
         if (i == 0)
         {

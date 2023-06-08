@@ -41,6 +41,19 @@ public class FileDataHandler
                 //dataToLoad = EncryptDecrypt(dataToLoad);
                 Debug.Log(dataToLoad);
                 loadedData = JsonUtility.FromJson<GameData>(dataToLoad);
+                //make serialization leaderboard to real leaderboard
+                //new LeaderboardFunctions().setMainLeaderboardVariables();
+                string[][][] leaderbordValues = new string[12][][];
+                for (int i = 0; i < leaderbordValues.Length; i++)
+                {
+                    string[][] miniLeaderboardValues = new string[4][];
+                    for (int j = 0; j < miniLeaderboardValues.Length; j++)
+                    {
+                        miniLeaderboardValues[j] = loadedData.saveLeaderboard.get(i).get(j);
+                    }
+                    leaderbordValues[i] = miniLeaderboardValues;
+                }
+               loadedData.leaderboardList = leaderbordValues;
             }
             catch (Exception e)
             {

@@ -174,7 +174,7 @@ public class RunnerInfoDisplay : MonoBehaviour
         string[] att = PublicData.charactersInfo.ElementAt(info.runnerId + 1); //gets the characters.csv traits
         int upgradeNumber = PublicData.upgradeLevelForTrait(num, info, att); //gets price of the current trait in points
         popup.gameObject.SetActive(true); //shows popup
-        disableBuyButtons(false); //makes but buttons not clickable
+        //disableBuyButtons(false); //makes but buttons not clickable
         int level = 0; //level of upgrade
         switch (num)
         {
@@ -224,6 +224,7 @@ public class RunnerInfoDisplay : MonoBehaviour
         {
             buyButton.interactable = false;
         }
+        buyButton.onClick.RemoveAllListeners();
         buyButton.onClick.AddListener(() =>  //sets up the buying button to buy things
         {
             hidePopup();

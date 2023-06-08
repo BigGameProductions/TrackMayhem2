@@ -88,6 +88,10 @@ public class LongJumpManager : MonoBehaviour
         } else if (code == 1)
         {
             jumpPressed = true;
+            if (jumpButton.GetComponentInChildren<TextMeshProUGUI>().text == "Pike")
+            {
+                jumpButton.SetActive(false);
+            }
         }
     }
 
@@ -115,6 +119,8 @@ public class LongJumpManager : MonoBehaviour
                 isFoul = true; //set the foul to true
                 runningMeter.runningBar.transform.parent.gameObject.SetActive(false); //hides the run meter
                 foulImage.enabled = true;
+                jumpButton.SetActive(false);
+                runButton.SetActive(false);
                 StartCoroutine(runThroughWait(1.5f));
             }
             if (Input.GetKeyDown(KeyCode.P) || jumpPressed) //if the player presses the jump button
@@ -199,9 +205,10 @@ public class LongJumpManager : MonoBehaviour
                 jumpButton.SetActive(false);
 
             }
-            if (player.transform.position.y<224.9)
+            if (player.transform.position.y<225)
             {
                 player.GetComponent<Rigidbody>().useGravity = false; //stops the jumping animation loop
+                jumpButton.SetActive(false);
                 StartCoroutine(legKickVelocity(0.2f)); //stop the landing from going forever
                 if (player.transform.position.x < -1890) //checks if the player is on the sandpit
                 {
@@ -269,17 +276,26 @@ public class LongJumpManager : MonoBehaviour
             {
                 totalInches += 5;
             }
-            if (totalInches > PublicData.gameData.personalBests.longJump) //checks for a new personal record
+            if (totalInches > Int32.Parse(PublicData.gameData.leaderboardList[1][1][0])/100.0f) //game record
+            {
+                PublicData.gameData.personalBests.longJump = totalInches;
+                PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.longJump = totalInches;
+                leadF.SetLeaderBoardEntry(1, PublicData.gameData.playerName, (int)(leaderboardManager.roundToNearest(0.25f, totalInches) * 100), PublicData.gameData.countryCode + "," + PublicData.currentRunnerUsing);
+                leadF.checkForOwnPlayer(1, 20); //checks to make sure it can stay in the top 20
+                leaderboardManager.addMarkLabelToPlayer(1);
+            }
+            else if (totalInches > PublicData.gameData.personalBests.longJump) //checks for a new personal record
             {
                 leadF.SetLeaderBoardEntry(1, PublicData.gameData.playerName, (int)(leaderboardManager.roundToNearest(0.25f, totalInches) * 100), PublicData.gameData.countryCode + "," + PublicData.currentRunnerUsing);
                 leadF.checkForOwnPlayer(1, 20); //checks to make sure it can stay in the top 20
                 prImage.enabled = true; //shows the pr banner
-                PublicData.gameData.personalBests.longJump = totalInches;
+                PublicData.gameData.personalBests.longJump = leaderboardManager.roundToNearest(0.25f,totalInches);
+                PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.longJump = leaderboardManager.roundToNearest(0.25f, totalInches); ;
                 leaderboardManager.addMarkLabelToPlayer(3);
 
             } else if (totalInches > PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.longJump)
             {
-                PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.longJump = totalInches;
+                PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.longJump = leaderboardManager.roundToNearest(0.25f, totalInches); ;
                 leaderboardManager.addMarkLabelToPlayer(2);
             }
             updatePlayerBanner(leaderboardManager.roundToNearest(0.25f, totalInches));
@@ -405,5 +421,7 @@ public class LongJumpManager : MonoBehaviour
 //TODO effects. Make them more accurate and look nicer
 
 //TODO fix the ending not sorting banners right
+
+//TODO determine to round the marks or not
 
 

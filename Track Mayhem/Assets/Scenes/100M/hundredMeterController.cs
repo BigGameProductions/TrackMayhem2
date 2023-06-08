@@ -255,7 +255,13 @@ public class hundredMeterController : MonoBehaviour
         currentPlayerBanner = leaderboardManager.getPlayerBanner();
         currentPlayerBanner.mark2 = eventTimer;
         PersonalBests characterPB = PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests;
-        if (eventTimer < PublicData.gameData.personalBests.hundredMeter || PublicData.gameData.personalBests.hundredMeter == 0) //if pr or first time doing it
+        if (eventTimer < Int32.Parse(PublicData.gameData.leaderboardList[0][1][0]) / 100.0f) //game record
+        {
+            PublicData.gameData.personalBests.hundredMeter = eventTimer;
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hundredMeter = eventTimer;
+            leaderboardManager.addMarkLabelToPlayer(1);
+        }
+        else if (eventTimer < PublicData.gameData.personalBests.hundredMeter || PublicData.gameData.personalBests.hundredMeter == 0) //if pr or first time doing it
         {
             PublicData.gameData.personalBests.hundredMeter = eventTimer; //sets pr
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hundredMeter = eventTimer; //sets cb too

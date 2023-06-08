@@ -315,7 +315,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
             string[] currentRecordInfo = getEventRecordByEvent(eventName);
             playerBanners = new PlayerBanner[] {
             new PlayerBanner(0, itemStorage.findFlagIndexOfCountry(currentRecordInfo[4]), currentRecordInfo[1], float.Parse(currentRecordInfo[2])),
-            new PlayerBanner(0, 0, "World", 98),
+            new PlayerBanner(0, itemStorage.findFlagIndexOfCountry(PublicData.gameData.leaderboardList[getEventID(eventName)][2][0].Split(",")[0]), PublicData.gameData.leaderboardList[getEventID(eventName)][0][0], Int32.Parse(PublicData.gameData.leaderboardList[getEventID(eventName)][1][0])/100.0f),
             new PlayerBanner(0, itemStorage.findFlagIndexOfCountry(PublicData.gameData.countryCode), playerName, getMarkForEvent(eventName, true))
              };
         } else if (stage == 3) //current player jump
@@ -487,6 +487,17 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
             return character ? PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hundredMeter:PublicData.gameData.personalBests.hundredMeter;
         }
         return 0;
+    }
+
+    private int getEventID(string theEvent) { //gets the event id of a string event
+        for (int i=0; i<PublicData.recordsInfo.Count; i++)
+        {
+            if (PublicData.recordsInfo.ElementAt(i)[0] == theEvent)
+            {
+                return i - 1;
+            }
+        }
+        return -1;
     }
 
 
