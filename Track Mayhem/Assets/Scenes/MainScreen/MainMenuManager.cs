@@ -39,7 +39,7 @@ public class MainMenuManager : MonoBehaviour
     void Start()
     {
         //PublicData.gameData.chestSlots = new ChestInfo[4];
-        PublicData.gameData.chestSlots[0] = new ChestInfo(4, true);
+        //PublicData.gameData.chestSlots[0] = new ChestInfo(4, true);
         //making profile button appear
         //make chests hide is not real
         //temp

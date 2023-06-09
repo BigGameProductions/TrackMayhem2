@@ -21,6 +21,11 @@ public class ItemStorage : MonoBehaviour
     public Sprite[] pictogramSprites; //sprites of all the events pictograms
     public Vector2[] pictogramSizes; //sizes of the rect transform of the pictogram
 
+    public Color[] bannerColors;
+    //0 is character best
+    //1 is personal record
+    //2 is game record
+
 
     public int findFlagIndexOfCountry(string code) //find the index of flags given the country code
     {

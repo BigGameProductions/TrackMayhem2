@@ -8,7 +8,7 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using System.IO;
 
-public class LeaderboardManager : MonoBehaviour, IDataPersistance
+public class LeaderboardManager : MonoBehaviour
 {
     [SerializeField] private string eventName; //name of the event that is active
     [SerializeField] private bool useSeeded; //determines if personal bests should be used too seed
@@ -34,6 +34,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
     [SerializeField] private TextMeshProUGUI eventNameTitle;
     [SerializeField] private TextMeshProUGUI leaderboardDescriptionTitle;
 
+    [SerializeField] private Image recordBanner; //banner for showing records
 
     private PersonalBests personalBests; //store personals bests for seeding
     private string playerName; //store the name of the player
@@ -45,7 +46,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
 
     private bool useTime; //shows if time is being used for the current event
 
-    public void LoadData(GameData data)
+    /*public void LoadData(GameData data)
     {
         this.personalBests = data.personalBests; //load the personal bests
         this.playerName = data.playerName; //name of the player
@@ -54,17 +55,21 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
     public void SaveData(ref GameData data)
     {
         //nothing to save
-    }
+    }*/
 
     private void Start()
     {
 
+        playerName = PublicData.gameData.playerName; //setting vars
+        personalBests = PublicData.gameData.personalBests; //setting vars
+        recordBanner.gameObject.SetActive(false);
         if (SceneManager.GetActiveScene().name != "EndScreen") //tests to make sure it is an event screen
         {
             cinematicCamera.GetComponent<Animator>().speed = 1;
             PublicData.currentEventName = eventName;
         } else
         {
+            gameObject.GetComponentInChildren<Animator>().Play("Nothing");
             eventName = PublicData.currentEventName;
             useTime = PublicData.usesTime;
             currentEventBanners = PublicData.playerBannerTransfer;
@@ -264,12 +269,36 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
     IEnumerator timeOfLeaderboard(int time)
     {
         yield return new WaitForSeconds(time);
+        gameObject.GetComponentInChildren<Animator>().Play("CurrentStandingsAnimationOut");
+        StartCoroutine(waitForAnimationOut(0.5f));
+    }
+
+    IEnumerator waitForAnimationOut(float delay)
+    {
+        yield return new WaitForSeconds(delay);
         updateCinematicStage(0);
     }
 
     public bool leaderBoardVisble() //returns if leaderboard is visible
     {
         return leaderBoardHeader.activeInHierarchy;
+    }
+
+    //-1 is for hiding
+    public void showRecordBanner(int id)
+    {
+        if (id == -1)
+        {
+            recordBanner.gameObject.SetActive(false);
+        } else
+        {
+            recordBanner.gameObject.SetActive(true);
+            recordBanner.GetComponent<Animator>().Play("SlideDown");
+            string[] titles = new string[] { "Character Best", "Personal Record", "Game Record" };
+            recordBanner.GetComponentInChildren<TextMeshProUGUI>().text = titles[id];
+            recordBanner.color = itemStorage.bannerColors[id];
+
+        }
     }
 
     public float roundToNearest(float nearest, float mark) //rounds the mark to the nearest float that is in the parameter. public for all classes
@@ -306,6 +335,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
         {
             leaderBoardHeader.SetActive(false);
             personalBanner.SetActive(false);
+            gameObject.GetComponentInChildren<Animator>().Play("Nothing");
             return;
         } else if (!leaderBoardHeader.activeInHierarchy && stage != 3) //make sure leaderboard is visible for other stages too
         {
@@ -740,6 +770,17 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
         eventNameTitle.text = "Open " + itemStorage.eventNames[getEventID(eventName)];
         pictogramImage.sprite = itemStorage.pictogramSprites[getEventID(eventName)];
         pictogramImage.GetComponent<RectTransform>().sizeDelta = itemStorage.pictogramSizes[getEventID(eventName)];
+        if (SceneManager.GetActiveScene().name != "EndScreen" && mode != 3 && mode !=2)
+        {
+            if (!gameObject.GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Nothing"))
+            {
+                gameObject.GetComponentInChildren<Animator>().Play("LeaderboardBannerSlide");
+            } else
+            {
+                gameObject.GetComponentInChildren<Animator>().Play("CurrentStandingsAnimation");
+            }
+
+        }
         if (mode == 2)
         {
             leaderboardDescriptionTitle.text = "Records";
@@ -747,7 +788,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
         {
             if (SceneManager.GetActiveScene().name == "EndScreen")
             {
-                leaderboardDescriptionTitle.text = "Final Results";
+                leaderboardDescriptionTitle.text = "Results - Final";
             } else if (cinematicCamera.gameObject.activeInHierarchy)
             {
                 leaderboardDescriptionTitle.text = "Start List - Final";
@@ -816,6 +857,11 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
         {
             leaderboardBanners[i].gameObject.SetActive(false);
         }
+        if (SceneManager.GetActiveScene().name != "EndScreen" && mode == 2) //animation after the banners are hidden
+        {
+            gameObject.GetComponentInChildren<Animator>().Play("LeaderboardBannerThreeSlide");
+
+        }   
         if (mode == 3)
         {
             TextMeshProUGUI[] textBoxes = personalBanner.GetComponentsInChildren<TextMeshProUGUI>(true);

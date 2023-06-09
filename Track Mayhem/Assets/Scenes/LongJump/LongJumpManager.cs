@@ -42,7 +42,6 @@ public class LongJumpManager : MonoBehaviour
 
 
     [SerializeField] private Image foulImage; //is the image that appears when you foul or don't land in the sand
-    [SerializeField] private Image prImage; //is the image that appears when you pr
 
     [SerializeField] private ParticleSystem sandEffect;
     [SerializeField] private ParticleSystem jumpSparkle;
@@ -68,8 +67,7 @@ public class LongJumpManager : MonoBehaviour
 
         leaderboardManager.cinematicCamera.GetComponent<Animator>().SetInteger("event", 1); //sets animator to the current event
 
-        foulImage.enabled = false; //hide the foul icon
-        prImage.enabled = false; //hides the pr image
+        foulImage.gameObject.SetActive(false); //hide the foul icon
 
         runningMeter.barDecreaseSpeed -= PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel * 10; //lowers bar slower
         runningMeter.speedPerClick -= PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel * 0.5f; //raises bar a bit slower
@@ -118,7 +116,8 @@ public class LongJumpManager : MonoBehaviour
             {
                 isFoul = true; //set the foul to true
                 runningMeter.runningBar.transform.parent.gameObject.SetActive(false); //hides the run meter
-                foulImage.enabled = true;
+                foulImage.gameObject.SetActive(true);
+                foulImage.GetComponent<Animator>().Play("FoulSlide");
                 jumpButton.SetActive(false);
                 runButton.SetActive(false);
                 StartCoroutine(runThroughWait(1.5f));
@@ -168,7 +167,8 @@ public class LongJumpManager : MonoBehaviour
                 if (player.transform.position.x > -1895.73) //testing got jumping foul
                 {
                     isFoul = true;
-                    foulImage.enabled = true;
+                    foulImage.gameObject.SetActive(true);
+                    foulImage.GetComponent<Animator>().Play("FoulSlide");
                 }
                 if (jumpMeterSpeed > 90 && jumpMeterSpeed < 110)
                 {
@@ -213,8 +213,10 @@ public class LongJumpManager : MonoBehaviour
                 if (player.transform.position.x < -1890) //checks if the player is on the sandpit
                 {
                     isFoul = true;
-                    foulImage.enabled = true;
-                } else
+                    foulImage.gameObject.SetActive(true);
+                    foulImage.GetComponent<Animator>().Play("FoulSlide");
+                }
+                else
                 {
                     sandEffect.Play();
                 }
@@ -232,7 +234,8 @@ public class LongJumpManager : MonoBehaviour
             jumpMeter.jumpBar.transform.parent.gameObject.SetActive(false);
             runningCamera.enabled = true;
             runningMeter.runningSpeed = 10000;
-            foulImage.enabled = true;
+            foulImage.gameObject.SetActive(true);
+            foulImage.GetComponent<Animator>().Play("FoulSlide");
             yield return new WaitForSeconds(1.5f);
             runningCamera.enabled = false;
             updatePlayerBanner(-1000);
@@ -283,12 +286,13 @@ public class LongJumpManager : MonoBehaviour
                 leadF.SetLeaderBoardEntry(1, PublicData.gameData.playerName, (int)(leaderboardManager.roundToNearest(0.25f, totalInches) * 100), PublicData.gameData.countryCode + "," + PublicData.currentRunnerUsing);
                 leadF.checkForOwnPlayer(1, 20); //checks to make sure it can stay in the top 20
                 leaderboardManager.addMarkLabelToPlayer(1);
+                leaderboardManager.showRecordBanner(2);
             }
             else if (totalInches > PublicData.gameData.personalBests.longJump) //checks for a new personal record
             {
                 leadF.SetLeaderBoardEntry(1, PublicData.gameData.playerName, (int)(leaderboardManager.roundToNearest(0.25f, totalInches) * 100), PublicData.gameData.countryCode + "," + PublicData.currentRunnerUsing);
                 leadF.checkForOwnPlayer(1, 20); //checks to make sure it can stay in the top 20
-                prImage.enabled = true; //shows the pr banner
+                leaderboardManager.showRecordBanner(1);
                 PublicData.gameData.personalBests.longJump = leaderboardManager.roundToNearest(0.25f,totalInches);
                 PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.longJump = leaderboardManager.roundToNearest(0.25f, totalInches); ;
                 leaderboardManager.addMarkLabelToPlayer(3);
@@ -297,6 +301,7 @@ public class LongJumpManager : MonoBehaviour
             {
                 PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.longJump = leaderboardManager.roundToNearest(0.25f, totalInches); ;
                 leaderboardManager.addMarkLabelToPlayer(2);
+                leaderboardManager.showRecordBanner(0);
             }
             updatePlayerBanner(leaderboardManager.roundToNearest(0.25f, totalInches));
         }
@@ -327,10 +332,11 @@ public class LongJumpManager : MonoBehaviour
         jumpButton.SetActive(false);
         leaderboardManager.showCurrentPlayerMarks(currentPlayerBanner, 3); //updates and shows the player leaderboard
         currentJumpNumber++; //inceases to the next jump
+        foulImage.gameObject.SetActive(false);
         if (isFoul) //if scratched
         {
             player.GetComponentInChildren<Animator>().Play("Upset"); //Animation for after the jump
-        } else if (prImage.enabled) //if got a personal record
+        } else if (true) //if got a personal record TODO
         {
             player.GetComponentInChildren<Animator>().Play("Exited"); //Animation for after the jump
         } else
@@ -360,11 +366,11 @@ public class LongJumpManager : MonoBehaviour
         leaderboardManager.hidePersonalBanner(); //hides personal banner
         player.GetComponentsInChildren<Transform>()[1].eulerAngles = new Vector3(0, 90, 0); //reset rotation
         player.GetComponentsInChildren<Transform>()[1].localPosition = new Vector3(0, 0, 0); //reset position
-        foulImage.enabled = false; //hides the image
-        prImage.enabled = false;// hides the image
+        foulImage.gameObject.SetActive(false); //hides the image
         isFoul = false; //makes the jump not a foul
         runButton.SetActive(true);
         jumpButton.SetActive(true);
+        leaderboardManager.showRecordBanner(-1);
         jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Takeoff";
         leaderboardManager.showUpdatedLeaderboard();
     }
