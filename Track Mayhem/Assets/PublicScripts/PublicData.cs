@@ -34,6 +34,7 @@ public static class PublicData
 
 
     public static int currentSelectedEventIndex = 1; //holds the index of the current event according to the records.csv
+    public static string currentEventName = "LongJump";
 
 
     public static RunnerInformation getCharactersInfo(int id) //function to get the current data from game data of that runner

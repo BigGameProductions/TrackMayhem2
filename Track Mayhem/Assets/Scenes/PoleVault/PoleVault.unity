@@ -7041,7 +7041,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -58.799988, y: 55.199997}
+  m_AnchoredPosition: {x: -58.80005, y: 55.200012}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1419984701
@@ -7232,6 +7232,39 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.08941544, y: 0.40634727, z: 0.09269205}
   m_Center: {x: 0.009002151, y: 0.23051608, z: -0.0022174418}
+--- !u!114 &1524269096 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1107348416157956522, guid: 76f6e4cd7ecc94f0db66c1d8656e5288, type: 3}
+  m_PrefabInstance: {fileID: 1771612317}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1524269097 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1342857798158939406, guid: 76f6e4cd7ecc94f0db66c1d8656e5288, type: 3}
+  m_PrefabInstance: {fileID: 1771612317}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1524269098 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8546547970892795082, guid: 76f6e4cd7ecc94f0db66c1d8656e5288, type: 3}
+  m_PrefabInstance: {fileID: 1771612317}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1555131526
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7677,7 +7710,10 @@ MonoBehaviour:
   cinematicCamera: {fileID: 163804171}
   leaderBoardHeader: {fileID: 1771612320}
   personalBanner: {fileID: 1771612318}
+  pictogramImage: {fileID: 1524269098}
   itemStorage: {fileID: 1555131527}
+  eventNameTitle: {fileID: 1524269097}
+  leaderboardDescriptionTitle: {fileID: 1524269096}
 --- !u!4 &1782467797
 Transform:
   m_ObjectHideFlags: 0

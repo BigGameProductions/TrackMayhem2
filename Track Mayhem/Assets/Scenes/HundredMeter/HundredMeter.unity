@@ -10659,7 +10659,10 @@ MonoBehaviour:
   cinematicCamera: {fileID: 935041778}
   leaderBoardHeader: {fileID: 2097925581}
   personalBanner: {fileID: 2097925579}
+  pictogramImage: {fileID: 1822460979}
   itemStorage: {fileID: 1384978574}
+  eventNameTitle: {fileID: 1822460978}
+  leaderboardDescriptionTitle: {fileID: 1822460977}
 --- !u!4 &1241750505
 Transform:
   m_ObjectHideFlags: 0
@@ -23354,6 +23357,39 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.28070068, y: 0.43485984, z: 0.19377127}
   m_Center: {x: 0.019317703, y: 0.10757496, z: 0.013877862}
+--- !u!114 &1822460977 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1107348416157956522, guid: 76f6e4cd7ecc94f0db66c1d8656e5288, type: 3}
+  m_PrefabInstance: {fileID: 2097925578}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1822460978 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1342857798158939406, guid: 76f6e4cd7ecc94f0db66c1d8656e5288, type: 3}
+  m_PrefabInstance: {fileID: 2097925578}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1822460979 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8546547970892795082, guid: 76f6e4cd7ecc94f0db66c1d8656e5288, type: 3}
+  m_PrefabInstance: {fileID: 2097925578}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1879881186
 GameObject:
   m_ObjectHideFlags: 0

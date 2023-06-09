@@ -21,6 +21,8 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
     [SerializeField] private GameObject leaderBoardHeader; //the header for the main leaderboard;
     [SerializeField] private GameObject personalBanner; //the banner shown for the player after each jump
 
+    [SerializeField] private Image pictogramImage;
+
     private PlayerBanner[] currentEventBanners;
 
     private List<PlayerBanner> finalBarHeightsBanners = new List<PlayerBanner>();
@@ -29,6 +31,8 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
     private float openingHeight = 0;
 
     [SerializeField] private ItemStorage itemStorage;
+    [SerializeField] private TextMeshProUGUI eventNameTitle;
+    [SerializeField] private TextMeshProUGUI leaderboardDescriptionTitle;
 
 
     private PersonalBests personalBests; //store personals bests for seeding
@@ -58,8 +62,10 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
         if (SceneManager.GetActiveScene().name != "EndScreen") //tests to make sure it is an event screen
         {
             cinematicCamera.GetComponent<Animator>().speed = 1;
+            PublicData.currentEventName = eventName;
         } else
         {
+            eventName = PublicData.currentEventName;
             useTime = PublicData.usesTime;
             currentEventBanners = PublicData.playerBannerTransfer;
             setLeaderboard(currentEventBanners, PublicData.leaderBoardMode); //shows the leaderboard sorted
@@ -72,6 +78,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
 
     private void Update()
     {
+
         if (SceneManager.GetActiveScene().name != "EndScreen")
         {
             if (cinematicCamera.GetComponent<Animator>().GetInteger("Stage") != animationStage)
@@ -729,6 +736,27 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
     //mode 5 = 3 attempt jumps 
     private void setLeaderboard(PlayerBanner[] playerBanners, int mode) //sets the leaderboard according to the array of playerBanners that it is given
     {
+        //titles
+        eventNameTitle.text = "Open " + itemStorage.eventNames[getEventID(eventName)];
+        pictogramImage.sprite = itemStorage.pictogramSprites[getEventID(eventName)];
+        pictogramImage.GetComponent<RectTransform>().sizeDelta = itemStorage.pictogramSizes[getEventID(eventName)];
+        if (mode == 2)
+        {
+            leaderboardDescriptionTitle.text = "Records";
+        } else
+        {
+            if (SceneManager.GetActiveScene().name == "EndScreen")
+            {
+                leaderboardDescriptionTitle.text = "Final Results";
+            } else if (cinematicCamera.gameObject.activeInHierarchy)
+            {
+                leaderboardDescriptionTitle.text = "Start List - Final";
+            } else
+            {
+                leaderboardDescriptionTitle.text = "Current Standings";
+            }
+        }
+        //titles
         for (int i = 0; i < playerBanners.Length; i++) //make all banners appear
         {
             leaderboardBanners[i].gameObject.SetActive(true);
@@ -744,6 +772,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
             leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[3].gameObject.SetActive(true); 
             TextMeshProUGUI[] textBoxes = leaderboardBanners[i].GetComponentsInChildren<TextMeshProUGUI>(true);
             textBoxes[0].text = playerBanners[i].place.ToString(); //place text box
+            textBoxes[0].gameObject.SetActive(true); //show the place numbers
             //Add flags for leaderboard
             textBoxes[1].text = playerBanners[i].player; //playerName text box
             if (mode == 1)
@@ -793,7 +822,7 @@ public class LeaderboardManager : MonoBehaviour, IDataPersistance
             personalBanner.GetComponentsInChildren<RectTransform>(true)[3].gameObject.GetComponent<Image>().sprite = itemStorage. flags[personalBannersMarks.flagNumber]; //temp
             for (int j = 4; j < personalBanner.GetComponentsInChildren<RectTransform>(true).Length; j++)
             {
-                if (j <=6 || j>9) personalBanner.GetComponentsInChildren<RectTransform>(true)[j].gameObject.SetActive(false); //make the banner empty
+                if ((j <=6 || j>9) && j!=0) personalBanner.GetComponentsInChildren<RectTransform>(true)[j].gameObject.SetActive(false); //make the banner empty
                 //j==0 is the main banner
                 // j <= 6; j > 9 is the bound for the items that are needed
             }

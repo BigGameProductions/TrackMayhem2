@@ -318,3 +318,39 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 93e1d67f2194e40d298792741bbd80e6, type: 3}
   - {fileID: 21300000, guid: 28c477d045b7841578f1176169e1b9c4, type: 3}
   - {fileID: 21300000, guid: 728351c9346ae4719ba71f07b3188fc5, type: 3}
+  eventNames:
+  - 100M
+  - Long Jump
+  - Pole Vault
+  - Shotput
+  - Javelin
+  - 400M
+  - Discus
+  - High Jump
+  - 110HH
+  - 1500M
+  - Decathalon
+  pictogramSprites:
+  - {fileID: -1730431450, guid: e565cc298a9fa43d085fb412936ba5de, type: 3}
+  - {fileID: 2058546721, guid: e565cc298a9fa43d085fb412936ba5de, type: 3}
+  - {fileID: -1710118083, guid: e565cc298a9fa43d085fb412936ba5de, type: 3}
+  - {fileID: 1119564163, guid: e565cc298a9fa43d085fb412936ba5de, type: 3}
+  - {fileID: 55714981, guid: 1ebbffb12b56342c89682f116f8bf51c, type: 3}
+  - {fileID: 555888163, guid: e565cc298a9fa43d085fb412936ba5de, type: 3}
+  - {fileID: -35025340, guid: e565cc298a9fa43d085fb412936ba5de, type: 3}
+  - {fileID: -41615980, guid: e565cc298a9fa43d085fb412936ba5de, type: 3}
+  - {fileID: 215419088, guid: e565cc298a9fa43d085fb412936ba5de, type: 3}
+  - {fileID: -1935586496, guid: e565cc298a9fa43d085fb412936ba5de, type: 3}
+  - {fileID: -979653911, guid: e565cc298a9fa43d085fb412936ba5de, type: 3}
+  pictogramSizes:
+  - {x: 35, y: 35}
+  - {x: 40, y: 35}
+  - {x: 35, y: 30}
+  - {x: 35, y: 33}
+  - {x: 40, y: 35}
+  - {x: 30, y: 30}
+  - {x: 30, y: 30}
+  - {x: 35, y: 30}
+  - {x: 35, y: 30}
+  - {x: 35, y: 30}
+  - {x: 44, y: 32}

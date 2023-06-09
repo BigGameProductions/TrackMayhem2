@@ -17,6 +17,10 @@ public class ItemStorage : MonoBehaviour
     public Sprite[] labelSprites; //list of labels for the player banner
     //0 is wr
 
+    public string[] eventNames; //stores the list of the string names of the events
+    public Sprite[] pictogramSprites; //sprites of all the events pictograms
+    public Vector2[] pictogramSizes; //sizes of the rect transform of the pictogram
+
 
     public int findFlagIndexOfCountry(string code) //find the index of flags given the country code
     {

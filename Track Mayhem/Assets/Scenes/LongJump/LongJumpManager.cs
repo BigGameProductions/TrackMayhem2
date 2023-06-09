@@ -405,7 +405,7 @@ public class LongJumpManager : MonoBehaviour
             {
                 speed = PublicData.averageSpeedDuringRun - (speed - PublicData.averageSpeedDuringRun); //makes it so over slows you down
             }
-            player.transform.Translate(new Vector3(0, 0, speed * runningSpeedRatio)); //making character move according to run meter
+            player.transform.Translate(new Vector3(0, 0, speed*1.3f * runningSpeedRatio)); //making character move according to run meter
             player.GetComponentInChildren<Animator>().speed = speed * animationRunningSpeedRatio; //making the animation match the sunning speed
             runningMeter.updateTimeElapsed();
         }
