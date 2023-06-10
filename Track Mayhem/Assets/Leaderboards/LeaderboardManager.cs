@@ -841,7 +841,7 @@ public class LeaderboardManager : MonoBehaviour
 
             } else if (mode == 4)
             {
-                leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[1].gameObject.SetActive(false); //record mark label
+                leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[1].gameObject.SetActive(true); //record mark label
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[3].gameObject.GetComponent<Image>().sprite = itemStorage.flags[playerBanners[i].flagNumber]; //temp
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[7].gameObject.SetActive(true); //record label mark
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[8].gameObject.SetActive(true); //record mark label
@@ -864,6 +864,7 @@ public class LeaderboardManager : MonoBehaviour
         }   
         if (mode == 3)
         {
+            gameObject.GetComponentInChildren<Animator>().Play("PersonalBannerSlide");
             TextMeshProUGUI[] textBoxes = personalBanner.GetComponentsInChildren<TextMeshProUGUI>(true);
             personalBanner.GetComponentsInChildren<RectTransform>(true)[3].gameObject.GetComponent<Image>().sprite = itemStorage. flags[personalBannersMarks.flagNumber]; //temp
             for (int j = 4; j < personalBanner.GetComponentsInChildren<RectTransform>(true).Length; j++)

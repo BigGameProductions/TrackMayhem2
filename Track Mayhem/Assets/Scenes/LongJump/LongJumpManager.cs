@@ -48,6 +48,7 @@ public class LongJumpManager : MonoBehaviour
 
     [SerializeField] RunningMeterBar runningMeter;
     [SerializeField] JumpingMeter jumpMeter;
+    [SerializeField] Button infoButton;
 
     [SerializeField] private Canvas controlsCanvas;
 
@@ -58,8 +59,8 @@ public class LongJumpManager : MonoBehaviour
         controlsCanvas.enabled = false;
         jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Takeoff";
         itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform); //inits the runner into the current scene
-        
 
+        infoButton.gameObject.SetActive(false);
         jumpMeter.jumpBar.gameObject.transform.parent.gameObject.SetActive(false); //hides the jump meter
         player.GetComponentInChildren<Animator>().Play("Running");
 
@@ -101,21 +102,26 @@ public class LongJumpManager : MonoBehaviour
             if (controlsCanvas.enabled == false)
             {
                 controlsCanvas.enabled = true;
+                infoButton.gameObject.SetActive(true);
             }
             runningMeter.updateRunMeter();
-            if ((Input.GetKeyDown(KeyCode.Space) || runPressed) && runningMeter.runningBar.transform.parent.gameObject.activeInHierarchy) //updating speed on click
+            if ((Input.GetKeyDown(KeyCode.Space) || runPressed) && runningMeter.runMeterSlider.gameObject.activeInHierarchy) //updating speed on click
             {
                 runPressed = false;
+                if (infoButton.gameObject.activeInHierarchy)
+                {
+                    infoButton.gameObject.SetActive(false);
+                }
                 runningMeter.increaseHeight();
                 if (leaderboardManager.leaderBoardVisble()) //hides the leaderboard if the player clicks
                 {
                     leaderboardManager.hidePersonalBanner();
                 }
             }
-            if (player.transform.position.x > -1901 && runningMeter.runningBar.transform.parent.gameObject.activeInHierarchy) //testing for an automatic foul by running past the board
+            if (player.transform.position.x > -1901 && runningMeter.runMeterSlider.gameObject.activeInHierarchy) //testing for an automatic foul by running past the board
             {
                 isFoul = true; //set the foul to true
-                runningMeter.runningBar.transform.parent.gameObject.SetActive(false); //hides the run meter
+                runningMeter.runMeterSlider.gameObject.SetActive(false); //hides the run meter
                 foulImage.gameObject.SetActive(true);
                 foulImage.GetComponent<Animator>().Play("FoulSlide");
                 jumpButton.SetActive(false);
@@ -131,7 +137,7 @@ public class LongJumpManager : MonoBehaviour
                     runButton.SetActive(false);
                     runningCamera.enabled = false;
                     jumpingCamera.enabled = true;
-                    runningMeter.runningBar.transform.parent.gameObject.SetActive(false); //hide run meter
+                    runningMeter.runMeterSlider.gameObject.SetActive(false); //hide run meter
                     player.GetComponentInChildren<Animator>().speed = 0; //make running animation stop
                     jumpMeter.jumpBar.gameObject.transform.parent.gameObject.SetActive(true); //sets the jump meter to showing
                     jumpMeter.setToRegularSpeed(); //setting the bar speed to normal speed
@@ -362,7 +368,7 @@ public class LongJumpManager : MonoBehaviour
         runningCamera.enabled = true; //shows running camera
         jumpingCamera.enabled = false; //hides jumping camera
         frontCamera.enabled = false;
-        runningMeter.runningBar.transform.parent.gameObject.SetActive(true); //shows run meter bar
+        runningMeter.runMeterSlider.gameObject.SetActive(true); //shows run meter bar
         leaderboardManager.hidePersonalBanner(); //hides personal banner
         player.GetComponentsInChildren<Transform>()[1].eulerAngles = new Vector3(0, 90, 0); //reset rotation
         player.GetComponentsInChildren<Transform>()[1].localPosition = new Vector3(0, 0, 0); //reset position
