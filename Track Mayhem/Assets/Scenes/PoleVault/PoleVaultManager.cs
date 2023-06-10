@@ -16,7 +16,6 @@ public class PoleVaultManager : MonoBehaviour
     [SerializeField]private RunningMeterBar runMeter;
     [SerializeField] private LeaderboardManager leaderboardManager;
     [SerializeField] private Image foulImage; //is the image that appears when you foul or don't land in the sand
-    [SerializeField] private Image prImage; //is the image that appears when you pr
     [SerializeField] private GameObject poleVaultPole; //the main pole that is used for the event
     [SerializeField] private GameObject poleGrip; //part of the pole that is being held onto
 
@@ -45,6 +44,8 @@ public class PoleVaultManager : MonoBehaviour
 
     [SerializeField] private GameObject barRaise; //bar to raise and lower
     [SerializeField] private GameObject bar; //bar to fall
+
+    [SerializeField] private ParticleSystem jumpSparkle;
 
     private Vector3 startingBarHeight; //height of the bar to determine if it falls
 
@@ -78,6 +79,8 @@ public class PoleVaultManager : MonoBehaviour
 
     [SerializeField] private Canvas controlsCanvas;
 
+    [SerializeField] private Button infoButton;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -102,8 +105,7 @@ public class PoleVaultManager : MonoBehaviour
 
         updateBarRaiseHeight(); //sets bar to starting height
 
-        foulImage.enabled = false; //hide the foul icon
-        prImage.enabled = false; //hides the pr image
+        foulImage.gameObject.SetActive(false); //hide the foul icon
     }
 
     public void buttonPressed(int code)
@@ -200,7 +202,20 @@ public class PoleVaultManager : MonoBehaviour
                 jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Curl";
                 jumpPressed = false;
                 jumpMeter.MakeJump();
-                //float jumpMeterSpeed = jumpMeter.jumpMeterSpeed;
+                float jumpMeterSpeed = jumpMeter.jumpMeterSpeed;
+                if (jumpMeterSpeed > 90 && jumpMeterSpeed < 110)
+                {
+                    jumpSparkle.startColor = Color.green;
+                }
+                else if (jumpMeterSpeed > 70 && jumpMeterSpeed < 130)
+                {
+                    jumpSparkle.startColor = Color.yellow;
+                }
+                else
+                {
+                    jumpSparkle.startColor = Color.red;
+                }
+                jumpSparkle.Play();
                 StartCoroutine(startPlant(0.5f)); //calls planting method 
 
             }
@@ -209,9 +224,10 @@ public class PoleVaultManager : MonoBehaviour
         if (playerCamera.enabled && !leaderboardManager.cinematicCamera.gameObject.activeInHierarchy && isRunning) //runs when the player is in the running stage
         {
             runMeter.updateRunMeter();
-            if ((Input.GetKeyDown(KeyCode.Space) || runPressed) && runMeter.runningBar.transform.parent.gameObject.activeInHierarchy) //updating speed on click
+            if ((Input.GetKeyDown(KeyCode.Space) || runPressed) && runMeter.runMeterSlider.gameObject.activeInHierarchy) //updating speed on click
             {
                 runPressed = false;
+                infoButton.gameObject.SetActive(false);
                 runMeter.increaseHeight();
                 if (leaderboardManager.leaderBoardVisble()) //hides the leaderboard if the player clicks
                 {
@@ -222,10 +238,11 @@ public class PoleVaultManager : MonoBehaviour
             {
                 isRunning = false; //stops running speed
                 isPlanting = true; //makes planting fail
-                foulImage.enabled = true; //show foul
+                foulImage.gameObject.SetActive(true);
+                foulImage.GetComponent<Animator>().Play("FoulSlide"); //show foul
                 runButton.SetActive(false);
                 jumpButton.SetActive(false);
-                runMeter.runningBar.transform.parent.gameObject.SetActive(false); //hide run meter
+                runMeter.runMeterSlider.gameObject.SetActive(false); //hide run meter
                 StartCoroutine(foulRun(1)); //wait x seconds then end jump
                 
             } else  {
@@ -236,7 +253,7 @@ public class PoleVaultManager : MonoBehaviour
                     runButton.SetActive(false);
                     jumpMeter.jumpBar.transform.parent.gameObject.SetActive(true);
                     isRunning = false; //shows the player is not longer running
-                    runMeter.runningBar.transform.parent.gameObject.SetActive(false); //hides running meter
+                    runMeter.runMeterSlider.gameObject.SetActive(false); //hides running meter
                     player.GetComponentInChildren<Animator>().speed = 0; //stops the player animations
                     jumpMeter.setToRegularSpeed(); //setting the bar speed to normal speed
                     /*runningCamera.enabled = false;
@@ -244,8 +261,8 @@ public class PoleVaultManager : MonoBehaviour
                     runningMeter.runningBar.transform.parent.gameObject.SetActive(false); //hide run meter
                     player.GetComponentInChildren<Animator>().speed = 0; //make running animation stop
                     jumpMeter.jumpBar.gameObject.transform.parent.gameObject.SetActive(true); //sets the jump meter to showing
-                    jumpMeter.setToRegularSpeed(); //setting the bar speed to normal  speed
-                    float averageSpeed = runningMeter.getAverageSpeed();
+                    jumpMeter.setToRegularSpeed(); //setting the bar speed to normal  speed*/
+                    float averageSpeed = runMeter.getAverageSpeed();
                     if (averageSpeed > 7500 && averageSpeed < 9500)
                     {
                         jumpSparkle.startColor = Color.green;
@@ -259,7 +276,7 @@ public class PoleVaultManager : MonoBehaviour
                         jumpSparkle.startColor = Color.red;
                     }
                     jumpSparkle.Play();
-                    StartCoroutine(jumpMeterTimeLimit(3)); //makes a time limit of x seconds for jumping angle*/
+                    //StartCoroutine(jumpMeterTimeLimit(3)); //makes a time limit of x seconds for jumping angle TODO add limit
                 }
             }
 
@@ -332,7 +349,9 @@ public class PoleVaultManager : MonoBehaviour
         yield return new WaitForSeconds(delay);
         if (player.transform.position.z > -189)
         {
-            foulImage.enabled = true;
+            foulImage.gameObject.SetActive(true);
+            foulImage.GetComponent<Animator>().Play("FoulSlide");
+
             poleVaultPole.transform.parent = null;
             updatePlayerBanner(-10000);
             afterJump();
@@ -419,6 +438,7 @@ public class PoleVaultManager : MonoBehaviour
 
     private void afterJump()
     {
+        foulImage.gameObject.SetActive(false); //hides the image
         jumpButton.SetActive(false); //hides jump button for after jump
         leaderboardManager.showCurrentPlayerMarks(currentPlayerBanner, 3); //updates and shows the player leaderboard
         poleVaultPole.GetComponent<Animator>().SetBool("Launched", false);
@@ -432,22 +452,25 @@ public class PoleVaultManager : MonoBehaviour
             PublicData.gameData.personalBests.polevault = currentBarHeight;
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.polevault = currentBarHeight;
             leaderboardManager.addMarkLabelToPlayer(1);
+            leaderboardManager.showRecordBanner(2);
         }
         else if (currentBarHeight > PublicData.gameData.personalBests.polevault) //if got a personal record
         {
 
             leadF.SetLeaderBoardEntry(2, PublicData.gameData.playerName, (int)(currentBarHeight * 100), PublicData.gameData.countryCode + "," + PublicData.currentRunnerUsing);
             leadF.checkForOwnPlayer(2, 20); //checks to make sure it can stay in the top 20
-            prImage.enabled = true;
             PublicData.gameData.personalBests.polevault = currentBarHeight;
             player.GetComponentInChildren<Animator>().Play("Exited"); //Animation for after the jump
             currentJumpNumber = 0;
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.polevault = currentBarHeight;
             leaderboardManager.addMarkLabelToPlayer(3);
-        } else if (currentBarHeight > PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.polevault)
+            leaderboardManager.showRecordBanner(1);
+        }
+        else if (currentBarHeight > PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.polevault)
         {
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.polevault = currentBarHeight;
             leaderboardManager.addMarkLabelToPlayer(2);
+            leaderboardManager.showRecordBanner(0);
         }
         else
         {
@@ -496,7 +519,7 @@ public class PoleVaultManager : MonoBehaviour
         playerCamera.enabled = true; //shows running camera
         jumpingCamera.enabled = false; //hides jumping camera
         frontCamera.enabled = false; //hides the front camera
-        runMeter.runningBar.transform.parent.gameObject.SetActive(true); //shows run meter bar
+        runMeter.runMeterSlider.gameObject.SetActive(true); //shows run meter bar
         leaderboardManager.hidePersonalBanner(); //hides personal banner
         isRunning = true; //updates state
         isPlanting = false; //updates state
@@ -506,13 +529,13 @@ public class PoleVaultManager : MonoBehaviour
         playerCamera.transform.localEulerAngles = startingCameraRotation; //set the camera in the right angle
         player.GetComponent<Rigidbody>().useGravity = false; //stop player from falling dowm
         player.GetComponentInChildren<Animator>().SetBool("Pike", false); //reset pike var
-        foulImage.enabled = false; //hides the image
+        foulImage.gameObject.SetActive(false); //hides the image
         updateBarRaiseHeight();
-        prImage.enabled = false;// hides the image
         passedBar = false;
         maxPlayerHeight = 0;
         runButton.SetActive(true);
         jumpButton.SetActive(true);
+        leaderboardManager.showRecordBanner(-1);
         //isFoul = false; //makes the jump not a foul
         leaderboardManager.showUpdatedLeaderboard();
 

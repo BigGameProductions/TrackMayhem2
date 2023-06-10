@@ -16,7 +16,6 @@ public class hundredMeterController : MonoBehaviour
     [SerializeField] private Camera playerCamera;
 
     [SerializeField] private Image foulImage;
-    [SerializeField] private Image prImage;
     [SerializeField] private TextMeshProUGUI setText;
 
     [SerializeField] private RunningMeterBar runningMeter;
@@ -26,6 +25,8 @@ public class hundredMeterController : MonoBehaviour
 
     [SerializeField] private Button runButton;
     [SerializeField] private Button jumpButton;
+    [SerializeField] private Button infoButton;
+    [SerializeField] private Canvas controlCanvas;
 
     [SerializeField] private GameObject[] competitorsList;
 
@@ -39,6 +40,7 @@ public class hundredMeterController : MonoBehaviour
 
     bool isRunning = false; //if gun has gone off
     bool runPressed = false; //if the run button is pressed
+    bool jumpPressed = false; //if the jump button has been pressed
     bool started = false; //if the player has gone out of the blocks
     bool finished = false; //if the player has crossed the finish line
     bool usedLean = false; //if the player has used their lean
@@ -53,9 +55,10 @@ public class hundredMeterController : MonoBehaviour
     void Start()
     {
         itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform); //inits the runner into the current scene
+        controlCanvas.enabled = false;
         setText.enabled = false;
-        prImage.enabled = false;
-        foulImage.enabled = false;
+        foulImage.gameObject.SetActive(false);
+        foulImage.GetComponentInChildren<TextMeshProUGUI>().text = "False Start";
         jumpButton.gameObject.SetActive(false);
         runButton.gameObject.SetActive(false);
         runningMeter.runningBar.transform.parent.gameObject.SetActive(false);
@@ -66,6 +69,18 @@ public class hundredMeterController : MonoBehaviour
 
     }
 
+    public void buttonPressed(int code)
+    {
+        if (code == 0)
+        {
+            runPressed = true;
+        }
+        else if (code == 1)
+        {
+            jumpPressed = true;
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -73,6 +88,7 @@ public class hundredMeterController : MonoBehaviour
         {
             if (!runButton.gameObject.activeInHierarchy)
             {
+                controlCanvas.enabled = true;
                 runButton.gameObject.SetActive(true); //show controls
                 runningMeter.runningBar.transform.parent.gameObject.SetActive(true); //show controls
                 PlayerBanner[] laneOrders = leaderboardManager.getPlayersInLaneOrder();
@@ -100,11 +116,14 @@ public class hundredMeterController : MonoBehaviour
             {
                 jumpButton.gameObject.SetActive(true);
             }
-            if ((Input.GetKeyDown(KeyCode.Space) || runPressed) && runningMeter.runningBar.transform.parent.gameObject.activeInHierarchy && !finished && !foulImage.enabled) //updating speed on click
+            if ((Input.GetKeyDown(KeyCode.Space) || runPressed) && runningMeter.runMeterSlider.gameObject.activeInHierarchy && !finished && !foulImage.gameObject.activeInHierarchy) //updating speed on click
             {
+                runPressed = false;
+                infoButton.gameObject.SetActive(false);
                 if (!isRunning)
                 {
-                    foulImage.enabled = true;
+                    foulImage.gameObject.SetActive(true);
+                    foulImage.GetComponent<Animator>().Play("FoulSlide");
                     isRunning = true;
                     runningMeter.runningSpeed = 800;
                     StartCoroutine(foulRun(2)); //wait then change screens
@@ -121,7 +140,8 @@ public class hundredMeterController : MonoBehaviour
                     leaderboardManager.hidePersonalBanner();
                 }
             }
-            if ((Input.GetKeyDown(KeyCode.P) || false) && runningMeter.runningBar.transform.parent.gameObject.activeInHierarchy && !finished && !foulImage.enabled) {
+            if ((Input.GetKeyDown(KeyCode.P) || jumpPressed) && runningMeter.runMeterSlider.gameObject.activeInHierarchy && !finished && !foulImage.gameObject.activeInHierarchy) {
+                jumpPressed = false;
                 usedLean = true;
                 jumpButton.gameObject.SetActive(false);
                 player.GetComponentInChildren<Animator>().Play("RunningLean");
@@ -139,7 +159,7 @@ public class hundredMeterController : MonoBehaviour
     IEnumerator showSet(float delay)
     {
         yield return new WaitForSeconds(delay);
-        if (!foulImage.enabled)
+        if (!foulImage.gameObject.activeInHierarchy)
         {
             setText.text = "Set";
             foreach (GameObject go in competitorsList) //gets all competitors up in the set position
@@ -159,7 +179,7 @@ public class hundredMeterController : MonoBehaviour
     IEnumerator showGo(float delay)
     {
         yield return new WaitForSeconds(delay);
-        if (!foulImage.enabled)
+        if (!foulImage.gameObject.activeInHierarchy)
         {
             setText.text = "GO";
             isRunning = true;
@@ -260,18 +280,21 @@ public class hundredMeterController : MonoBehaviour
             PublicData.gameData.personalBests.hundredMeter = eventTimer;
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hundredMeter = eventTimer;
             leaderboardManager.addMarkLabelToPlayer(1);
+            leaderboardManager.showRecordBanner(2);
         }
         else if (eventTimer < PublicData.gameData.personalBests.hundredMeter || PublicData.gameData.personalBests.hundredMeter == 0) //if pr or first time doing it
         {
             PublicData.gameData.personalBests.hundredMeter = eventTimer; //sets pr
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hundredMeter = eventTimer; //sets cb too
-            prImage.enabled = true; //shows pr image
             leaderboardManager.addMarkLabelToPlayer(3);
+            leaderboardManager.showRecordBanner(1);
 
-        } else if (eventTimer < characterPB.hundredMeter || characterPB.hundredMeter == 0)
+        }
+        else if (eventTimer < characterPB.hundredMeter || characterPB.hundredMeter == 0)
         {
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hundredMeter = eventTimer;
             leaderboardManager.addMarkLabelToPlayer(2);
+            leaderboardManager.showRecordBanner(0);
         }
         leaderboardManager.showCurrentPlayerMarks(currentPlayerBanner, 3); //updates and shows the player leaderboard
         leaderboardManager.addPlayerTime(eventTimer); //adds player to the banners
