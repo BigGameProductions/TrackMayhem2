@@ -203,11 +203,15 @@ public class PoleVaultManager : MonoBehaviour
                 jumpPressed = false;
                 jumpMeter.MakeJump();
                 float jumpMeterSpeed = jumpMeter.jumpMeterSpeed;
-                if (jumpMeterSpeed > 90 && jumpMeterSpeed < 110)
+                if (jumpMeterSpeed > 66.6 && jumpMeterSpeed < 132.6)
                 {
                     jumpSparkle.startColor = Color.green;
                 }
-                else if (jumpMeterSpeed > 70 && jumpMeterSpeed < 130)
+                else if (jumpMeterSpeed < 66.6 && jumpMeterSpeed > 33.3)
+                {
+                    jumpSparkle.startColor = Color.yellow;
+                }
+                else if (jumpMeterSpeed > 132.6 && jumpMeterSpeed < 164.6)
                 {
                     jumpSparkle.startColor = Color.yellow;
                 }

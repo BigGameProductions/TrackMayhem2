@@ -176,13 +176,19 @@ public class LongJumpManager : MonoBehaviour
                     foulImage.gameObject.SetActive(true);
                     foulImage.GetComponent<Animator>().Play("FoulSlide");
                 }
-                if (jumpMeterSpeed > 90 && jumpMeterSpeed < 110)
+                if (jumpMeterSpeed > 66.6 && jumpMeterSpeed < 132.6)
                 {
                     jumpSparkle.startColor = Color.green;
-                } else if (jumpMeterSpeed > 70 && jumpMeterSpeed < 130)
+                }
+                else if (jumpMeterSpeed < 66.6 && jumpMeterSpeed > 33.3)
                 {
                     jumpSparkle.startColor = Color.yellow;
-                } else
+                }
+                else if (jumpMeterSpeed > 132.6 && jumpMeterSpeed < 164.6)
+                {
+                    jumpSparkle.startColor = Color.yellow;
+                }
+                else
                 {
                     jumpSparkle.startColor = Color.red;
                 }

@@ -124,6 +124,8 @@ public class hundredMeterController : MonoBehaviour
                 {
                     foulImage.gameObject.SetActive(true);
                     foulImage.GetComponent<Animator>().Play("FoulSlide");
+                    runningMeter.runMeterSlider.gameObject.SetActive(false);
+                    runButton.gameObject.SetActive(false);
                     isRunning = true;
                     runningMeter.runningSpeed = 800;
                     StartCoroutine(foulRun(2)); //wait then change screens

@@ -173,7 +173,7 @@ MonoBehaviour:
   jumpBar: {fileID: 575540448}
   jumpMeterSpeed: 0
   jumpBarSpeed: 500
-  jumpMeterToTop: 180
+  jumpMeterToTop: 175
   setScaleForMovement: 1.8062
 --- !u!4 &33656355
 Transform:
