@@ -393,7 +393,6 @@ public class LongJumpManager : MonoBehaviour
         jumpMeter.jumpBar.gameObject.transform.parent.gameObject.SetActive(false); //sets the jump meter to hiding
         float powerPercent = 1; //percent of max power used
         float averageSpeed = runningMeter.getAverageSpeed(); //gets average running speed
-        Debug.Log(averageSpeed);
         if (averageSpeed <= 8500) //sets percentage based on distance from 0 to 8500. 8500 is considered the perfect run
         {
             powerPercent = averageSpeed / 8500;

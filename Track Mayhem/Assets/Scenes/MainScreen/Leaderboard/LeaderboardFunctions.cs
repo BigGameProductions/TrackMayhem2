@@ -10,7 +10,8 @@ public class LeaderboardFunctions
     private string[] keys = new string[] {
         "10edeb578b951bf058f872f9c82026b662b11325355a4c1216dcff76bad59d8d",
         "183c8ab3d8f816348561d28303c3e1fa4c2c420d600adeea6e2d9b9f038dc7e9",
-        "4a734ebe10d0abc558de1c91369b39325736237422b30a50875532c9206432d9"
+        "4a734ebe10d0abc558de1c91369b39325736237422b30a50875532c9206432d9",
+        "2edf44095753d058361b58698a9030db438194af8ffaa7c5b9f31fdba9d0a76d"
     };
 
     public string[][][] mainLeaderboard = new string[12][][];
@@ -36,7 +37,7 @@ public class LeaderboardFunctions
             mainLeaderboard[currentEventOn] = currentData;
             PublicData.gameData.leaderboardList[currentEventOn] = currentData;
             currentEventOn++; //goes to the next event counter
-            if (currentEventOn != 3)
+            if (currentEventOn != 4)
             {
                 GetLeaderboard(currentEventOn); //gets the next event
             } else
@@ -44,7 +45,7 @@ public class LeaderboardFunctions
                 //set save leaderboard
                 for (int i=0; i<mainLeaderboard.Length; i++)
                 {
-                    if (i<3)
+                    if (i<4)
                     {
                         SerializationLeaderboardTypes tempSave = new SerializationLeaderboardTypes();
                         tempSave.set(0, mainLeaderboard[i][0]);

@@ -350,6 +350,7 @@ public class LeaderboardManager : MonoBehaviour
         } else if (stage == 2)
         {
             string[] currentRecordInfo = getEventRecordByEvent(eventName);
+            Debug.Log(PublicData.recordsInfo.ElementAt(0)[0]);
             playerBanners = new PlayerBanner[] {
             new PlayerBanner(0, itemStorage.findFlagIndexOfCountry(currentRecordInfo[4]), currentRecordInfo[1], float.Parse(currentRecordInfo[2])),
             new PlayerBanner(0, itemStorage.findFlagIndexOfCountry(PublicData.gameData.leaderboardList[getEventID(eventName)][2][0].Split(",")[0]), PublicData.gameData.leaderboardList[getEventID(eventName)][0][0], Int32.Parse(PublicData.gameData.leaderboardList[getEventID(eventName)][1][0])/100.0f),
@@ -484,7 +485,6 @@ public class LeaderboardManager : MonoBehaviour
 
         }
         banners[banners.Length - 1] = new PlayerBanner(0, itemStorage.findFlagIndexOfCountry(PublicData.gameData.countryCode), playerName, getMarkForEvent(SceneManager.GetActiveScene().name, true), isPlayer:true);;
-        Debug.Log(useTime + ":" + currentBarHeight);
         return sortBanners(banners, !useTime, currentBarHeight!=-10); //sorting banners based on bar events
     }
 
@@ -522,6 +522,10 @@ public class LeaderboardManager : MonoBehaviour
         else if (theEvent == "HundredMeter")
         {
             return character ? PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hundredMeter:PublicData.gameData.personalBests.hundredMeter;
+        }
+        else if (theEvent == "Shotput")
+        {
+            return character ? PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.shotput : PublicData.gameData.personalBests.shotput;
         }
         return 0;
     }
