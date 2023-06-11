@@ -123,24 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &31811274 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 261622672196417342, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
-  m_PrefabInstance: {fileID: 224016233}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &31811278
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 31811274}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 616.6768, y: 353.24942, z: 1.88498e-12}
-  m_Center: {x: -308.33646, y: 1150.4983, z: 6.1323316e-12}
 --- !u!1 &33541641
 GameObject:
   m_ObjectHideFlags: 0
@@ -238,24 +220,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.07311782, y: 0.47265002, z: 0.070279345}
   m_Center: {x: 0.017151028, y: 0.26366755, z: -0.0134241395}
---- !u!1 &110918238 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2422878839762634841, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
-  m_PrefabInstance: {fileID: 224016233}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &110918242
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 110918238}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 73.79578, y: 455.2832, z: 2.4300557e-12}
-  m_Center: {x: -660.26184, y: 938.3373, z: 5.002564e-12}
 --- !u!1001 &224016233
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5740,6 +5704,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 127824415785865332, guid: d077e6698862e4979974e57da8147e7b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 127824415785865332, guid: d077e6698862e4979974e57da8147e7b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1157246334}
+    - target: {fileID: 127824415785865332, guid: d077e6698862e4979974e57da8147e7b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: jumpButtonPressed
+      objectReference: {fileID: 0}
+    - target: {fileID: 127824415785865332, guid: d077e6698862e4979974e57da8147e7b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ShotputManager, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 127824416417995680, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -5875,6 +5855,22 @@ PrefabInstance:
     - target: {fileID: 127824417599285891, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_Color.r
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 127824417807774298, guid: d077e6698862e4979974e57da8147e7b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 127824417807774298, guid: d077e6698862e4979974e57da8147e7b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1157246334}
+    - target: {fileID: 127824417807774298, guid: d077e6698862e4979974e57da8147e7b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: runButtonPressed
+      objectReference: {fileID: 0}
+    - target: {fileID: 127824417807774298, guid: d077e6698862e4979974e57da8147e7b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ShotputManager, Assembly-CSharp
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d077e6698862e4979974e57da8147e7b, type: 3}
@@ -6160,7 +6156,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   eventName: Shotput
   useSeeded: 1
-  seededMark: 204
+  seededMark: 360
   seedSpreadDown: 60
   seedSpreadUp: 24
   seedRoundInches: 0.25
@@ -13293,24 +13289,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &1614980414 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6801847442674512306, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
-  m_PrefabInstance: {fileID: 224016233}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &1614980418
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1614980414}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 4291.339, y: 2834.6467, z: 1.51098e-11}
-  m_Center: {x: -2145.6675, y: 1417.323, z: 7.5549e-12}
 --- !u!114 &1635368510 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 127824415785865332, guid: d077e6698862e4979974e57da8147e7b, type: 3}
@@ -13420,24 +13398,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!1 &1720638438 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 688249511633805533, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
-  m_PrefabInstance: {fileID: 224016233}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &1720638442
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1720638438}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 75.71808, y: 455.79376, z: 2.43193e-12}
-  m_Center: {x: -698.6708, y: 926.814, z: 4.940549e-12}
 --- !u!1 &1738770176
 GameObject:
   m_ObjectHideFlags: 0
@@ -13581,8 +13541,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 657.7916, y: 444.43265, z: 2.3705697e-12}
-  m_Center: {x: -328.89386, y: 944.6905, z: 5.0370697e-12}
+  m_Size: {x: 1918.3955, y: 905.31024, z: 68.797615}
+  m_Center: {x: -959.1958, y: 927.33276, z: -40.607735}
 --- !u!1 &1890192454
 GameObject:
   m_ObjectHideFlags: 0

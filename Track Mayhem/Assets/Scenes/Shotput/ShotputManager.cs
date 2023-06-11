@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class ShotputManager : MonoBehaviour
@@ -20,6 +21,8 @@ public class ShotputManager : MonoBehaviour
 
     [SerializeField] Canvas controlsCanvas;
 
+    private LeaderboardFunctions leadF = new LeaderboardFunctions();
+
     [SerializeField] private LeaderboardManager leaderboardManager;
     [SerializeField] private RunningMeterBar runMeter;
 
@@ -28,6 +31,8 @@ public class ShotputManager : MonoBehaviour
     private PlayerBanner currentPlayerBanner;
 
     private int currentThrowNumber = 0;
+
+    private float totalInches = 0;
 
     private int rightHandTransformPosition = 55;
     private bool isRunning = true; //if the player is charging up throw
@@ -60,11 +65,12 @@ public class ShotputManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (shotput.transform.position.y < 227.5 && !measure)
+        if (shotput.transform.position.y < 227.5 && !measure && !isRunning)
         {
             measure = true;
             float totalDistance = -1779.07f-shotput.transform.position.x;
-            updatePlayerBanner(leaderboardManager.roundToNearest(0.25f, totalDistance / PublicData.spacesPerInch));
+            totalInches = 2 * leaderboardManager.roundToNearest(0.25f, totalDistance / PublicData.spacesPerInch);
+            updatePlayerBanner(totalInches);
             StartCoroutine(showPersonalBanner(2));
         }
         if (!leaderboardManager.cinematicCamera.gameObject.activeInHierarchy && !playerCamera.enabled && !shotput.GetComponent<Rigidbody>().useGravity)
@@ -77,7 +83,7 @@ public class ShotputManager : MonoBehaviour
             shotCamera.transform.eulerAngles = new Vector3(30, 0, 0);
             shotput.transform.eulerAngles = new Vector3(0, 0, 0);
         }
-        if (player.GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 0.35)
+        if (player.GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 0.35 && !measure)
         {
             runButton.gameObject.SetActive(false);
             runMeter.runMeterSlider.gameObject.SetActive(false);
@@ -94,35 +100,14 @@ public class ShotputManager : MonoBehaviour
         if (playerCamera.enabled && !leaderboardManager.cinematicCamera.gameObject.activeInHierarchy && isRunning) //runs when the player is in the running stage
         {
             runMeter.updateRunMeter();
-            if ((Input.GetKeyDown(KeyCode.Space)) && runMeter.runMeterSlider.gameObject.activeInHierarchy) //updating speed on click
+            if ((Input.GetKeyDown(KeyCode.Space))) //updating speed on click
             {
-                infoButton.gameObject.SetActive(false);
-                runMeter.increaseHeight();
-                if (leaderboardManager.leaderBoardVisble()) //hides the leaderboard if the player clicks
-                {
-                    leaderboardManager.hidePersonalBanner();
-                }
+                runButtonPressed();
             }
-            else
-            {
-              //nothing yet
-            }
-
-
-
         }
-        if (!isRunning && Input.GetKeyDown(KeyCode.P) && jumpClicks < 3)
+        if (Input.GetKeyDown(KeyCode.P))
         {
-            Instantiate(ringAnimation.gameObject.GetComponentsInChildren<Transform>()[1], ringAnimation.transform);
-            float clickTime = ringAnimation.GetCurrentAnimatorStateInfo(0).normalizedTime;
-            float timeDiff = Math.Abs(perfectPiviotPoints[jumpClicks] - clickTime);
-            float totalPowerPercentage = 0;
-            if (timeDiff < 0.05)
-            {
-                totalPowerPercentage = 1 - (timeDiff / 0.05f);
-            }
-            piviotPercents[jumpClicks] = totalPowerPercentage;
-            jumpClicks++;
+            jumpButtonPressed();
         }
         if (!isRunning && player.GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 0.8 && !didThrow)
         {
@@ -193,6 +178,7 @@ public class ShotputManager : MonoBehaviour
         yield return new WaitForSeconds(delay);
         playerCamera.enabled = false;
         shotCamera.enabled = true;
+        jumpButton.gameObject.SetActive(false);
     }
 
     IEnumerator showPersonalBanner(float delay)
@@ -205,12 +191,93 @@ public class ShotputManager : MonoBehaviour
         ringAnimation.gameObject.SetActive(false);
         player.GetComponentInChildren<Animator>().speed = 1;
         player.GetComponentInChildren<Animator>().Play("Wave");
+        if (totalInches > Int32.Parse(PublicData.gameData.leaderboardList[3][1][0]) / 100.0f) //game record
+        {
+            PublicData.gameData.personalBests.shotput = totalInches;
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.shotput = totalInches;
+            leadF.SetLeaderBoardEntry(3, PublicData.gameData.playerName, (int)(leaderboardManager.roundToNearest(0.25f, totalInches) * 100), PublicData.gameData.countryCode + "," + PublicData.currentRunnerUsing);
+            leadF.checkForOwnPlayer(3, 20); //checks to make sure it can stay in the top 20
+            leaderboardManager.addMarkLabelToPlayer(1);
+            leaderboardManager.showRecordBanner(2);
+        }
+        else if (totalInches > PublicData.gameData.personalBests.shotput) //checks for a new personal record
+        {
+            leadF.SetLeaderBoardEntry(3, PublicData.gameData.playerName, (int)(leaderboardManager.roundToNearest(0.25f, totalInches) * 100), PublicData.gameData.countryCode + "," + PublicData.currentRunnerUsing);
+            leadF.checkForOwnPlayer(3, 20); //checks to make sure it can stay in the top 20
+            leaderboardManager.showRecordBanner(1);
+            PublicData.gameData.personalBests.shotput = leaderboardManager.roundToNearest(0.25f, totalInches);
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.shotput = leaderboardManager.roundToNearest(0.25f, totalInches); ;
+            leaderboardManager.addMarkLabelToPlayer(3);
+
+        }
+        else if (totalInches > PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.longJump)
+        {
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.longJump = leaderboardManager.roundToNearest(0.25f, totalInches); ;
+            leaderboardManager.addMarkLabelToPlayer(2);
+            leaderboardManager.showRecordBanner(0);
+        }
         StartCoroutine(waitAfterPersonalBanner(3));
     }
 
     IEnumerator waitAfterPersonalBanner(float delay)
     {
         yield return new WaitForSeconds(delay);
+        if (currentThrowNumber == 3)
+        {
+            SceneManager.LoadScene("EndScreen");
+        }
+        leaderboardManager.showRecordBanner(-1);
+        leaderboardManager.hidePersonalBanner();
+        leaderboardManager.showUpdatedLeaderboard();
+        shotput.transform.SetParent(player.GetComponentsInChildren<Transform>()[rightHandTransformPosition]); //sets the parent of the pole to 
+        shotput.transform.localPosition = new Vector3(-0.00200000009f, 0.140000001f, 0.0329999998f); //alligns shot to player hand
+        player.GetComponentInChildren<Animator>().Play("ShotputThrow");
+        player.GetComponentInChildren<Animator>().speed = 0;
+        shotput.GetComponent<Rigidbody>().useGravity = false;
+        player.GetComponentsInChildren<Transform>()[1].eulerAngles = new Vector3(0, 90, 0);
+        ringAnimation.speed = 0;
+        ringAnimation.gameObject.SetActive(false);
+        jumpButton.gameObject.SetActive(false);
+        runMeter.runMeterSlider.gameObject.SetActive(true);
+        runButton.gameObject.SetActive(true);
+        runMeter.runningSpeed = 0;
+        player.GetComponentsInChildren<Transform>()[1].localPosition = new Vector3(0, 0, 0);
+        measure = false;
+        isRunning = true;
+        jumpClicks = 0;
+        didThrow = false;
+        piviotPercents = new float[3];
+    }
+
+    public void runButtonPressed()
+    {
+        if (playerCamera.enabled && !leaderboardManager.cinematicCamera.gameObject.activeInHierarchy && isRunning && runMeter.runMeterSlider.gameObject.activeInHierarchy)
+        {
+            infoButton.gameObject.SetActive(false);
+            runMeter.increaseHeight();
+            if (leaderboardManager.leaderBoardVisble()) //hides the leaderboard if the player clicks
+            {
+                leaderboardManager.hidePersonalBanner();
+            }
+        }
+    }
+
+    public void jumpButtonPressed()
+    {
+        if (!isRunning && jumpClicks < 3)
+        {
+            Instantiate(ringAnimation.gameObject.GetComponentsInChildren<Transform>()[1], ringAnimation.transform);
+            float clickTime = ringAnimation.GetCurrentAnimatorStateInfo(0).normalizedTime;
+            float timeDiff = Math.Abs(perfectPiviotPoints[jumpClicks] - clickTime);
+            float totalPowerPercentage = 0;
+            if (timeDiff < 0.05)
+            {
+                totalPowerPercentage = 1 - (timeDiff / 0.05f);
+            }
+            piviotPercents[jumpClicks] = totalPowerPercentage;
+            jumpClicks++;
+        }
+        
     }
 }
 

@@ -35,4 +35,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/HundredMeter/HundredMeter.unity
     guid: 3ecf22589d61743d28e8d3c934ca0d69
+  - enabled: 1
+    path: Assets/Scenes/Shotput/Shotput.unity
+    guid: 31516670babb6428ba362d398ac8672b
   m_configObjects: {}

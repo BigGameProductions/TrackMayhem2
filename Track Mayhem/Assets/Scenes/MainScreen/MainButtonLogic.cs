@@ -23,6 +23,11 @@ public class MainButtonLogic : MonoBehaviour
         {
             SceneManager.LoadScene("PoleVault");
         }
+        else if (PublicData.currentSelectedEventIndex == 3)
+        {
+            SceneManager.LoadScene("Shotput");
+        }
+
     }
 
 
