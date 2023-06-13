@@ -60,8 +60,7 @@ public class LeaderboardManager : MonoBehaviour
     private void Start()
     {
 
-        playerName = PublicData.gameData.playerName; //setting vars
-        personalBests = PublicData.gameData.personalBests; //setting vars
+        
         recordBanner.gameObject.SetActive(false);
         if (SceneManager.GetActiveScene().name != "EndScreen") //tests to make sure it is an event screen
         {
@@ -331,6 +330,8 @@ public class LeaderboardManager : MonoBehaviour
     //stage same as mode for setLeaderboard
     private void updateCinematicStage(int stage)
     {
+        playerName = PublicData.gameData.playerName; //setting vars //TODO change location
+        personalBests = PublicData.gameData.personalBests; //setting vars
         if (stage==0) //hides the leaderboard when it should not be shown
         {
             leaderBoardHeader.SetActive(false);
@@ -529,6 +530,10 @@ public class LeaderboardManager : MonoBehaviour
         else if (theEvent == "Javelin")
         {
             return character ? PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.javelin : PublicData.gameData.personalBests.javelin;
+        }
+        else if (theEvent == "FourHundred")
+        {
+            return character ? PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.fourHundred : PublicData.gameData.personalBests.fourHundred;
         }
         return 0;
     }
@@ -918,7 +923,17 @@ public class LeaderboardManager : MonoBehaviour
         {
             if (asTime)
             {
-                return mark == 0 ? "FS" : Math.Round(mark, 2).ToString();
+                if (mark == 0)
+                {
+                    return "FS";
+                } else if (mark >= 60) {
+                    int min = (int)(mark / 60);
+                    float seconds = mark - (min * 60);
+                    return min + ":" + Math.Round(seconds, 2).ToString();
+                } else
+                {
+                    return Math.Round(mark, 2).ToString();
+                }
             } else
             {
                 return ((int)mark / 12) + "' " + Math.Round(mark % 12, 2) + "''";
