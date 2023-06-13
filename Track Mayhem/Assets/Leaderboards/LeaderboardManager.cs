@@ -350,7 +350,6 @@ public class LeaderboardManager : MonoBehaviour
         } else if (stage == 2)
         {
             string[] currentRecordInfo = getEventRecordByEvent(eventName);
-            Debug.Log(PublicData.recordsInfo.ElementAt(0)[0]);
             playerBanners = new PlayerBanner[] {
             new PlayerBanner(0, itemStorage.findFlagIndexOfCountry(currentRecordInfo[4]), currentRecordInfo[1], float.Parse(currentRecordInfo[2])),
             new PlayerBanner(0, itemStorage.findFlagIndexOfCountry(PublicData.gameData.leaderboardList[getEventID(eventName)][2][0].Split(",")[0]), PublicData.gameData.leaderboardList[getEventID(eventName)][0][0], Int32.Parse(PublicData.gameData.leaderboardList[getEventID(eventName)][1][0])/100.0f),
@@ -526,6 +525,10 @@ public class LeaderboardManager : MonoBehaviour
         else if (theEvent == "Shotput")
         {
             return character ? PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.shotput : PublicData.gameData.personalBests.shotput;
+        }
+        else if (theEvent == "Javelin")
+        {
+            return character ? PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.javelin : PublicData.gameData.personalBests.javelin;
         }
         return 0;
     }
@@ -870,7 +873,7 @@ public class LeaderboardManager : MonoBehaviour
         {
             gameObject.GetComponentInChildren<Animator>().Play("PersonalBannerSlide");
             TextMeshProUGUI[] textBoxes = personalBanner.GetComponentsInChildren<TextMeshProUGUI>(true);
-            personalBanner.GetComponentsInChildren<RectTransform>(true)[3].gameObject.GetComponent<Image>().sprite = itemStorage. flags[personalBannersMarks.flagNumber]; //temp
+            personalBanner.GetComponentsInChildren<RectTransform>(true)[3].gameObject.GetComponent<Image>().sprite = itemStorage.flags[personalBannersMarks.flagNumber]; //temp
             for (int j = 4; j < personalBanner.GetComponentsInChildren<RectTransform>(true).Length; j++)
             {
                 if ((j <=6 || j>9) && j!=0) personalBanner.GetComponentsInChildren<RectTransform>(true)[j].gameObject.SetActive(false); //make the banner empty

@@ -9,6 +9,8 @@ public class PersonalBests
     public float polevault;
     public float hundredMeter;
     public float shotput;
+    public float javelin;
+    public float fourHundred;
 
     public PersonalBests() //sets defualts for all event
     {
@@ -16,5 +18,7 @@ public class PersonalBests
         this.polevault = 0;
         this.hundredMeter = 0;
         this.shotput = 0;
+        this.javelin = 0;
+        this.fourHundred = 0;
     } 
 }
