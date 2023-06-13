@@ -535,6 +535,14 @@ public class LeaderboardManager : MonoBehaviour
         {
             return character ? PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.fourHundred : PublicData.gameData.personalBests.fourHundred;
         }
+        else if (theEvent == "Discus")
+        {
+            return character ? PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.discus : PublicData.gameData.personalBests.discus;
+        }
+        else if (theEvent == "Hurdles")
+        {
+            return character ? PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hurdles : PublicData.gameData.personalBests.hurdles;
+        }
         return 0;
     }
 

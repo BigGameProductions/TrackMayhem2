@@ -5368,7 +5368,7 @@ PrefabInstance:
     - target: {fileID: 127824415785865332, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1048310997}
+      objectReference: {fileID: 0}
     - target: {fileID: 127824415785865332, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: jumpButtonPressed
@@ -5520,7 +5520,7 @@ PrefabInstance:
     - target: {fileID: 127824417807774298, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1048310997}
+      objectReference: {fileID: 0}
     - target: {fileID: 127824417807774298, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: runButtonPressed
@@ -5625,7 +5625,7 @@ GameObject:
   - component: {fileID: 408412910}
   - component: {fileID: 408412911}
   m_Layer: 0
-  m_Name: ShotCamera
+  m_Name: DiscusCamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5730,7 +5730,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 409732885}
   m_LocalRotation: {x: 0, y: 0.7071068, z: -0, w: -0.7071068}
-  m_LocalPosition: {x: -1772.14, y: 226.73, z: -115.02}
+  m_LocalPosition: {x: -1750.07, y: 226.73, z: -251.25}
   m_LocalScale: {x: 4.000001, y: 4, z: 4.000001}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5757,7 +5757,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 112
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!1001 &483992490
 PrefabInstance:
@@ -7521,10 +7521,10 @@ GameObject:
   - component: {fileID: 792800630}
   - component: {fileID: 792800634}
   - component: {fileID: 792800633}
-  - component: {fileID: 792800632}
   - component: {fileID: 792800631}
+  - component: {fileID: 792800635}
   m_Layer: 0
-  m_Name: Shotput
+  m_Name: Discus
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7539,7 +7539,7 @@ Transform:
   m_GameObject: {fileID: 792800629}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1779.07, y: 227.88, z: -114.99}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 0.8, y: 0.098335, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 408412912}
@@ -7562,19 +7562,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
---- !u!135 &792800632
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 792800629}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &792800633
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -7625,6 +7612,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 792800629}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!65 &792800635
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 792800629}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &855391741
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7889,39 +7889,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1048310998}
-  - component: {fileID: 1048310997}
+  - component: {fileID: 1048310999}
   m_Layer: 0
-  m_Name: ShotputManager
+  m_Name: DiscusManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1048310997
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1048310996}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6ecb6d2ad70c74fd5992ead502e28bfb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  shotput: {fileID: 792800629}
-  player: {fileID: 409732885}
-  basePlayer: {fileID: 483992503}
-  playerCamera: {fileID: 933152171}
-  shotCamera: {fileID: 408412910}
-  infoButton: {fileID: 277645955}
-  runButton: {fileID: 277645957}
-  jumpButton: {fileID: 277645959}
-  ringAnimation: {fileID: 1319040971}
-  controlsCanvas: {fileID: 277645958}
-  leaderboardManager: {fileID: 1948724041}
-  runMeter: {fileID: 976403088}
-  itemStorage: {fileID: 855391742}
 --- !u!4 &1048310998
 Transform:
   m_ObjectHideFlags: 0
@@ -7937,6 +7912,31 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1048310999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1048310996}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dac9138cffc2c41cea98aa7acc624967, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shotput: {fileID: 792800629}
+  player: {fileID: 409732885}
+  basePlayer: {fileID: 483992503}
+  playerCamera: {fileID: 933152171}
+  shotCamera: {fileID: 408412910}
+  infoButton: {fileID: 277645955}
+  runButton: {fileID: 277645957}
+  jumpButton: {fileID: 277645959}
+  ringAnimation: {fileID: 1319040971}
+  controlsCanvas: {fileID: 277645958}
+  leaderboardManager: {fileID: 1948724041}
+  runMeter: {fileID: 976403088}
+  itemStorage: {fileID: 855391742}
 --- !u!1001 &1129074360
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13281,6 +13281,24 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.062744156, y: 0.27361944, z: 0.050720457}
   m_Center: {x: 0.0039978195, y: 0.12809843, z: -0.0014648568}
+--- !u!1 &1813983557 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6063465341674060488, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
+  m_PrefabInstance: {fileID: 1864564914}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &1813983561
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1813983557}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 4236.126, y: 2449.1216, z: 23.309793}
+  m_Center: {x: -2118.0613, y: 1600.0044, z: -4.9871144}
 --- !u!1 &1862687023
 GameObject:
   m_ObjectHideFlags: 0
@@ -13479,7 +13497,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b376f073b5024f94afa6ee8c3f42c25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  eventName: Shotput
+  eventName: Discus
   useSeeded: 1
   seededMark: 360
   seedSpreadDown: 60
@@ -13615,7 +13633,7 @@ GameObject:
   - component: {fileID: 2141627936}
   - component: {fileID: 2141627935}
   m_Layer: 5
-  m_Name: ShotputCanvas
+  m_Name: DiscusCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

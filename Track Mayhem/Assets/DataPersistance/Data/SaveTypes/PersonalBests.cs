@@ -11,6 +11,11 @@ public class PersonalBests
     public float shotput;
     public float javelin;
     public float fourHundred;
+    public float discus;
+    public float hurdles;
+    public float highJump;
+    private float mile;
+    private float dec;
 
     public PersonalBests() //sets defualts for all event
     {
@@ -20,5 +25,10 @@ public class PersonalBests
         this.shotput = 0;
         this.javelin = 0;
         this.fourHundred = 0;
+        this.discus = 0;
+        this.hurdles = 0;
+        this.highJump = 0;
+        this.mile = 0;
+        this.dec = 0;
     } 
 }

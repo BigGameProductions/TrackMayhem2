@@ -1,14 +1,11 @@
 fileFormatVersion: 2
-guid: 6a0416935833e4ec6825435351fa10ba
+guid: 6d50a874c1a9744558ea843a5bb86bf3
 ModelImporter:
   serializedVersion: 21202
   internalIDToNameTable:
   - first:
-      74: -6205273431718664262
-    second: Armature|DiscusThrow
-  - first:
-      74: 988944136328325377
-    second: Armature|FullThrow
+      74: 6218492360761268788
+    second: Armature|Hurdle
   externalObjects: {}
   materials:
     materialImportMode: 2
