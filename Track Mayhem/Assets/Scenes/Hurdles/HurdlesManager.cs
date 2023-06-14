@@ -66,7 +66,6 @@ public class HurdlesManager : MonoBehaviour
         {
             go.GetComponentInChildren<Animator>().Play("BlockStart");
         }
-
     }
 
     public void buttonPressed(int code)
@@ -118,7 +117,8 @@ public class HurdlesManager : MonoBehaviour
                 runPressed = false;
                 //temp
                 player.GetComponentsInChildren<Transform>()[1].localEulerAngles = new Vector3(0, 0, 0);
-                player.GetComponentsInChildren<Transform>()[1].localPosition = new Vector3(0, player.GetComponentsInChildren<Transform>()[1].localPosition.y, 0);
+                bool onGround = player.GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Running");
+                player.GetComponentsInChildren<Transform>()[1].localPosition = new Vector3(0, onGround?0:player.GetComponentsInChildren<Transform>()[1].localPosition.y, 0);
                 infoButton.gameObject.SetActive(false);
                 if (!isRunning)
                 {

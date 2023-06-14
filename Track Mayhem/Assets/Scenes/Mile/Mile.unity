@@ -1876,6 +1876,81 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -3702037217650275473, guid: 85e5dcf85f8564326a2025740a2ac482, type: 3}
+--- !u!1 &113871187
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 113871190}
+  - component: {fileID: 113871189}
+  m_Layer: 0
+  m_Name: BirdEyeCamera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!20 &113871189
+Camera:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 113871187}
+  m_Enabled: 0
+  serializedVersion: 2
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_projectionMatrixMode: 1
+  m_GateFitMode: 2
+  m_FOVAxisMode: 0
+  m_SensorSize: {x: 36, y: 24}
+  m_LensShift: {x: 0, y: 0}
+  m_FocalLength: 50
+  m_NormalizedViewPortRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  near clip plane: 0.3
+  far clip plane: 1000
+  field of view: 60
+  orthographic: 0
+  orthographic size: 5
+  m_Depth: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingPath: -1
+  m_TargetTexture: {fileID: 0}
+  m_TargetDisplay: 0
+  m_TargetEye: 3
+  m_HDR: 1
+  m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
+  m_ForceIntoRT: 0
+  m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: 0.022
+--- !u!4 &113871190
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 113871187}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -1968, y: 616, z: -160}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 15
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!65 &158185779
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4407,6 +4482,7 @@ MonoBehaviour:
   player: {fileID: 1774302335}
   leaderboardManager: {fileID: 578847836}
   playerCamera: {fileID: 1905284906}
+  birdEyeView: {fileID: 113871189}
   foulImage: {fileID: 1294512099}
   setText: {fileID: 1901461368}
   runningMeter: {fileID: 1272389819}
@@ -4900,7 +4976,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -3578956721518870609, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.0009063771
+      value: -0.0009156519
       objectReference: {fileID: 0}
     - target: {fileID: -3578956721518870609, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
       propertyPath: m_LocalPosition.y
@@ -4908,7 +4984,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -3578956721518870609, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.014981204
+      value: 0.015003091
       objectReference: {fileID: 0}
     - target: {fileID: -3578956721518870609, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
       propertyPath: m_LocalRotation.w
@@ -4916,15 +4992,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -3578956721518870609, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.015606056
+      value: 0.015606055
       objectReference: {fileID: 0}
     - target: {fileID: -3578956721518870609, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.013451548
+      value: 0.013451577
       objectReference: {fileID: 0}
     - target: {fileID: -3578956721518870609, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.0036098973
+      value: 0.003609897
       objectReference: {fileID: 0}
     - target: {fileID: -3578956721518870609, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -6120,7 +6196,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8879528566716807029, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 1.7763566e-15
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 9181561324199910010, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
       propertyPath: m_LocalPosition.x

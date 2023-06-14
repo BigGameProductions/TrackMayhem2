@@ -543,6 +543,14 @@ public class LeaderboardManager : MonoBehaviour
         {
             return character ? PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hurdles : PublicData.gameData.personalBests.hurdles;
         }
+        else if (theEvent == "HighJump")
+        {
+            return character ? PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.highJump : PublicData.gameData.personalBests.highJump;
+        }
+        else if (theEvent == "FifteenHundred")
+        {
+            return character ? PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.mile : PublicData.gameData.personalBests.mile;
+        }
         return 0;
     }
 

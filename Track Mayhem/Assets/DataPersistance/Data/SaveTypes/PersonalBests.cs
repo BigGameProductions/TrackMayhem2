@@ -14,8 +14,8 @@ public class PersonalBests
     public float discus;
     public float hurdles;
     public float highJump;
-    private float mile;
-    private float dec;
+    public float mile;
+    public float dec;
 
     public PersonalBests() //sets defualts for all event
     {

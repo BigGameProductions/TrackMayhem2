@@ -14,6 +14,7 @@ public class FifteenHundredManager : MonoBehaviour
 
     [SerializeField] private LeaderboardManager leaderboardManager;
     [SerializeField] private Camera playerCamera;
+    [SerializeField] private Camera birdEyeView;
 
     [SerializeField] private Image foulImage;
     [SerializeField] private TextMeshProUGUI setText;
@@ -50,6 +51,9 @@ public class FifteenHundredManager : MonoBehaviour
     bool started = false; //if the player has gone out of the blocks
     bool finished = false; //if the player has crossed the finish line
     bool usedLean = false; //if the player has used their lean
+    bool didLap = false; //if the player has done a lap
+
+    private int lapNumber = 0;
 
     float eventTimer = 0; //keeps track of the time of the event
 
@@ -75,6 +79,8 @@ public class FifteenHundredManager : MonoBehaviour
             go.GetComponentsInChildren<Animator>()[1].Play("BlockStart");
         }
         energyBar.gameObject.SetActive(false);
+        player.GetComponent<Animator>().Play("FourHundredRun", 0, 0.18f);
+
 
     }
 
@@ -123,10 +129,15 @@ public class FifteenHundredManager : MonoBehaviour
                 }*/
             }
             runningMeter.updateRunMeter();
-            if (isRunning && player.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 0.99 && !finished)
+            lapNumber = (int)player.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime;
+            if (lapNumber == 4 && !finished)
             {
                 finished = true;
                 StartCoroutine(waitAfterFinish(2));
+            }
+            if (player.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime < 0.8)
+            {
+                didLap = false;
             }
             /*if (isRunning && competitorsList[3].transform.position.x <= -2161.52)
              {
@@ -176,7 +187,8 @@ public class FifteenHundredManager : MonoBehaviour
             {
                 playerCamera.enabled = true;
                 setText.enabled = true;
-                player.GetComponentsInChildren<Animator>()[1].Play("BlockStart");
+                player.GetComponentsInChildren<Animator>()[1].Play("Running");
+                player.GetComponentsInChildren<Animator>()[1].speed=0;
                 StartCoroutine(showSet(3));
             }
         }
@@ -188,14 +200,14 @@ public class FifteenHundredManager : MonoBehaviour
         if (!foulImage.gameObject.activeInHierarchy)
         {
             setText.text = "Set";
-            foreach (GameObject go in competitorsList) //gets all competitors up in the set position
+            /*foreach (GameObject go in competitorsList) //gets all competitors up in the set position
             {
                 if (go.activeInHierarchy) //stop animator warning
                 {
                     go.GetComponentsInChildren<Animator>()[1].Play("BlockStartUp");
                 }
             }
-            player.GetComponentsInChildren<Animator>()[1].Play("BlockStartUp");
+            player.GetComponentsInChildren<Animator>()[1].Play("BlockStartUp");*/
             leaderboardManager.getOtherRunnersTime(); //gets the time for the other runners
             StartCoroutine(showGo(UnityEngine.Random.Range(1.0f, 2.5f)));
         }
@@ -214,10 +226,18 @@ public class FifteenHundredManager : MonoBehaviour
                 StartCoroutine(oppenentBlockStart(UnityEngine.Random.Range(0.1f, 0.5f), i));
                 //StartCoroutine(oppenentBlockStart(0.2f, i));
             }
+            StartCoroutine(changeView(5));
 
         }
 
     }
+
+    IEnumerator changeView(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        birdEyeView.enabled = true;
+    }
+
 
     IEnumerator oppenentBlockStart(float delay, int index)
     {
@@ -267,6 +287,11 @@ public class FifteenHundredManager : MonoBehaviour
             }
             //player.transform.Translate(new Vector3(0, 0, speed * runningSpeedRatio)); //making character move according to run meter
             player.GetComponent<Animator>().speed = speed / 2000f;
+            if (birdEyeView.enabled)
+            {
+                player.GetComponent<Animator>().speed = speed / 200f;
+            }
+            eventTimer += Time.deltaTime * 9; //one less beacause it is already incrementing it
             player.GetComponentsInChildren<Animator>()[1].speed = speed * animationRunningSpeedRatio; //making the animation match the sunning speed
             for (int i = 0; i < competitorsList.Length; i++)
             {
