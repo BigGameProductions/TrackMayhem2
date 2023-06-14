@@ -36,6 +36,11 @@ public static class PublicData
     public static int currentSelectedEventIndex = 1; //holds the index of the current event according to the records.csv
     public static string currentEventName = "LongJump";
 
+    public static bool inDec; //if the player is in a dec
+    public static int currentEventDec = -1; //event index the player is in
+    public static PlayerBanner[] decPlayers; //players of the dec for each event
+    public static DecathalonScores[] decPlayersScores;
+
 
     public static RunnerInformation getCharactersInfo(int id) //function to get the current data from game data of that runner
     {

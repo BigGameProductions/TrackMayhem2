@@ -176,7 +176,7 @@ public class LeaderboardManager : MonoBehaviour
                     }
                     else
                     {
-                        currentEventBanners[i].bestMark = currentBarHeight - 6;
+                        currentEventBanners[i].bestMark = currentBarHeight - (eventName == "HighJump" ? 2 : 6);
 
                     }
 
@@ -184,7 +184,7 @@ public class LeaderboardManager : MonoBehaviour
                 }
             }
             currentEventBanners = newBannerList.ToArray(); //converts the list back to the array for use
-            currentBarHeight += 6;
+            currentBarHeight += eventName == "HighJump" ? 2:6;
             clearPlayerMarks();
 
         }
@@ -467,6 +467,10 @@ public class LeaderboardManager : MonoBehaviour
     private PlayerBanner[] generateBanners(int size, bool addPlayer) //generates the banners for size number of people based off of the seeding and returns a list og them
     {
         PlayerBanner[] banners = new PlayerBanner[size + (addPlayer ? 1:0)];
+        if (eventName == "Decathalon")
+        {
+            PublicData.decPlayersScores = new DecathalonScores[8];
+        }
         for (int i = 0; i<size; i++)
         {
             int flagNum = UnityEngine.Random.Range(0, 254); //random country
@@ -481,10 +485,24 @@ public class LeaderboardManager : MonoBehaviour
                 basedSeed = seededMark;
                 personalBest = seedTimesForEvent(eventName, useSeeded, seedSpreadDown, seedSpreadUp);
             }
-            banners[i] = new PlayerBanner(i, flagNum, name, useTime ? personalBest:roundToNearest(0.25f, personalBest)); //round personal bests to only two places except times
+            if (PublicData.inDec && eventName != "Decathalon")
+            {
+                banners[i] = new PlayerBanner(i, PublicData.decPlayers[i].flagNumber, PublicData.decPlayers[i].player, useTime ? personalBest : roundToNearest(0.25f, personalBest)); //round personal bests to only two places except times
+            } else
+            {
+                banners[i] = new PlayerBanner(i, flagNum, name, useTime ? personalBest : roundToNearest(0.25f, personalBest)); //round personal bests to only two places except times
+            }
+            if (eventName == "Decathalon")
+            {
+                PublicData.decPlayersScores[i] = new DecathalonScores(name, flagNum);
+            }
 
         }
         banners[banners.Length - 1] = new PlayerBanner(0, itemStorage.findFlagIndexOfCountry(PublicData.gameData.countryCode), playerName, getMarkForEvent(SceneManager.GetActiveScene().name, true), isPlayer:true);;
+        if (eventName == "Decathalon")
+        {
+            PublicData.decPlayers = sortBanners(banners, !useTime, currentBarHeight != -10);
+        }
         return sortBanners(banners, !useTime, currentBarHeight!=-10); //sorting banners based on bar events
     }
 
@@ -817,6 +835,22 @@ public class LeaderboardManager : MonoBehaviour
             if (SceneManager.GetActiveScene().name == "EndScreen")
             {
                 leaderboardDescriptionTitle.text = "Results - Final";
+                //update dec scores
+                /*if (PublicData.inDec)
+                {
+                    foreach (PlayerBanner pb in playerBanners)
+                    {
+                        foreach (DecathalonScores ds in PublicData.decPlayersScores)
+                        {
+                            if (ds.name == pb.player && ds.flagId==pb.flagNumber)
+                            {
+                                ds.eventMarks[getEventID(eventName)] = pb.bestMark;
+                                //TODO add scores for dec
+                                break;
+                            }
+                        }
+                    }
+                }*/ //TODO add back
             } else if (cinematicCamera.gameObject.activeInHierarchy)
             {
                 leaderboardDescriptionTitle.text = "Start List - Final";
@@ -915,9 +949,36 @@ public class LeaderboardManager : MonoBehaviour
         } 
 
     }
+    private string fillZeros(string item, bool hasMin) {
+        if (item.Contains("."))
+        {
+            if (hasMin && item.Split(".")[0].Length == 1)
+            {
+                item = "0" + item;
+            }
+            if (item.Split(".")[1].Length != 2)
+            {
+                return item + "0";
+            } else
+            {
+                return item;
+            }
+        } else
+        {
+            if (hasMin && item.Length == 1)
+            {
+                item = "0" + item;
+            }
+            return item + ".00";
+        }
+    }
 
     private string markToString(float mark, bool asTime=false)
     {
+        if (eventName == "Decathalon")
+        {
+            return Math.Round(mark, 0).ToString();
+        }
         if (mark == -10000)
         {
             return "X";
@@ -945,10 +1006,10 @@ public class LeaderboardManager : MonoBehaviour
                 } else if (mark >= 60) {
                     int min = (int)(mark / 60);
                     float seconds = mark - (min * 60);
-                    return min + ":" + Math.Round(seconds, 2).ToString();
+                    return min + ":" + fillZeros(Math.Round(seconds, 2).ToString(), true);
                 } else
                 {
-                    return Math.Round(mark, 2).ToString();
+                    return fillZeros(Math.Round(mark, 2).ToString(), false);
                 }
             } else
             {

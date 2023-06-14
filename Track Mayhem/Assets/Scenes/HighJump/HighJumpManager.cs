@@ -34,8 +34,6 @@ public class HighJumpManager : MonoBehaviour
     private bool passedBar = false; //if the player has passed the current height
     private float maxPlayerHeight = 0; //max height the player jumping
 
-    Vector3 tempPos = new Vector3(3.6730001f, -1.17499995f, -0.213f);
-    Vector3 temprot = new Vector3(57.1805916f, 299.280121f, 330.898041f);
 
     PlayerBanner currentPlayerBanner; //stores the current player data in a banner class
 
@@ -45,14 +43,14 @@ public class HighJumpManager : MonoBehaviour
 
     [SerializeField] private GameObject barRaise; //bar to raise and lower
     [SerializeField] private GameObject bar; //bar to fall
+    [SerializeField] private GameObject SecondBarRaise; //other side for the bar raise
 
     [SerializeField] private ParticleSystem jumpSparkle;
 
     private Vector3 startingBarHeight; //height of the bar to determine if it falls
 
-    private int rightHandTransformPosition = 55;
 
-    private float openingHeight = 120;
+    private float openingHeight = 72;
     private float currentBarHeight = 0; //sets the starting height to x inches
 
     private Vector3 startingPosition = new Vector3(-2255.1f, 226.73f, -73.9f); //starting position of player
@@ -78,6 +76,8 @@ public class HighJumpManager : MonoBehaviour
     bool isRunning = true; //shows if the player is in running form
     bool isPlanting = false; //shows if the player is planting the pole
     bool startedAngle = false; //shows if the player has started the angle of the jump
+    bool hasPiked = false; //if the player has piked
+    bool over = false; //if the player is over the bar
 
     private float anglePower = 0; //power from the angle meter
 
@@ -143,6 +143,7 @@ public class HighJumpManager : MonoBehaviour
             angleAnimation.speed = 0;
             if (startedAngle && !player.GetComponent<Rigidbody>().useGravity)
             {
+                isRunning = false;
                 float arrowPos = angleAnimation.GetCurrentAnimatorStateInfo(0).normalizedTime;
                 float diff = Math.Abs(0.46f - arrowPos);
                 if (diff < 0.1)
@@ -152,17 +153,52 @@ public class HighJumpManager : MonoBehaviour
                 Rigidbody rb = player.GetComponent<Rigidbody>();
                 rb.useGravity = true;
                 rb.constraints = RigidbodyConstraints.FreezeRotation;
-                rb.AddForce(new Vector3(5, 10, 0), ForceMode.Impulse);
+                rb.AddForce(new Vector3(7, anglePower*12, 0), ForceMode.Impulse);
                 player.GetComponentsInChildren<Animator>()[1].Play("HighJumpJump");
                 player.GetComponentsInChildren<Animator>()[1].speed = 1;
                 player.GetComponent<Animator>().enabled = false;
                 player.GetComponentsInChildren<Animator>()[1].applyRootMotion = true;
+
             }
         }
-        if (isPlanting)
+        if (player.GetComponent<Rigidbody>().useGravity) //gets max height
         {
-            jumpingCamera.transform.position = new Vector3(jumpingCamera.transform.position.x, player.transform.position.y + 10, jumpingCamera.transform.position.z);
+            if (player.transform.position.y > maxPlayerHeight)
+            {
+                maxPlayerHeight = player.transform.position.y;
+            }
         }
+        if (isRunning)
+        {
+            player.GetComponentsInChildren<Transform>()[1].localPosition = new Vector3(0, 0, 0);
+        }
+        if (!hasPiked && player.GetComponentsInChildren<Animator>()[1].GetCurrentAnimatorStateInfo(0).IsName("HighJumpJump") && player.GetComponentsInChildren<Animator>()[1].GetCurrentAnimatorStateInfo(0).normalizedTime > 0.67f)
+        {
+            player.GetComponentsInChildren<Animator>()[1].speed = 0;
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                hasPiked = true;
+                player.GetComponentsInChildren<Animator>()[1].speed = 1;
+            }
+        }
+        if (player.transform.position.y < 226.5 && !isRunning && !over)
+        {
+            Debug.Log(maxPlayerHeight + ":" + bar.transform.position.z*-3);
+            if (Math.Abs(startingBarHeight.z-bar.transform.position.z) < 0.005 && maxPlayerHeight >= 236+(float)((currentBarHeight - 84) * PublicData.spacesPerInch * 3))
+            {
+                Debug.Log("cleared");
+                updatePlayerBanner(-10); //code for a make
+                passedBar = true;
+            }
+            else
+            {
+                Debug.Log("failed");
+                updatePlayerBanner(-10000); //code for a miss
+            }
+            afterJump();
+            over = true;
+        }
+        
         if (inCinematic)
         {
             if (!leaderboardManager.cinematicCamera.GetComponent<Animator>().enabled)
@@ -215,7 +251,7 @@ public class HighJumpManager : MonoBehaviour
         }*/
 
 
-        IEnumerator waitForFall(float delay)
+        IEnumerator waitForFall(float delay) //use this for later
         {
             yield return new WaitForSeconds(delay);
             passedBar = !(startingBarHeight.y - bar.transform.position.y > 1.5 || barStraight(bar, 1) || maxPlayerHeight + 2.5 < bar.transform.position.y);
@@ -271,6 +307,7 @@ public class HighJumpManager : MonoBehaviour
                 runPressed = false;
                 infoButton.gameObject.SetActive(false);
                 runMeter.increaseHeight();
+                player.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
                 if (leaderboardManager.leaderBoardVisble()) //hides the leaderboard if the player clicks
                 {
                     leaderboardManager.hidePersonalBanner();
@@ -352,7 +389,7 @@ public class HighJumpManager : MonoBehaviour
 
     }
 
-    private bool barStraight(GameObject bar, float range)
+    private bool barStraight(GameObject bar, float range) //checks if the bar is straight
     {
         if (bar.transform.eulerAngles.x < (0 - range) || bar.transform.eulerAngles.x > range)
         {
@@ -456,7 +493,7 @@ public class HighJumpManager : MonoBehaviour
     IEnumerator addUpForce(float delay) //adds delay to when the player in lauched up
     {
         yield return new WaitForSeconds(delay);
-        player.GetComponent<Rigidbody>().useGravity = true; //makes it so that player can fall
+        player.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll; //makes it so that player can fall
         float jumpPowerScale = 0.4f; //scale to balence the jumping power
         float runPowerScale = 1;
         float runningPower = runPowerScale * PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel; //power of running temp 
@@ -540,12 +577,11 @@ public class HighJumpManager : MonoBehaviour
         if (currentJumpNumber == 0) //if it needs to move up
         {
             //move up 6 inches
-            currentBarHeight += 6;
+            currentBarHeight += 2;
             updateBarRaiseHeight();
         }
         frontCamera.enabled = true;
         jumpingCamera.enabled = false;
-        player.transform.parent = null;
         player.transform.position = new Vector3(-2255.1001f, 230.100006f, -242.100006f); //sets the after jump position
         player.transform.eulerAngles = new Vector3(0, 180, 0);
         runMeter.runningSpeed = 0; //resets running speed
@@ -555,11 +591,15 @@ public class HighJumpManager : MonoBehaviour
 
     private void updateBarRaiseHeight() //updates the height of the bar and resets all rotation
     {
-        //bar.transform.localEulerAngles = new Vector3(0, 0, 0); //reset bar rotation
-        //bar.transform.localPosition = new Vector3(0, 29.2f, 0);
+        bar.transform.localEulerAngles = new Vector3(0, 0, -90); //reset bar rotation
+        float differenceFromCenter = (float)((currentBarHeight - 84) * PublicData.spacesPerInch * 3);
+        bar.transform.localPosition = new Vector3(-7.87401581f, -0.590551198f, 89.4684982f+differenceFromCenter);
+        bar.GetComponent<Rigidbody>().angularVelocity = new Vector3(0, 0, 0);
+        bar.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
         //set the height to the current height
         startingBarHeight = bar.transform.position;
-        //barRaise.transform.localPosition = new Vector3(0, 0, (float)(-226.9 + currentBarHeight * PublicData.spacesPerInch * 3));
+        barRaise.transform.localPosition = new Vector3(0, 0, differenceFromCenter);
+        SecondBarRaise.transform.localPosition = new Vector3(0, 0, differenceFromCenter);
         leaderboardManager.updateCurrentBarHeight(currentBarHeight, openingHeight); //updates the height and if it is opening height
     }
 
@@ -571,10 +611,17 @@ public class HighJumpManager : MonoBehaviour
             leaderboardManager.simRemainingJumps();
             SceneManager.LoadScene("EndScreen");
         }
-        player.transform.position = startingPosition;
-        player.GetComponentsInChildren<Animator>()[1].Play("PoleRunning");
+        //player.transform.position = startingPosition;
+        startedAngle = false;
+        player.GetComponent<Animator>().enabled = true;
+        player.GetComponent<Animator>().Play("Nothing");
+        player.GetComponent<Animator>().Play("HighJumpRun");
+        player.GetComponent<Animator>().speed = 0;
+        player.GetComponentsInChildren<Animator>()[1].Play("Running");
+        player.GetComponentsInChildren<Animator>()[1].speed = 0;
+        player.GetComponentsInChildren<Animator>()[1].applyRootMotion = false;
         //poleVaultPole.GetComponent<Animator>().Play("RunningPosition");
-       // poleVaultPole.transform.SetParent(player.GetComponentsInChildren<Transform>()[rightHandTransformPosition]); //sets the parent of the pole to the right hand of the player
+        // poleVaultPole.transform.SetParent(player.GetComponentsInChildren<Transform>()[rightHandTransformPosition]); //sets the parent of the pole to the right hand of the player
         playerCamera.enabled = true; //shows running camera
         jumpingCamera.enabled = false; //hides jumping camera
         frontCamera.enabled = false; //hides the front camera
@@ -583,17 +630,19 @@ public class HighJumpManager : MonoBehaviour
         isRunning = true; //updates state
         isPlanting = false; //updates state
         player.GetComponentsInChildren<Transform>()[1].localEulerAngles = new Vector3(0, 0, 0); //reset rotation
-        player.GetComponentsInChildren<Transform>()[1].localPosition = new Vector3(0, 0, 0); //reset position
+        //player.GetComponentsInChildren<Transform>()[1].localPosition = new Vector3(0, 0, 0); //reset position
         playerCamera.transform.localPosition = startingCameraPosition; //set the camera in the right position
         playerCamera.transform.localEulerAngles = startingCameraRotation; //set the camera in the right angle
         player.GetComponent<Rigidbody>().useGravity = false; //stop player from falling dowm
-        player.GetComponentsInChildren<Animator>()[1].SetBool("Pike", false); //reset pike var
         foulImage.gameObject.SetActive(false); //hides the image
         updateBarRaiseHeight();
         passedBar = false;
+        over = false;
+        hasPiked = false;
         maxPlayerHeight = 0;
         runButton.SetActive(true);
         jumpButton.SetActive(true);
+        angleAnimation.Play("AngleMeterAnimation", 0, 0);
         leaderboardManager.showRecordBanner(-1);
         //isFoul = false; //makes the jump not a foul
         leaderboardManager.showUpdatedLeaderboard();
@@ -601,6 +650,10 @@ public class HighJumpManager : MonoBehaviour
     }
     private void FixedUpdate() //fixed for speed and running
     {
+        if (player.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Nothing"))
+        {
+            player.GetComponent<Animator>().Play("HighJumpRun");
+        }
         if (playerCamera.enabled && (isRunning || isPlanting)) //if running or planting
         {
             if (isPlanting) //slowly lowers speed if in the plant
@@ -625,3 +678,4 @@ public class HighJumpManager : MonoBehaviour
 }
 
 //TODO fix no height bugs
+//TODO fix under height bugs

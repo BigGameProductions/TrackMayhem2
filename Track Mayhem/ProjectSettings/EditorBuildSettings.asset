@@ -41,4 +41,22 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Discus/Discus.unity
     guid: 41c76c2701af54979abd38f2d8861014
+  - enabled: 1
+    path: Assets/Scenes/Decathalon/Decathalon.unity
+    guid: d380e0b93ca1e4921b954820c76ec00d
+  - enabled: 1
+    path: Assets/Scenes/FourHundred/FourHundred.unity
+    guid: f7d2a8692ea0042ab89017c4fc1f16f3
+  - enabled: 1
+    path: Assets/Scenes/HighJump/HighJump.unity
+    guid: 89dbee7a4cb0745739a56a5d565ab054
+  - enabled: 1
+    path: Assets/Scenes/Hurdles/Hurdles.unity
+    guid: d50c9f4fc0e744c37afe0d4f6e4fad5f
+  - enabled: 1
+    path: Assets/Scenes/Javelin/Javelin.unity
+    guid: 4b2ae17bbc4564365873cf88bcdb251f
+  - enabled: 1
+    path: Assets/Scenes/Mile/Mile.unity
+    guid: be72c61d7bb84409eb91f1ba164ec917
   m_configObjects: {}

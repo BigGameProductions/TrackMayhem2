@@ -38,7 +38,14 @@ public class MainButtonLogic : MonoBehaviour
 
     public void mainMenu()
     {
-        SceneManager.LoadScene("MainScreen");
+        if (SceneManager.GetActiveScene().name == "EndScreen" && PublicData.inDec)
+        {
+            PublicData.currentEventDec++;
+            SceneManager.LoadScene("Decathalon");
+        } else
+        {
+            SceneManager.LoadScene("MainScreen");
+        }
     }
 
     public void leaderboardDisplay()
