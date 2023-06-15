@@ -81,6 +81,10 @@ public class PoleVaultManager : MonoBehaviour
 
     [SerializeField] private Button infoButton;
 
+    [SerializeField] private Canvas heightPickCanvas;
+    [SerializeField] private TextMeshProUGUI heightText;
+    [SerializeField] private Slider heightPickSlider; 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -136,6 +140,10 @@ public class PoleVaultManager : MonoBehaviour
                 inCinematic = false;
                 leaderboardManager.cinematicCamera.gameObject.SetActive(false);
                 playerCamera.enabled = true;
+                //TODO check for pr below opening
+                heightPickCanvas.enabled = true;
+                heightPickSlider.minValue = openingHeight;
+                heightPickSlider.maxValue = 156; //TODO add pr
             }
         } else
         {
@@ -143,6 +151,17 @@ public class PoleVaultManager : MonoBehaviour
             {
                 controlsCanvas.enabled = true;
             }
+        }
+        if (heightPickCanvas.enabled)
+        {
+            if (heightPickSlider.value%6 <3) //snaps slider to 6 inch increments
+            {
+                heightPickSlider.value -= heightPickSlider.value % 6;
+            } else
+            {
+                heightPickSlider.value += 6-(heightPickSlider.value % 6);
+            }
+            heightText.text = (int)(heightPickSlider.value / 12) + "'" + heightPickSlider.value % 12 + "''";
         }
         if (poleVaultPole.GetComponent<Animator>().GetBool("Launched")) //when the player is launched in the air
         {

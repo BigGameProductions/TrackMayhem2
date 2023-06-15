@@ -62,7 +62,16 @@ public class LeaderboardManager : MonoBehaviour
 
         
         recordBanner.gameObject.SetActive(false);
-        if (SceneManager.GetActiveScene().name != "EndScreen") //tests to make sure it is an event screen
+        if (eventName == "Decathalon" && PublicData.currentEventDec == 10)
+        {
+            PublicData.playerBannerTransfer = generateBanners(7, true);
+            PublicData.inDec = false;
+            PublicData.leaderBoardMode = 1;
+            PublicData.usesTime = false;
+            PublicData.currentEventName = "Decathalon";
+            SceneManager.LoadScene("EndScreen");
+        }
+        else if (SceneManager.GetActiveScene().name != "EndScreen") //tests to make sure it is an event screen
         {
             cinematicCamera.GetComponent<Animator>().speed = 1;
             PublicData.currentEventName = eventName;
@@ -150,7 +159,7 @@ public class LeaderboardManager : MonoBehaviour
 
 
 
-    public void simRemainingJumps() //simulates and sorts all banners for end display
+    public void simRemainingJumps(bool toHeight = false, float height = 0) //simulates and sorts all banners for end display
     {
         //getPlayerBanner().bestMark = currentBarHeight;
         //finalBarHeightsBanners.Add(getPlayerBanner());
@@ -467,7 +476,7 @@ public class LeaderboardManager : MonoBehaviour
     private PlayerBanner[] generateBanners(int size, bool addPlayer) //generates the banners for size number of people based off of the seeding and returns a list og them
     {
         PlayerBanner[] banners = new PlayerBanner[size + (addPlayer ? 1:0)];
-        if (eventName == "Decathalon")
+        if (eventName == "Decathalon" && PublicData.currentEventDec == -1)
         {
             PublicData.decPlayersScores = new DecathalonScores[8];
         }
@@ -485,14 +494,22 @@ public class LeaderboardManager : MonoBehaviour
                 basedSeed = seededMark;
                 personalBest = seedTimesForEvent(eventName, useSeeded, seedSpreadDown, seedSpreadUp);
             }
-            if (PublicData.inDec && eventName != "Decathalon")
+            if (PublicData.inDec && PublicData.currentEventDec != -1)
             {
+                if (PublicData.currentEventDec == 10)
+                {
+                    personalBest = 0;
+                    foreach (int num in PublicData.decPlayersScores[i].pointsMarks)
+                    {
+                        personalBest += num;
+                    }
+                }
                 banners[i] = new PlayerBanner(i, PublicData.decPlayers[i].flagNumber, PublicData.decPlayers[i].player, useTime ? personalBest : roundToNearest(0.25f, personalBest)); //round personal bests to only two places except times
             } else
             {
                 banners[i] = new PlayerBanner(i, flagNum, name, useTime ? personalBest : roundToNearest(0.25f, personalBest)); //round personal bests to only two places except times
             }
-            if (eventName == "Decathalon")
+            if (eventName == "Decathalon" && PublicData.currentEventDec == -1)
             {
                 PublicData.decPlayersScores[i] = new DecathalonScores(name, flagNum);
             }
@@ -501,7 +518,20 @@ public class LeaderboardManager : MonoBehaviour
         banners[banners.Length - 1] = new PlayerBanner(0, itemStorage.findFlagIndexOfCountry(PublicData.gameData.countryCode), playerName, getMarkForEvent(SceneManager.GetActiveScene().name, true), isPlayer:true);;
         if (eventName == "Decathalon")
         {
-            PublicData.decPlayers = sortBanners(banners, !useTime, currentBarHeight != -10);
+            if (PublicData.currentEventDec==-1)
+            {
+                PublicData.decPlayersScores[7] = new DecathalonScores(PublicData.gameData.playerName, itemStorage.findFlagIndexOfCountry(PublicData.gameData.countryCode));
+            } else
+            {
+                int personalBest = 0;
+                foreach (int num in PublicData.decPlayersScores[7].pointsMarks)
+                {
+                    personalBest += num;
+                }
+                banners[banners.Length - 1] = new PlayerBanner(0, itemStorage.findFlagIndexOfCountry(PublicData.gameData.countryCode), playerName, personalBest, isPlayer: true); ;
+
+            }
+            PublicData.decPlayers = sortBanners(banners, true);
         }
         return sortBanners(banners, !useTime, currentBarHeight!=-10); //sorting banners based on bar events
     }
@@ -804,6 +834,20 @@ public class LeaderboardManager : MonoBehaviour
 
     }
 
+    private int getPointsForEvent(int eventCode, float mark)
+    {
+        mark *= itemStorage.decathalonMeterConversions[eventCode];
+        if (itemStorage.decathalonMeterConversions[eventCode] == 1)
+        {
+            Vector3 vars = itemStorage.decathalonCalculations[eventCode];
+            return (int)(vars.x * Math.Pow((vars.y-mark), vars.z));
+        } else
+        {
+            Vector3 vars = itemStorage.decathalonCalculations[eventCode];
+            return (int)(vars.x * Math.Pow((mark-vars.y), vars.z));
+        }
+    }
+
     //mode 0 = hide leaderboard
     //mode 1 = normal 8 person leaderboard with best marks
     //mode 2 = olympic and world records and personal bests
@@ -836,21 +880,32 @@ public class LeaderboardManager : MonoBehaviour
             {
                 leaderboardDescriptionTitle.text = "Results - Final";
                 //update dec scores
-                /*if (PublicData.inDec)
+                if (PublicData.inDec)
                 {
                     foreach (PlayerBanner pb in playerBanners)
                     {
+                        if (pb.isPlayer)
+                        {
+                            PublicData.decPlayersScores[7].eventMarks[getEventID(eventName)] = pb.bestMark;
+                            Debug.Log("Points for this event :" + getPointsForEvent(getEventID(eventName), pb.bestMark));
+                            PublicData.decPlayersScores[7].pointsMarks[getEventID(eventName)] = getPointsForEvent(getEventID(eventName),pb.bestMark);
+                            continue;
+                        }
                         foreach (DecathalonScores ds in PublicData.decPlayersScores)
                         {
-                            if (ds.name == pb.player && ds.flagId==pb.flagNumber)
+                            if (ds != null)
                             {
-                                ds.eventMarks[getEventID(eventName)] = pb.bestMark;
-                                //TODO add scores for dec
-                                break;
+                                if (ds.name == pb.player && ds.flagId == pb.flagNumber)
+                                {
+                                    ds.eventMarks[getEventID(eventName)] = pb.bestMark;
+                                    ds.pointsMarks[getEventID(eventName)] = getPointsForEvent(getEventID(eventName), pb.bestMark);
+                                    break;
+                                }
                             }
+                            
                         }
                     }
-                }*/ //TODO add back
+                }
             } else if (cinematicCamera.gameObject.activeInHierarchy)
             {
                 leaderboardDescriptionTitle.text = "Start List - Final";

@@ -26,6 +26,10 @@ public class ItemStorage : MonoBehaviour
     //1 is personal record
     //2 is game record
 
+    public Vector3[] decathalonCalculations; //numbers to multiply the scores by
+
+    public float[] decathalonMeterConversions; //number for conversions for each event
+
 
     public int findFlagIndexOfCountry(string code) //find the index of flags given the country code
     {

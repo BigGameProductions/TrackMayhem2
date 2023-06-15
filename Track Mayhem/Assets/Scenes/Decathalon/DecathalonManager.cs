@@ -14,8 +14,8 @@ public class DecathalonManager : MonoBehaviour
     {
         "HundredMeter",
         "LongJump",
-        "HighJump",
         "Shotput",
+        "HighJump",
         "FourHundred",
         "Hurdles",
         "Discus",
@@ -46,7 +46,7 @@ public class DecathalonManager : MonoBehaviour
     {
         if (!leaderboardManager.cinematicCamera.gameObject.activeInHierarchy && PublicData.currentEventDec == -1)
         {
-            PublicData.currentEventDec = 0;
+            PublicData.currentEventDec = 9;
             SceneManager.LoadScene(eventOrder[PublicData.currentEventDec]);
         }
     }

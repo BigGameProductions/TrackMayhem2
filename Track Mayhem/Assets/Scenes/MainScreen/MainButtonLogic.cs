@@ -27,7 +27,34 @@ public class MainButtonLogic : MonoBehaviour
         {
             SceneManager.LoadScene("Shotput");
         }
-
+        else if (PublicData.currentSelectedEventIndex == 4)
+        {
+            SceneManager.LoadScene("Javelin");
+        }
+        else if (PublicData.currentSelectedEventIndex == 5)
+        {
+            SceneManager.LoadScene("FourHundred");
+        }
+        else if (PublicData.currentSelectedEventIndex == 6)
+        {
+            SceneManager.LoadScene("Discus");
+        }
+        else if (PublicData.currentSelectedEventIndex == 7)
+        {
+            SceneManager.LoadScene("HighJump");
+        }
+        else if (PublicData.currentSelectedEventIndex == 8)
+        {
+            SceneManager.LoadScene("Hurdles");
+        }
+        else if (PublicData.currentSelectedEventIndex == 9)
+        {
+            SceneManager.LoadScene("FifteenHundred");
+        }
+        else if (PublicData.currentSelectedEventIndex == 10)
+        {
+            SceneManager.LoadScene("Decathalon");
+        }
     }
 
 
