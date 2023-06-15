@@ -4191,9 +4191,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   eventName: FifteenHundred
   useSeeded: 0
-  seededMark: 6500
-  seedSpreadDown: 200
-  seedSpreadUp: 200
+  seededMark: 30000
+  seedSpreadDown: 1200
+  seedSpreadUp: 1200
   seedRoundInches: 1
   leaderboardBanners:
   - {fileID: 1698654101}
@@ -4494,10 +4494,11 @@ MonoBehaviour:
   jumpButton: {fileID: 1294512091}
   infoButton: {fileID: 1294512091}
   controlCanvas: {fileID: 1294512090}
-  energyDepletion: 0.01
+  energyDepletion: 0.002
   energyGain: 0.01
   competitorsList: []
   laneZValues: []
+  zOffset: -16
 --- !u!65 &831690831
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5832,7 +5833,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
       propertyPath: m_Controller
@@ -10309,7 +10310,7 @@ GameObject:
   - component: {fileID: 1308276611}
   - component: {fileID: 1308276610}
   m_Layer: 5
-  m_Name: FourHundredCanvas
+  m_Name: FifteenHundredCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -17777,8 +17778,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1774302335}
-  m_LocalRotation: {x: 0, y: 0.7071068, z: -0, w: -0.7071068}
-  m_LocalPosition: {x: -2162.03, y: 226.73, z: -16.39}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -2167.04, y: 226.73, z: -308.22}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -17790,7 +17791,7 @@ Transform:
   - {fileID: 1800892624}
   m_Father: {fileID: 0}
   m_RootOrder: 7
-  m_LocalEulerAnglesHint: {x: 0, y: 270, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!95 &1774302337
 Animator:
   serializedVersion: 4
@@ -17799,7 +17800,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1774302335}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 5b2ff3eb8449a49a48622a67a4b24a2c, type: 2}
   m_CullingMode: 0

@@ -72,21 +72,25 @@ public class RunningMeterBar : MonoBehaviour
         }
         runningBar.transform.position = new Vector3(runningBar.transform.position.x, startingBarHeight + (runningSpeed * barIncreasePerSpeed), runningBar.transform.position.z);
         runMeterSlider.value = runningSpeed;
-        if (runningSpeed < 220 || SceneManager.GetActiveScene().name != "FourHundred")
+        if (SceneManager.GetActiveScene().name != "Mile")
         {
-            if (runningSpeed > 220)
+            if (runningSpeed < 220 || SceneManager.GetActiveScene().name != "FourHundred")
             {
-                fillImage.color = Color.red;
-            }
-            else if (runningSpeed > 150)
-            {
-                fillImage.color = Color.green;
-            }
-            else
-            {
-                fillImage.color = Color.yellow;
+                if (runningSpeed > 220)
+                {
+                    fillImage.color = Color.red;
+                }
+                else if (runningSpeed > 150)
+                {
+                    fillImage.color = Color.green;
+                }
+                else
+                {
+                    fillImage.color = Color.yellow;
+                }
             }
         }
+        
         
     }
 

@@ -88,6 +88,7 @@ public class PoleVaultManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        heightPickCanvas.enabled = false;
         controlsCanvas.enabled = false;
         jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Plant";
         currentBarHeight = openingHeight;
@@ -516,6 +517,18 @@ public class PoleVaultManager : MonoBehaviour
         jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Plant";
         StartCoroutine(waitAfterPersonalBanner(3));
     }
+
+    public void selectOpeningHeight()
+    {
+        heightPickCanvas.enabled = false;
+        if (heightPickSlider.value != openingHeight)
+        {
+            currentBarHeight = heightPickSlider.value;
+            updateBarRaiseHeight();
+            leaderboardManager.passToHeight(currentBarHeight);
+        }
+    }
+        
 
     private void updateBarRaiseHeight() //updates the height of the bar and resets all rotation
     {

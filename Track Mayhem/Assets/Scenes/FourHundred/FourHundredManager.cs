@@ -53,9 +53,15 @@ public class FourHundredManager : MonoBehaviour
 
     float eventTimer = 0; //keeps track of the time of the event
 
+    float lapTimeProgress = 0;
+
     float startingBarDecreaseSpeed = 300; //gets the starting decrease speed
 
+    public float zOffset;
+
     PlayerBanner currentPlayerBanner;
+
+    [SerializeField] private GameObject fourHundredBlocks;
 
     // Start is called before the first frame update
     void Start()
@@ -122,9 +128,10 @@ public class FourHundredManager : MonoBehaviour
                 }*/
             }
             runningMeter.updateRunMeter();
-            if (isRunning && player.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime >0.99 && !finished)
+            if (isRunning && lapTimeProgress==4 && !finished)
             {
                 finished = true;
+                eventTimer *= 2;
                 StartCoroutine(waitAfterFinish(2));
             }
            /*if (isRunning && competitorsList[3].transform.position.x <= -2161.52)
@@ -263,8 +270,43 @@ public class FourHundredManager : MonoBehaviour
             {
                 energyBar.value += energyGain;
             }
+            //math for arch
+            //other end z is -308.22
+            if (lapTimeProgress < 1)
+            {
+                float circleRad = (308.8f - 16.39f) / 2.0f;//start and end pos
+                Vector3 ogPos = new Vector3(-2162.03f, 226.73f, circleRad * -1); //start is -16.39
+                Vector3 unitCirclePos = new Vector3((float)Math.Cos(Math.PI * lapTimeProgress), player.transform.position.y, (float)Math.Sin(Math.PI * lapTimeProgress));
+                //player.transform.position = ogPos;
+                player.transform.position = new Vector3(circleRad * unitCirclePos.z*-1, 0, (circleRad * unitCirclePos.x) + zOffset) + ogPos;
+                player.transform.eulerAngles = new Vector3(0, 270-(180*lapTimeProgress), 0);
+            } else if (lapTimeProgress < 2)
+            {
+                if (fourHundredBlocks.activeInHierarchy)
+                {
+                    fourHundredBlocks.SetActive(false);
+                }
+                //-1832 for hundred meter end
+                //-2162.03 for start
+                float diff = 2162.03f - 1832f;
+                player.transform.position = new Vector3(-2162.03f + (diff * (lapTimeProgress - 1)), player.transform.position.y, player.transform.position.z);
+            } else if (lapTimeProgress < 3)
+            {
+                float circleRad = (308.22f - 16.39f) / 2.0f;//start and end pos
+                Vector3 ogPos = new Vector3(-1832, 226.73f, circleRad * -1); //start is -16.39
+                Vector3 unitCirclePos = new Vector3((float)Math.Cos(Math.PI * lapTimeProgress), player.transform.position.y, (float)Math.Sin(Math.PI * lapTimeProgress));
+                //player.transform.position = ogPos;
+                player.transform.position = new Vector3(circleRad * unitCirclePos.z , 0, (circleRad * -1 * unitCirclePos.x) + zOffset) + ogPos;
+                player.transform.eulerAngles = new Vector3(0, 90 - (180 * (lapTimeProgress-2)), 0);
+            }
+            else if (lapTimeProgress < 4)
+            {
+                float diff = 2162.03f - 1832f;
+                player.transform.position = new Vector3(-1832 - (diff * (lapTimeProgress - 3)), player.transform.position.y, player.transform.position.z);
+            }
+            
+            //math for arch
             //player.transform.Translate(new Vector3(0, 0, speed * runningSpeedRatio)); //making character move according to run meter
-            player.GetComponent<Animator>().speed = speed / 2000f;
             player.GetComponentsInChildren<Animator>()[1].speed = speed * animationRunningSpeedRatio; //making the animation match the sunning speed
             for (int i = 0; i < competitorsList.Length; i++)
             {
@@ -297,6 +339,9 @@ public class FourHundredManager : MonoBehaviour
             {
                 runningMeter.updateTimeElapsed();
                 eventTimer += Time.deltaTime;
+                lapTimeProgress += speed/75000; //normal mode
+                //lapTimeProgress += 0.005f; //fast mode
+                lapTimeProgress = Math.Min(lapTimeProgress, 4); //cap progress at 2
                 //runningMeter.barDecreaseSpeed = Math.Min(startingBarDecreaseSpeed + (eventTimer * 20), 400); //make the bar decrease faster as you go on
                 //runningMeter.speedPerClick = 75 + (eventTimer * 5);
             }

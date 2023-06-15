@@ -177,15 +177,17 @@ MonoBehaviour:
   energyBar: {fileID: 2138129892}
   runningSliderFill: {fileID: 1062670330}
   runningSpeedRatio: 0.004
-  animationRunningSpeedRatio: 0.005
+  animationRunningSpeedRatio: 0.0055
   runButton: {fileID: 1062670336}
   jumpButton: {fileID: 1062670335}
   infoButton: {fileID: 1062670329}
   controlCanvas: {fileID: 1062670328}
   energyDepletion: 0.01
-  energyGain: 0.01
+  energyGain: 0.005
   competitorsList: []
   laneZValues: []
+  zOffset: -16.5
+  fourHundredBlocks: {fileID: 1061238987}
 --- !u!65 &9169576
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -11579,6 +11581,11 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.28070068, y: 0.43485984, z: 0.19377127}
   m_Center: {x: 0.019317703, y: 0.10757496, z: 0.013877862}
+--- !u!1 &1061238987 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4170042393577030568, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
+  m_PrefabInstance: {fileID: 107347973}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1062670327
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11586,6 +11593,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 127824415785865328, guid: d077e6698862e4979974e57da8147e7b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 127824415785865332, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -17279,7 +17290,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1347954845}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 5b2ff3eb8449a49a48622a67a4b24a2c, type: 2}
   m_CullingMode: 0
@@ -19731,6 +19742,10 @@ PrefabInstance:
     - target: {fileID: 905930232019578275, guid: 76f6e4cd7ecc94f0db66c1d8656e5288, type: 3}
       propertyPath: m_Name
       value: Canvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 4029095316339253281, guid: 76f6e4cd7ecc94f0db66c1d8656e5288, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 76f6e4cd7ecc94f0db66c1d8656e5288, type: 3}

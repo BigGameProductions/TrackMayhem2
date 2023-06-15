@@ -60,7 +60,6 @@ public class LeaderboardManager : MonoBehaviour
     private void Start()
     {
 
-        
         recordBanner.gameObject.SetActive(false);
         if (eventName == "Decathalon" && PublicData.currentEventDec == 10)
         {
@@ -157,14 +156,51 @@ public class LeaderboardManager : MonoBehaviour
 
     }
 
+    public void passToHeight(float height)
+    {
+        currentBarHeight = height - (eventName == "HighJump" ? 2 : 6);
+        leaderBoardHeader.SetActive(true);
+        currentEventBanners = simulateBarMark(currentEventBanners);
+        currentEventBanners = simulateBarMark(currentEventBanners);
+        currentEventBanners = simulateBarMark(currentEventBanners);
+        List<PlayerBanner> newBannerList = new List<PlayerBanner>();
+        for (int i = 0; i < currentEventBanners.Length; i++)
+        {
+            if (currentEventBanners[i].mark3 != -10000)
+            {
+                newBannerList.Add(currentEventBanners[i]); //adds only the passing players to the leaderboard
+            }
+            else
+            {
+                if (openingHeight == currentBarHeight - 6)
+                {
+                    currentEventBanners[i].bestMark = -100000; //no height
+                }
+                else
+                {
+                    currentEventBanners[i].bestMark = currentBarHeight - 12;
+                }
+                finalBarHeightsBanners.Add(currentEventBanners[i]);
+            }
+        }
+        currentEventBanners = newBannerList.ToArray(); //converts the list back to the array for use
+        foreach (PlayerBanner pb in currentEventBanners)
+        {
+            pb.mark1 = -100;
+            pb.mark2 = -100;
+            pb.mark3 = -100;
+        }
+        currentBarHeight = height;
+        
+        setLeaderboard(currentEventBanners, 4);
+    }
 
-
-    public void simRemainingJumps(bool toHeight = false, float height = 0) //simulates and sorts all banners for end display
+    public void simRemainingJumps(float height = 1200) //simulates and sorts all banners for end display
     {
         //getPlayerBanner().bestMark = currentBarHeight;
         //finalBarHeightsBanners.Add(getPlayerBanner());
     
-        while (finalBarHeightsBanners.Count < 8 && currentBarHeight < 1200)
+        while (finalBarHeightsBanners.Count < 8 && currentBarHeight < height)
         {
             simulateBarMark(currentEventBanners); //three jumps
             simulateBarMark(currentEventBanners);
@@ -1069,6 +1105,18 @@ public class LeaderboardManager : MonoBehaviour
             } else
             {
                 return ((int)mark / 12) + "' " + Math.Round(mark % 12, 2) + "''";
+            }
+        }
+        
+    }
+
+    private void LateUpdate()
+    {
+        if (eventName == "HighJump" || eventName == "PoleVault")
+        {
+            for (int i = currentEventBanners.Length; i < 8; i++) //remove banners that are not needed
+            {
+                leaderboardBanners[i].gameObject.SetActive(false);
             }
         }
         

@@ -46,7 +46,7 @@ public class DecathalonManager : MonoBehaviour
     {
         if (!leaderboardManager.cinematicCamera.gameObject.activeInHierarchy && PublicData.currentEventDec == -1)
         {
-            PublicData.currentEventDec = 9;
+            PublicData.currentEventDec = 0;
             SceneManager.LoadScene(eventOrder[PublicData.currentEventDec]);
         }
     }

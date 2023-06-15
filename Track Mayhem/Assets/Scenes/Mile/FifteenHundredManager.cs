@@ -59,6 +59,10 @@ public class FifteenHundredManager : MonoBehaviour
 
     float startingBarDecreaseSpeed = 300; //gets the starting decrease speed
 
+    private float lapTimeProgress = 0.98f; //time of the current lap
+
+    [SerializeField] private float zOffset;
+
     PlayerBanner currentPlayerBanner;
 
     // Start is called before the first frame update
@@ -110,6 +114,21 @@ public class FifteenHundredManager : MonoBehaviour
                 runningSliderFill.color = Color.red;
             }
         }
+        if (runningMeter.runningSpeed > 150 && runningMeter.runningSpeed <220)
+        {
+            if (energyBar.value > 0.1)
+            {
+                runningSliderFill.color = Color.green;
+            }
+            else
+            {
+                runningSliderFill.color = Color.red;
+            }
+        }
+        if (runningMeter.runningSpeed < 150)
+        {
+            runningSliderFill.color = Color.yellow;
+        }
         if (!leaderboardManager.cinematicCamera.gameObject.activeInHierarchy)
         {
             if (!runButton.gameObject.activeInHierarchy)
@@ -128,13 +147,7 @@ public class FifteenHundredManager : MonoBehaviour
                     }
                 }*/
             }
-            runningMeter.updateRunMeter();
-            lapNumber = (int)player.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime;
-            if (lapNumber == 4 && !finished)
-            {
-                finished = true;
-                StartCoroutine(waitAfterFinish(2));
-            }
+            runningMeter.updateRunMeter();            
             if (player.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime < 0.8)
             {
                 didLap = false;
@@ -226,16 +239,9 @@ public class FifteenHundredManager : MonoBehaviour
                 StartCoroutine(oppenentBlockStart(UnityEngine.Random.Range(0.1f, 0.5f), i));
                 //StartCoroutine(oppenentBlockStart(0.2f, i));
             }
-            StartCoroutine(changeView(5));
 
         }
 
-    }
-
-    IEnumerator changeView(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        birdEyeView.enabled = true;
     }
 
 
@@ -272,26 +278,51 @@ public class FifteenHundredManager : MonoBehaviour
         if ((playerCamera.enabled && isRunning) || finished)
         {
             float speed = runningMeter.runningSpeed;
-            if (speed > PublicData.averageSpeedDuringRun && energyBar.value == 0)
+            if (speed > PublicData.averageSpeedDuringRun - 25 && energyBar.value == 0)
             {
-                speed = PublicData.averageSpeedDuringRun - (speed - PublicData.averageSpeedDuringRun); //makes it so over slows you down
+                speed = PublicData.averageSpeedDuringRun -25 - (speed - (PublicData.averageSpeedDuringRun-25)); //makes it so over slows you down
+                Debug.Log(speed);
             }
-            if (speed > 220 && energyBar.value != 0)
+            if (speed > 150 && energyBar.value != 0)
             {
-                energyBar.value -= energyDepletion;
+                energyBar.value -= energyDepletion*((speed-150)/150);
                 if (energyBar.value < 0.11f) energyBar.value = 0;
             }
-            else if (speed < PublicData.averageSpeedDuringRun)
-            {
-                energyBar.value += energyGain;
-            }
             //player.transform.Translate(new Vector3(0, 0, speed * runningSpeedRatio)); //making character move according to run meter
-            player.GetComponent<Animator>().speed = speed / 2000f;
+            if (lapTimeProgress < 1)
+            {
+                float circleRad = (308.8f - 16.39f) / 2.0f;//start and end pos
+                Vector3 ogPos = new Vector3(-2162.03f, 226.73f, circleRad * -1); //start is -16.39
+                Vector3 unitCirclePos = new Vector3((float)Math.Cos(Math.PI * lapTimeProgress), player.transform.position.y, (float)Math.Sin(Math.PI * lapTimeProgress));
+                //player.transform.position = ogPos;
+                player.transform.position = new Vector3(circleRad * unitCirclePos.z * -1, 0, (circleRad * unitCirclePos.x) + zOffset) + ogPos;
+                player.transform.eulerAngles = new Vector3(0, 270 - (180 * lapTimeProgress), 0);
+            }
+            else if (lapTimeProgress < 2)
+            {
+                //-1832 for hundred meter end
+                //-2162.03 for start
+                float diff = 2162.03f - 1832f;
+                player.transform.position = new Vector3(-2162.03f + (diff * (lapTimeProgress - 1)), player.transform.position.y, player.transform.position.z);
+            }
+            else if (lapTimeProgress < 3)
+            {
+                float circleRad = (308.22f - 16.39f) / 2.0f;//start and end pos
+                Vector3 ogPos = new Vector3(-1832, 226.73f, circleRad * -1); //start is -16.39
+                Vector3 unitCirclePos = new Vector3((float)Math.Cos(Math.PI * lapTimeProgress), player.transform.position.y, (float)Math.Sin(Math.PI * lapTimeProgress));
+                //player.transform.position = ogPos;
+                player.transform.position = new Vector3(circleRad * unitCirclePos.z, 0, (circleRad * -1 * unitCirclePos.x) + zOffset) + ogPos;
+                player.transform.eulerAngles = new Vector3(0, 90 - (180 * (lapTimeProgress - 2)), 0);
+            }
+            else if (lapTimeProgress < 4)
+            {
+                float diff = 2162.03f - 1832f;
+                player.transform.position = new Vector3(-1832 - (diff * (lapTimeProgress - 3)), player.transform.position.y, player.transform.position.z);
+            }
             if (birdEyeView.enabled)
             {
                 player.GetComponent<Animator>().speed = speed / 200f;
             }
-            eventTimer += Time.deltaTime * 9; //one less beacause it is already incrementing it
             player.GetComponentsInChildren<Animator>()[1].speed = speed * animationRunningSpeedRatio; //making the animation match the sunning speed
             for (int i = 0; i < competitorsList.Length; i++)
             {
@@ -324,6 +355,26 @@ public class FifteenHundredManager : MonoBehaviour
             {
                 runningMeter.updateTimeElapsed();
                 eventTimer += Time.deltaTime;
+                float speedAdjuster = 25000;
+                energyDepletion = speedAdjuster / 12500000; //makes energy match the speed
+                lapTimeProgress += speed / speedAdjuster; //normal mode
+                //lapTimeProgress += 0.005f; //fast mode
+                lapTimeProgress = Math.Min(lapTimeProgress, 4); //cap progress at 4
+                if (lapTimeProgress == 4)
+                {
+                    lapNumber++;
+                    if (lapNumber == 4 && !finished)
+                    {
+                        finished = true;
+                        eventTimer *= 6;
+                        StartCoroutine(waitAfterFinish(2));
+                    }
+                    else
+                    {
+                        lapTimeProgress = 0;
+                    }
+                }
+                
                 //runningMeter.barDecreaseSpeed = Math.Min(startingBarDecreaseSpeed + (eventTimer * 20), 400); //make the bar decrease faster as you go on
                 //runningMeter.speedPerClick = 75 + (eventTimer * 5);
             }
@@ -372,5 +423,4 @@ public class FifteenHundredManager : MonoBehaviour
 
 }
 
-//TODO fix lean going diffrent ways
 

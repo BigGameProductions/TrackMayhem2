@@ -52,14 +52,42 @@ public class LongJumpManager : MonoBehaviour
 
     [SerializeField] private Canvas controlsCanvas;
 
+    [SerializeField] private Canvas boardChangeCanvas;
+    [SerializeField] private GameObject boardChangeButton;
+    [SerializeField] private GameObject jumpBoard;
+    [SerializeField] private Camera boardChangeCamera;
+    [SerializeField] private TextMeshProUGUI boardChangeText;
+
+    private GameObject playerLeftFoot;
+    private GameObject playerRightFoot;
+
+    private float boardDistance = 96; //distance of the long jump board
+    private float startingBoardX; //x position for 8ft board
+
+    bool firstTimeShow = false; //for first time objects to show
+
     
     // Start is called before the first frame update
     void Start()
     {
+
+        boardChangeButton.gameObject.SetActive(false);
+        startingBoardX = jumpBoard.transform.position.x;
         controlsCanvas.enabled = false;
         jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Takeoff";
         itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform); //inits the runner into the current scene
-
+        for(int i=0; i<player.GetComponentsInChildren<Transform>().Length; i++)
+        {
+            Transform tf = player.GetComponentsInChildren<Transform>()[i];
+            if (tf.name == "mixamorig1:RightToe_End")
+            {
+                playerRightFoot = tf.gameObject;
+            }
+            if (tf.name == "mixamorig1:LeftToe_End")
+            {
+                playerLeftFoot = tf.gameObject;
+            }
+        }
         infoButton.gameObject.SetActive(false);
         jumpMeter.jumpBar.gameObject.transform.parent.gameObject.SetActive(false); //hides the jump meter
         player.GetComponentInChildren<Animator>().Play("Running");
@@ -99,15 +127,24 @@ public class LongJumpManager : MonoBehaviour
     {
         if (runningCamera.enabled && !leaderboardManager.cinematicCamera.gameObject.activeInHierarchy) //change this so it works for enabled
         {
-            if (controlsCanvas.enabled == false)
+            if (controlsCanvas.enabled == false && !boardChangeCamera.enabled)
             {
                 controlsCanvas.enabled = true;
-                infoButton.gameObject.SetActive(true);
+                if (!firstTimeShow)
+                {
+                    boardChangeButton.gameObject.SetActive(true);
+                    infoButton.gameObject.SetActive(true);
+                    firstTimeShow = true;
+                }
+                
+
+
             }
             runningMeter.updateRunMeter();
             if ((Input.GetKeyDown(KeyCode.Space) || runPressed) && runningMeter.runMeterSlider.gameObject.activeInHierarchy) //updating speed on click
             {
                 runPressed = false;
+                boardChangeButton.gameObject.SetActive(false);
                 if (infoButton.gameObject.activeInHierarchy)
                 {
                     infoButton.gameObject.SetActive(false);
@@ -118,7 +155,7 @@ public class LongJumpManager : MonoBehaviour
                     leaderboardManager.hidePersonalBanner();
                 }
             }
-            if (player.transform.position.x > -1901 && runningMeter.runMeterSlider.gameObject.activeInHierarchy) //testing for an automatic foul by running past the board
+            if (player.transform.position.x > jumpBoard.transform.position.x && runningMeter.runMeterSlider.gameObject.activeInHierarchy) //testing for an automatic foul by running past the board
             {
                 isFoul = true; //set the foul to true
                 runningMeter.runMeterSlider.gameObject.SetActive(false); //hides the run meter
@@ -165,6 +202,12 @@ public class LongJumpManager : MonoBehaviour
             jumpMeter.updateJumpMeter();
             if (Input.GetKeyDown(KeyCode.Space) || jumpPressed) //makes jump
             {
+                if (playerLeftFoot.transform.position.x > jumpBoard.transform.position.x || playerRightFoot.transform.position.x > jumpBoard.transform.position.x)
+                {
+                    isFoul = true; //set the foul to true
+                    foulImage.gameObject.SetActive(true);
+                    foulImage.GetComponent<Animator>().Play("FoulSlide");
+                }
                 jumpButton.SetActive(false); //hides button until pike
                 jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Pike";
                 jumpPressed = false;
@@ -238,6 +281,33 @@ public class LongJumpManager : MonoBehaviour
         
     }
 
+    public void changeBoard()
+    {
+        boardChangeCanvas.enabled = true;
+        controlsCanvas.enabled = false;
+        boardChangeButton.SetActive(false);
+        boardChangeCamera.enabled = true;
+    }
+
+    public void changeBoardPosition(int direction)
+    {
+        boardDistance += direction * 12;
+        if (boardDistance < 96)
+        {
+            boardDistance = 96;
+        }
+        jumpBoard.transform.position = new Vector3(((96-boardDistance)*PublicData.spacesPerInch)+startingBoardX,jumpBoard.transform.position.y, jumpBoard.transform.position.z);
+        boardChangeText.text = "Change board to: " + boardDistance / 12 + "'";
+    }
+
+    public void finalBoard()
+    {
+        boardChangeCanvas.enabled = false;
+        controlsCanvas.enabled = true;
+        boardChangeButton.SetActive(true);
+        boardChangeCamera.enabled = false;
+        boardChangeButton.GetComponentInChildren<TextMeshProUGUI>().text = "Board: " + boardDistance / 12 + "'";
+    }
     IEnumerator jumpMeterTimeLimit(float time) //waits x seconds before saying the player has taken too long with their jumping meter
     {
         yield return new WaitForSeconds(time);
@@ -291,6 +361,7 @@ public class LongJumpManager : MonoBehaviour
             {
                 totalInches += 5;
             }
+            totalInches += boardDistance - 96;
             if (totalInches > Int32.Parse(PublicData.gameData.leaderboardList[1][1][0])/100.0f) //game record
             {
                 PublicData.gameData.personalBests.longJump = totalInches;
@@ -384,6 +455,7 @@ public class LongJumpManager : MonoBehaviour
         jumpButton.SetActive(true);
         leaderboardManager.showRecordBanner(-1);
         jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Takeoff";
+        boardChangeButton.gameObject.SetActive(true);
         leaderboardManager.showUpdatedLeaderboard();
     }
 
