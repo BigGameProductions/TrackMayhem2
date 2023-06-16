@@ -381,6 +381,16 @@ public class LeaderboardManager : MonoBehaviour
         return mark;
     }
 
+    public void changeBannerBest(int flagNum, string name, float mark)
+    {
+        foreach (PlayerBanner pb in currentEventBanners)
+        {
+            if (pb.flagNumber == flagNum && pb.player == name)
+            {
+                pb.bestMark = mark;
+            }
+        }
+    }
     
 
     public void updateCurrentBarHeight(float amount, float isOpeningHeight)

@@ -36,6 +36,7 @@ public class hundredMeterController : MonoBehaviour
     private float[] competitorsAccelSpeedList = new float[8]; //acceleration of all the competitors
     private float[] competitorsStartSpeedList = new float[8]; //start speed of all the competitors
     private float[] competitorsMaxSpeedList = new float[8]; //max speed of all the competitors
+    private bool[] competitorsMarkedTimeList = new bool[8]; //max speed of all the competitors
 
 
     bool isRunning = false; //if gun has gone off
@@ -51,6 +52,10 @@ public class hundredMeterController : MonoBehaviour
 
     PlayerBanner currentPlayerBanner;
 
+    PlayerBanner[] laneOrders;
+
+    float playerTime = 0;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -64,6 +69,9 @@ public class hundredMeterController : MonoBehaviour
         runningMeter.runningBar.transform.parent.gameObject.SetActive(false);
         foreach (GameObject go in competitorsList) //gets all competitors in the blocks
         {
+            Destroy(go.GetComponentsInChildren<Transform>()[1].gameObject);
+            int charNum = UnityEngine.Random.Range(0, 2);
+            itemStorage.initRunner(charNum, go.transform);
             go.GetComponentInChildren<Animator>().Play("BlockStart");
         }
 
@@ -91,7 +99,7 @@ public class hundredMeterController : MonoBehaviour
                 controlCanvas.enabled = true;
                 runButton.gameObject.SetActive(true); //show controls
                 runningMeter.runningBar.transform.parent.gameObject.SetActive(true); //show controls
-                PlayerBanner[] laneOrders = leaderboardManager.getPlayersInLaneOrder();
+                laneOrders = leaderboardManager.getPlayersInLaneOrder();
                 for (int i=0; i<laneOrders.Length; i++)
                 {
                     if (laneOrders[i].isPlayer)
@@ -102,10 +110,24 @@ public class hundredMeterController : MonoBehaviour
                 }
             }
             runningMeter.updateRunMeter();
-            if (isRunning && player.transform.position.x <= -2161.52)
+            if (isRunning && player.transform.position.x <= -2161.52 && !finished)
             {
                 finished = true;
+                playerTime = eventTimer;
+                runningMeter.runningSpeed = 220;
+                runningMeter.barDecreaseSpeed = 80;
+                controlCanvas.enabled = false;
+                player.GetComponentsInChildren<Transform>()[1].localPosition = new Vector3(0, 0, 0);
                 StartCoroutine(waitAfterFinish(2));
+            }
+            foreach (GameObject go in competitorsList)
+            {
+                if (go.transform.position.x < -2162.1 && !competitorsMarkedTimeList[Int32.Parse(go.name[4].ToString()) - 1])
+                {
+                    competitorsMarkedTimeList[Int32.Parse(go.name[4].ToString()) - 1] = true;
+                    PlayerBanner pb = laneOrders[Int32.Parse(go.name[4].ToString())-1];
+                    leaderboardManager.changeBannerBest(pb.flagNumber, pb.player, eventTimer);
+                }
             }
             /*if (isRunning && competitorsList[3].transform.position.x <= -2161.52)
             {
@@ -236,6 +258,10 @@ public class hundredMeterController : MonoBehaviour
             player.GetComponentInChildren<Animator>().speed = speed * animationRunningSpeedRatio; //making the animation match the sunning speed
             for (int i=0; i<competitorsList.Length; i++)
             {
+                if (competitorsMarkedTimeList[i])
+                {
+                    competitorsSpeedList[i] -= 0.5f;
+                }
                 //float time = 13.87f;
                 float time = leaderboardManager.getPlayersInLaneOrder()[i].bestMark;
                 if (competitorsMaxSpeedList[i] != competitorsSpeedList[i] && competitorsList[i].transform.position.x > -2122.37) //if not max speed
@@ -249,7 +275,7 @@ public class hundredMeterController : MonoBehaviour
                     {
                         competitorsSpeedList[i] = competitorsStartSpeedList[i] + (competitorsMaxSpeedList[i]*eventTimer*eventTimer)/((time/6)*(time/6)); //acceleration
                     }
-                } else if (competitorsList[i].transform.position.x <= -2122.37)
+                } else if (competitorsList[i].transform.position.x <= -2122.37 && !competitorsMarkedTimeList[i])
                 {
                     competitorsSpeedList[i] = competitorsMaxSpeedList[i] + 0;
                 }
@@ -260,10 +286,10 @@ public class hundredMeterController : MonoBehaviour
                     competitorsList[i].GetComponentInChildren<Animator>().Play("RunningLean");
                 }
             }
+            eventTimer += Time.deltaTime;
             if (!finished)
             {
                 runningMeter.updateTimeElapsed();
-                eventTimer += Time.deltaTime;
                 runningMeter.barDecreaseSpeed = Math.Min(startingBarDecreaseSpeed + (eventTimer * 20), 400); //make the bar decrease faster as you go on
                 //runningMeter.speedPerClick = 75 + (eventTimer * 5);
             }
@@ -275,31 +301,31 @@ public class hundredMeterController : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         currentPlayerBanner = leaderboardManager.getPlayerBanner();
-        currentPlayerBanner.mark2 = eventTimer;
+        currentPlayerBanner.mark2 = playerTime;
         PersonalBests characterPB = PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests;
-        if (eventTimer < Int32.Parse(PublicData.gameData.leaderboardList[0][1][0]) / 100.0f) //game record
+        if (playerTime < Int32.Parse(PublicData.gameData.leaderboardList[0][1][0]) / 100.0f) //game record
         {
-            PublicData.gameData.personalBests.hundredMeter = eventTimer;
-            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hundredMeter = eventTimer;
+            PublicData.gameData.personalBests.hundredMeter = playerTime;
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hundredMeter = playerTime;
             leaderboardManager.addMarkLabelToPlayer(1);
             leaderboardManager.showRecordBanner(2);
         }
-        else if (eventTimer < PublicData.gameData.personalBests.hundredMeter || PublicData.gameData.personalBests.hundredMeter == 0) //if pr or first time doing it
+        else if (playerTime < PublicData.gameData.personalBests.hundredMeter || PublicData.gameData.personalBests.hundredMeter == 0) //if pr or first time doing it
         {
-            PublicData.gameData.personalBests.hundredMeter = eventTimer; //sets pr
-            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hundredMeter = eventTimer; //sets cb too
+            PublicData.gameData.personalBests.hundredMeter = playerTime; //sets pr
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hundredMeter = playerTime; //sets cb too
             leaderboardManager.addMarkLabelToPlayer(3);
             leaderboardManager.showRecordBanner(1);
 
         }
-        else if (eventTimer < characterPB.hundredMeter || characterPB.hundredMeter == 0)
+        else if (playerTime < characterPB.hundredMeter || characterPB.hundredMeter == 0)
         {
-            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hundredMeter = eventTimer;
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hundredMeter = playerTime;
             leaderboardManager.addMarkLabelToPlayer(2);
             leaderboardManager.showRecordBanner(0);
         }
         leaderboardManager.showCurrentPlayerMarks(currentPlayerBanner, 3); //updates and shows the player leaderboard
-        leaderboardManager.addPlayerTime(eventTimer); //adds player to the banners
+        leaderboardManager.addPlayerTime(playerTime); //adds player to the banners
         StartCoroutine(showEndScreen(3));
 
     }
