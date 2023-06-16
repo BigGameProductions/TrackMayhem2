@@ -83,7 +83,8 @@ public class PoleVaultManager : MonoBehaviour
 
     [SerializeField] private Canvas heightPickCanvas;
     [SerializeField] private TextMeshProUGUI heightText;
-    [SerializeField] private Slider heightPickSlider; 
+
+    [SerializeField] private Camera heightSelectCamera;
 
     // Start is called before the first frame update
     void Start()
@@ -141,28 +142,20 @@ public class PoleVaultManager : MonoBehaviour
                 inCinematic = false;
                 leaderboardManager.cinematicCamera.gameObject.SetActive(false);
                 playerCamera.enabled = true;
-                //TODO check for pr below opening
-                heightPickCanvas.enabled = true;
-                heightPickSlider.minValue = openingHeight;
-                heightPickSlider.maxValue = 156; //TODO add pr
+                if (PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.polevault > openingHeight)
+                {
+                    heightPickCanvas.enabled = true;
+                    heightSelectCamera.enabled = true;
+                    controlsCanvas.enabled = false;
+                    heightText.text = "Open at: " + (int)(currentBarHeight / 12) + "'" + currentBarHeight % 12 + "''";
+                }
             }
         } else
         {
-            if (controlsCanvas.enabled == false)
+            if (controlsCanvas.enabled == false && !heightSelectCamera.enabled)
             {
                 controlsCanvas.enabled = true;
             }
-        }
-        if (heightPickCanvas.enabled)
-        {
-            if (heightPickSlider.value%6 <3) //snaps slider to 6 inch increments
-            {
-                heightPickSlider.value -= heightPickSlider.value % 6;
-            } else
-            {
-                heightPickSlider.value += 6-(heightPickSlider.value % 6);
-            }
-            heightText.text = (int)(heightPickSlider.value / 12) + "'" + heightPickSlider.value % 12 + "''";
         }
         if (poleVaultPole.GetComponent<Animator>().GetBool("Launched")) //when the player is launched in the air
         {
@@ -521,12 +514,29 @@ public class PoleVaultManager : MonoBehaviour
     public void selectOpeningHeight()
     {
         heightPickCanvas.enabled = false;
-        if (heightPickSlider.value != openingHeight)
+        heightSelectCamera.enabled = false;
+        controlsCanvas.enabled = true;
+        if (currentBarHeight != openingHeight)
         {
-            currentBarHeight = heightPickSlider.value;
             updateBarRaiseHeight();
-            leaderboardManager.passToHeight(currentBarHeight);
+            leaderboardManager.passToHeight(currentBarHeight, openingHeight);
         }
+        openingHeight = currentBarHeight;
+    }
+
+    public void changeBarHeight(int direction)
+    {
+        currentBarHeight += direction * 6;
+        if (currentBarHeight < openingHeight)
+        {
+            currentBarHeight = openingHeight;
+        }
+        if (currentBarHeight > PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.polevault)
+        {
+            currentBarHeight -= 6;
+        }
+        heightText.text = "Open at: " + (int)(currentBarHeight / 12) + "'" + currentBarHeight % 12 + "''";
+        updateBarRaiseHeight();
     }
         
 

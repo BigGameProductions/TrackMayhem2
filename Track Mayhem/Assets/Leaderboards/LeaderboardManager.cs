@@ -156,43 +156,60 @@ public class LeaderboardManager : MonoBehaviour
 
     }
 
-    public void passToHeight(float height)
+    public void passToHeight(float height, float openingHeight)
     {
-        currentBarHeight = height - (eventName == "HighJump" ? 2 : 6);
-        leaderBoardHeader.SetActive(true);
-        currentEventBanners = simulateBarMark(currentEventBanners);
-        currentEventBanners = simulateBarMark(currentEventBanners);
-        currentEventBanners = simulateBarMark(currentEventBanners);
-        List<PlayerBanner> newBannerList = new List<PlayerBanner>();
-        for (int i = 0; i < currentEventBanners.Length; i++)
+        currentBarHeight = openingHeight;
+        while (currentBarHeight < height)
         {
-            if (currentEventBanners[i].mark3 != -10000)
+            currentEventBanners = simulateBarMark(currentEventBanners);
+            currentEventBanners = simulateBarMark(currentEventBanners);
+            currentEventBanners = simulateBarMark(currentEventBanners);
+            List<PlayerBanner> newBannerList = new List<PlayerBanner>();
+            for (int i = 0; i < currentEventBanners.Length; i++)
             {
-                newBannerList.Add(currentEventBanners[i]); //adds only the passing players to the leaderboard
-            }
-            else
-            {
-                if (openingHeight == currentBarHeight - 6)
+                if (currentEventBanners[i].mark3 != -10000)
                 {
-                    currentEventBanners[i].bestMark = -100000; //no height
+                    newBannerList.Add(currentEventBanners[i]); //adds only the passing players to the leaderboard
                 }
                 else
                 {
-                    currentEventBanners[i].bestMark = currentBarHeight - 12;
+                    Debug.Log("failed");
+                    if (openingHeight == currentBarHeight)
+                    {
+                        currentEventBanners[i].bestMark = -100000; //no height
+                    }
+                    else
+                    {
+                        currentEventBanners[i].bestMark = currentBarHeight - (eventName == "HighJump" ? 2 : 6);
+                    }
+                    finalBarHeightsBanners.Add(currentEventBanners[i]);
                 }
-                finalBarHeightsBanners.Add(currentEventBanners[i]);
+            }
+            currentEventBanners = newBannerList.ToArray(); //converts the list back to the array for use
+            currentBarHeight += eventName == "HighJump" ? 2 : 6;
+            foreach (PlayerBanner pb in currentEventBanners)
+            {
+                if (pb.mark1 == -10)
+                {
+                    pb.lastMakeAttempt = 1;
+                }
+                else if (pb.mark2 == -10)
+                {
+                    pb.lastMakeAttempt = 2;
+                    pb.totalFails += 1;
+                }
+                else if (pb.mark3 == -10)
+                {
+                    pb.lastMakeAttempt = 3;
+                    pb.totalFails += 2;
+                }
+                pb.mark1 = -100;
+                pb.mark2 = -100;
+                pb.mark2 = -100;
             }
         }
-        currentEventBanners = newBannerList.ToArray(); //converts the list back to the array for use
-        foreach (PlayerBanner pb in currentEventBanners)
-        {
-            pb.mark1 = -100;
-            pb.mark2 = -100;
-            pb.mark3 = -100;
-        }
-        currentBarHeight = height;
+       
         
-        setLeaderboard(currentEventBanners, 4);
     }
 
     public void simRemainingJumps(float height = 1200) //simulates and sorts all banners for end display
@@ -1112,7 +1129,7 @@ public class LeaderboardManager : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (eventName == "HighJump" || eventName == "PoleVault")
+        if ((eventName == "HighJump" || eventName == "PoleVault") && !cinematicCamera.gameObject.activeInHierarchy)
         {
             for (int i = currentEventBanners.Length; i < 8; i++) //remove banners that are not needed
             {

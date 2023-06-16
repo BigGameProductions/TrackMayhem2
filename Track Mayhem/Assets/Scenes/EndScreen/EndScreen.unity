@@ -5139,7 +5139,7 @@ MonoBehaviour:
   - {fileID: 706995673}
   - {fileID: 706995672}
   - {fileID: 706995671}
-  cinematicCamera: {fileID: 0}
+  cinematicCamera: {fileID: 1657519615}
   leaderBoardHeader: {fileID: 706995670}
   personalBanner: {fileID: 706995668}
   pictogramImage: {fileID: 323767230}

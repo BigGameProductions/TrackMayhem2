@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 
 public class HighJumpManager : MonoBehaviour
 {
@@ -85,6 +86,12 @@ public class HighJumpManager : MonoBehaviour
 
     [SerializeField] private Button infoButton;
 
+    [SerializeField] private Camera heightSelectCamera;
+    [SerializeField] private Canvas heightPickCanvas;
+    [SerializeField] private TextMeshProUGUI heightText;
+
+    [SerializeField] private EventSystem ev;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -153,7 +160,21 @@ public class HighJumpManager : MonoBehaviour
                 Rigidbody rb = player.GetComponent<Rigidbody>();
                 rb.useGravity = true;
                 rb.constraints = RigidbodyConstraints.FreezeRotation;
-                rb.AddForce(new Vector3(7, anglePower*12, 0), ForceMode.Impulse);
+                float averageSpeed = runMeter.getAverageSpeed(); //gets average running speed
+                float runPowerPercentage = 0;
+                //float inPitSpeed = -5; //default for the pit
+                //float maxPitChange = 3; //max change from default on each side
+                if (averageSpeed <= 8500) //sets percentage based on distance from 0 to 8500. 8500 is considered the perfect run
+                {
+                    runPowerPercentage = averageSpeed / 8500;
+                    //inPitSpeed += maxPitChange * (1 - runPowerPercentage); //less in the pit
+                }
+                else //sets from 0 to 4500 for the top part
+                {
+                    runPowerPercentage = 1 - ((averageSpeed - 8500) / 4500);
+
+                }
+                rb.AddForce(new Vector3(runPowerPercentage*7, anglePower*9 + runPowerPercentage*3, 0), ForceMode.Impulse);
                 player.GetComponentsInChildren<Animator>()[1].Play("HighJumpJump");
                 player.GetComponentsInChildren<Animator>()[1].speed = 1;
                 player.GetComponent<Animator>().enabled = false;
@@ -183,8 +204,8 @@ public class HighJumpManager : MonoBehaviour
         }
         if (player.transform.position.y < 226.5 && !isRunning && !over)
         {
-            Debug.Log(maxPlayerHeight + ":" + bar.transform.position.z*-3);
-            if (Math.Abs(startingBarHeight.z-bar.transform.position.z) < 0.005 && maxPlayerHeight >= 236+(float)((currentBarHeight - 84) * PublicData.spacesPerInch * 3))
+            Debug.Log(maxPlayerHeight + ":" + 233 + (float)((currentBarHeight - 84) * PublicData.spacesPerInch * 3));
+            if (Math.Abs(startingBarHeight.z-bar.transform.position.z) < 0.005 && maxPlayerHeight >= 233+(float)((currentBarHeight - 84) * PublicData.spacesPerInch * 3))
             {
                 Debug.Log("cleared");
                 updatePlayerBanner(-10); //code for a make
@@ -206,11 +227,18 @@ public class HighJumpManager : MonoBehaviour
                 inCinematic = false;
                 leaderboardManager.cinematicCamera.gameObject.SetActive(false);
                 playerCamera.enabled = true;
+                if (PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.highJump > openingHeight)
+                {
+                    heightPickCanvas.enabled = true;
+                    heightSelectCamera.enabled = true;
+                    controlsCanvas.enabled = false;
+                    heightText.text = "Open at: " + (int)(currentBarHeight / 12) + "'" + currentBarHeight % 12 + "''";
+                }
             }
         }
         else
         {
-            if (controlsCanvas.enabled == false)
+            if (controlsCanvas.enabled == false && !heightSelectCamera.enabled)
             {
                 controlsCanvas.enabled = true;
             }
@@ -249,6 +277,8 @@ public class HighJumpManager : MonoBehaviour
             }
 
         }*/
+
+
 
 
         IEnumerator waitForFall(float delay) //use this for later
@@ -364,6 +394,35 @@ public class HighJumpManager : MonoBehaviour
 
 
         }
+    }
+
+    public void selectOpeningHeight()
+    {
+        heightPickCanvas.enabled = false;
+        heightSelectCamera.enabled = false;
+        controlsCanvas.enabled = true;
+        if (currentBarHeight != openingHeight)
+        {
+            updateBarRaiseHeight();
+            leaderboardManager.passToHeight(currentBarHeight, openingHeight);
+        }
+        openingHeight = currentBarHeight;
+        ev.SetSelectedGameObject(null);
+    }
+
+    public void changeBarHeight(int direction)
+    {
+        currentBarHeight += direction * 2;
+        if (currentBarHeight < openingHeight)
+        {
+            currentBarHeight = openingHeight;
+        }
+        if (currentBarHeight > PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.highJump)
+        {
+            currentBarHeight -= 2;
+        }
+        heightText.text = "Open at: " + (int)(currentBarHeight / 12) + "'" + currentBarHeight % 12 + "''";
+        updateBarRaiseHeight();
     }
 
     public void onJumpButtonDown()
@@ -562,9 +621,9 @@ public class HighJumpManager : MonoBehaviour
             leaderboardManager.addMarkLabelToPlayer(3);
             leaderboardManager.showRecordBanner(1);
         }
-        else if (currentBarHeight > PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.polevault)
+        else if (currentBarHeight > PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.highJump)
         {
-            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.polevault = currentBarHeight;
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.highJump = currentBarHeight;
             leaderboardManager.addMarkLabelToPlayer(2);
             leaderboardManager.showRecordBanner(0);
         }

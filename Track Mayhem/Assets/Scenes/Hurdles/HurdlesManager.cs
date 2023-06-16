@@ -51,10 +51,14 @@ public class HurdlesManager : MonoBehaviour
 
     PlayerBanner currentPlayerBanner;
 
+    [SerializeField] GameObject basePlayer;
+    [SerializeField] HurdleCollisionDetector hcd;
+    private int hurdleHitCount = 0;
+
     // Start is called before the first frame update
     void Start()
     {
-        itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform); //inits the runner into the current scene
+        itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform, basePlayer); //inits the runner into the current scene
         controlCanvas.enabled = false;
         setText.enabled = false;
         foulImage.gameObject.SetActive(false);
@@ -83,6 +87,11 @@ public class HurdlesManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (hcd.hitCount != hurdleHitCount)
+        {
+            runningMeter.runningSpeed -= 100;
+            hurdleHitCount = hcd.hitCount;
+        }
         if (!leaderboardManager.cinematicCamera.gameObject.activeInHierarchy)
         {
             if (!runButton.gameObject.activeInHierarchy)
@@ -105,6 +114,7 @@ public class HurdlesManager : MonoBehaviour
             if (isRunning && player.transform.position.x <= -2161.52  && !finished)
             {
                 finished = true;
+                Debug.Log("hit : " + hurdleHitCount);
                 StartCoroutine(waitAfterFinish(2));
             }
             /*if (isRunning && competitorsList[3].transform.position.x <= -2161.52)
@@ -273,7 +283,6 @@ public class HurdlesManager : MonoBehaviour
             {
                 runningMeter.updateTimeElapsed();
                 eventTimer += Time.deltaTime;
-                runningMeter.barDecreaseSpeed = Math.Min(startingBarDecreaseSpeed + (eventTimer * 20), 400); //make the bar decrease faster as you go on
                 //runningMeter.speedPerClick = 75 + (eventTimer * 5);
             }
         }
@@ -318,6 +327,8 @@ public class HurdlesManager : MonoBehaviour
         yield return new WaitForSeconds(delay);
         SceneManager.LoadScene("EndScreen");
     }
+
+    
 
 }
 
