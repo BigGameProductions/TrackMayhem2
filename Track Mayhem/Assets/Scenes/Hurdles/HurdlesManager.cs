@@ -37,6 +37,8 @@ public class HurdlesManager : MonoBehaviour
     private float[] competitorsStartSpeedList = new float[8]; //start speed of all the competitors
     private float[] competitorsMaxSpeedList = new float[8]; //max speed of all the competitors
 
+    private bool[] competitorsMarkedTimeList = new bool[8]; //marked times of the competitors
+
 
     bool isRunning = false; //if gun has gone off
     bool runPressed = false; //if the run button is pressed
@@ -54,6 +56,10 @@ public class HurdlesManager : MonoBehaviour
     [SerializeField] GameObject basePlayer;
     [SerializeField] HurdleCollisionDetector hcd;
     private int hurdleHitCount = 0;
+
+    private float playerTime;
+
+    PlayerBanner[] laneOrders;
 
     // Start is called before the first frame update
     void Start()
@@ -90,6 +96,10 @@ public class HurdlesManager : MonoBehaviour
         if (hcd.hitCount != hurdleHitCount)
         {
             runningMeter.runningSpeed -= 100;
+            if (!player.GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Hurdle"))
+            {
+                runningMeter.runningSpeed = 0;
+            }
             hurdleHitCount = hcd.hitCount;
         }
         if (!leaderboardManager.cinematicCamera.gameObject.activeInHierarchy)
@@ -100,7 +110,7 @@ public class HurdlesManager : MonoBehaviour
                 runButton.gameObject.SetActive(true); //show controls
                 jumpButton.gameObject.SetActive(true);
                 runningMeter.runningBar.transform.parent.gameObject.SetActive(true); //show controls
-                /*PlayerBanner[] laneOrders = leaderboardManager.getPlayersInLaneOrder();
+                laneOrders = leaderboardManager.getPlayersInLaneOrder();
                 for (int i = 0; i < laneOrders.Length; i++)
                 {
                     if (laneOrders[i].isPlayer)
@@ -108,14 +118,24 @@ public class HurdlesManager : MonoBehaviour
                         player.transform.position = competitorsList[i].transform.position - new Vector3(-2.3f, 0, 0);
                         competitorsList[i].SetActive(false);
                     }
-                }*/
+                }
             }
             runningMeter.updateRunMeter();
             if (isRunning && player.transform.position.x <= -2161.52  && !finished)
             {
                 finished = true;
                 Debug.Log("hit : " + hurdleHitCount);
+                playerTime = eventTimer;
                 StartCoroutine(waitAfterFinish(2));
+            }
+            foreach (GameObject go in competitorsList)
+            {
+                if (go.transform.position.x < -2162.1 && !competitorsMarkedTimeList[Int32.Parse(go.name[4].ToString()) - 1])
+                {
+                    competitorsMarkedTimeList[Int32.Parse(go.name[4].ToString()) - 1] = true;
+                    PlayerBanner pb = laneOrders[Int32.Parse(go.name[4].ToString()) - 1];
+                    leaderboardManager.changeBannerBest(pb.flagNumber, pb.player, eventTimer);
+                }
             }
             /*if (isRunning && competitorsList[3].transform.position.x <= -2161.52)
             {
@@ -154,9 +174,9 @@ public class HurdlesManager : MonoBehaviour
             }
             if ((Input.GetKeyDown(KeyCode.P) || jumpPressed) && runningMeter.runMeterSlider.gameObject.activeInHierarchy && !finished && !foulImage.gameObject.activeInHierarchy)
             {
+                jumpPressed = false;
                 if (player.transform.position.x < -2125)
                 {
-                    jumpPressed = false;
                     usedLean = true;
                     jumpButton.gameObject.SetActive(false);
                     player.GetComponentInChildren<Animator>().Play("RunningLean");
@@ -278,11 +298,24 @@ public class HurdlesManager : MonoBehaviour
                 {
                     competitorsList[i].GetComponentInChildren<Animator>().Play("RunningLean");
                 }
+                for (int j = -1770; j > -1778 - 360; j -= 35)
+                {
+                    //Debug.Log(competitorsList[i].transform.position.x < j);
+                    if (competitorsList[i].transform.position.x < j && competitorsList[i].transform.position.x > j-5 && competitorsList[i].GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Running"))
+                    {
+                        competitorsList[i].GetComponentInChildren<Animator>().Play("Hurdle");
+                    }
+                }
+                competitorsList[i].GetComponentsInChildren<Transform>()[1].localEulerAngles = new Vector3(0, 0, 0);
+                if (competitorsList[i].GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Running"))
+                {
+                    competitorsList[i].GetComponentsInChildren<Transform>()[1].localPosition = new Vector3(0, 0, 0);
+                }
             }
+            eventTimer += Time.deltaTime;
             if (!finished)
             {
                 runningMeter.updateTimeElapsed();
-                eventTimer += Time.deltaTime;
                 //runningMeter.speedPerClick = 75 + (eventTimer * 5);
             }
         }
@@ -293,31 +326,31 @@ public class HurdlesManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         currentPlayerBanner = leaderboardManager.getPlayerBanner();
-        currentPlayerBanner.mark2 = eventTimer;
+        currentPlayerBanner.mark2 = playerTime;
         PersonalBests characterPB = PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests;
-        if (eventTimer < Int32.Parse(PublicData.gameData.leaderboardList[8][1][0]) / 100.0f) //game record
+        if (playerTime < Int32.Parse(PublicData.gameData.leaderboardList[8][1][0]) / 100.0f) //game record
         {
-            PublicData.gameData.personalBests.hurdles = eventTimer;
-            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hurdles = eventTimer;
+            PublicData.gameData.personalBests.hurdles = playerTime;
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hurdles = playerTime;
             leaderboardManager.addMarkLabelToPlayer(1);
             leaderboardManager.showRecordBanner(2);
         }
-        else if (eventTimer < PublicData.gameData.personalBests.hurdles || PublicData.gameData.personalBests.hurdles == 0) //if pr or first time doing it
+        else if (playerTime < PublicData.gameData.personalBests.hurdles || PublicData.gameData.personalBests.hurdles == 0) //if pr or first time doing it
         {
-            PublicData.gameData.personalBests.hurdles = eventTimer; //sets pr
-            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hurdles = eventTimer; //sets cb too
+            PublicData.gameData.personalBests.hurdles = playerTime; //sets pr
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hurdles = playerTime; //sets cb too
             leaderboardManager.addMarkLabelToPlayer(3);
             leaderboardManager.showRecordBanner(1);
 
         }
-        else if (eventTimer < characterPB.hundredMeter || characterPB.hundredMeter == 0)
+        else if (playerTime < characterPB.hundredMeter || characterPB.hundredMeter == 0)
         {
-            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hurdles = eventTimer;
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hurdles = playerTime;
             leaderboardManager.addMarkLabelToPlayer(2);
             leaderboardManager.showRecordBanner(0);
         }
         leaderboardManager.showCurrentPlayerMarks(currentPlayerBanner, 3); //updates and shows the player leaderboard
-        leaderboardManager.addPlayerTime(eventTimer); //adds player to the banners
+        leaderboardManager.addPlayerTime(playerTime); //adds player to the banners
         StartCoroutine(showEndScreen(3));
 
     }
@@ -334,3 +367,4 @@ public class HurdlesManager : MonoBehaviour
 
 //TODO fix lean going diffrent ways
 //TODO fix camera issues with end of race
+//TODO make all hurldes has hitboxes

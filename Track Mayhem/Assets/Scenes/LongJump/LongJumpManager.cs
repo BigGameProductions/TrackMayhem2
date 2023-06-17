@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Linq;
 using TMPro;
+using UnityEngine.EventSystems;
 
 public class LongJumpManager : MonoBehaviour
 {
@@ -40,6 +41,10 @@ public class LongJumpManager : MonoBehaviour
 
     private bool isFoul = false; //tells if the current jump is a foul
 
+    private float ljSpaces = 3.08333333333f/12;
+
+    [SerializeField] EventSystem ev;
+
 
     [SerializeField] private Image foulImage; //is the image that appears when you foul or don't land in the sand
 
@@ -65,6 +70,8 @@ public class LongJumpManager : MonoBehaviour
     private float startingBoardX; //x position for 8ft board
 
     bool firstTimeShow = false; //for first time objects to show
+
+    public bool godMode;
 
     
     // Start is called before the first frame update
@@ -98,12 +105,18 @@ public class LongJumpManager : MonoBehaviour
 
         foulImage.gameObject.SetActive(false); //hide the foul icon
 
-        runningMeter.barDecreaseSpeed -= PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel * 10; //lowers bar slower
-        runningMeter.speedPerClick -= PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel * 0.5f; //raises bar a bit slower
+        /*runningMeter.barDecreaseSpeed -= PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel * 10; //lowers bar slower
+        runningMeter.speedPerClick -= PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel * 0.5f; //raises bar a bit slower*/
 
-        jumpMeter.jumpBarSpeed -= PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel * 20; //makes the jump abr go slower
+        //jumpMeter.jumpBarSpeed -= PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel * 20; //makes the jump abr go slower
 
-        pullInLegPower += PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel * 0.5f;
+        pullInLegPower += curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 5);
+
+        boardDistance = PublicData.getCharactersInfo(PublicData.currentRunnerUsing).eventPrefs.longJumpBoard;
+        boardChangeButton.GetComponentInChildren<TextMeshProUGUI>().text = "Board: " + boardDistance / 12 + "'";
+        boardChangeText.text = "Change board to: " + boardDistance / 12 + "'";
+        jumpBoard.transform.position = new Vector3(startingBoardX - (boardDistance*ljSpaces), jumpBoard.transform.position.y, jumpBoard.transform.position.z);
+
 
     }
 
@@ -213,12 +226,6 @@ public class LongJumpManager : MonoBehaviour
                 jumpPressed = false;
                 jumpMeter.MakeJump();
                 float jumpMeterSpeed = jumpMeter.jumpMeterSpeed;
-                if (player.transform.position.x > -1895.73) //testing got jumping foul
-                {
-                    isFoul = true;
-                    foulImage.gameObject.SetActive(true);
-                    foulImage.GetComponent<Animator>().Play("FoulSlide");
-                }
                 if (jumpMeterSpeed > 66.6 && jumpMeterSpeed < 132.6)
                 {
                     jumpSparkle.startColor = Color.green;
@@ -257,6 +264,7 @@ public class LongJumpManager : MonoBehaviour
                     player.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0); //makes the player stop the jump
                 }
                 player.GetComponentInChildren<Animator>().Play("LegPull"); //pulls in legs
+                player.GetComponentInChildren<Animator>().speed = 1; //making the animation match the sunning speed
                 jumpButton.SetActive(false);
 
             }
@@ -265,7 +273,7 @@ public class LongJumpManager : MonoBehaviour
                 player.GetComponent<Rigidbody>().useGravity = false; //stops the jumping animation loop
                 jumpButton.SetActive(false);
                 StartCoroutine(legKickVelocity(0.2f)); //stop the landing from going forever
-                if (player.transform.position.x < -1890) //checks if the player is on the sandpit
+                if (player.transform.position.x < -1890 || player.transform.position.x  > -1854) //checks if the player is on the sandpit
                 {
                     isFoul = true;
                     foulImage.gameObject.SetActive(true);
@@ -287,16 +295,23 @@ public class LongJumpManager : MonoBehaviour
         controlsCanvas.enabled = false;
         boardChangeButton.SetActive(false);
         boardChangeCamera.enabled = true;
+        if (leaderboardManager.leaderBoardVisble()) //hides the leaderboard if the player clicks
+        {
+            leaderboardManager.hidePersonalBanner();
+        }
     }
 
     public void changeBoardPosition(int direction)
     {
         boardDistance += direction * 12;
-        if (boardDistance < 96)
+        if (boardDistance < 48)
         {
-            boardDistance = 96;
+            boardDistance = 48;
         }
-        jumpBoard.transform.position = new Vector3(((96-boardDistance)*PublicData.spacesPerInch)+startingBoardX,jumpBoard.transform.position.y, jumpBoard.transform.position.z);
+        if (boardDistance > 600) {
+            boardDistance = 600;
+        }
+        jumpBoard.transform.position = new Vector3(startingBoardX -(boardDistance*ljSpaces),jumpBoard.transform.position.y, jumpBoard.transform.position.z);
         boardChangeText.text = "Change board to: " + boardDistance / 12 + "'";
     }
 
@@ -307,6 +322,8 @@ public class LongJumpManager : MonoBehaviour
         boardChangeButton.SetActive(true);
         boardChangeCamera.enabled = false;
         boardChangeButton.GetComponentInChildren<TextMeshProUGUI>().text = "Board: " + boardDistance / 12 + "'";
+        PublicData.getCharactersInfo(PublicData.currentRunnerUsing).eventPrefs.longJumpBoard = boardDistance;
+        ev.SetSelectedGameObject(null);
     }
     IEnumerator jumpMeterTimeLimit(float time) //waits x seconds before saying the player has taken too long with their jumping meter
     {
@@ -321,7 +338,7 @@ public class LongJumpManager : MonoBehaviour
             yield return new WaitForSeconds(1.5f);
             runningCamera.enabled = false;
             updatePlayerBanner(-1000);
-            afterJump();
+            afterJump(false);
         }
 
     }
@@ -332,7 +349,7 @@ public class LongJumpManager : MonoBehaviour
         runningCamera.enabled = false; //stops the running loop
         player.GetComponentInChildren<Animator>().speed = 1; //normal playing speed instead of running speed
         updatePlayerBanner(-1000); //update the banner to foul
-        afterJump();
+        afterJump(false);
     }
 
     IEnumerator legKickVelocity(float time) //holds the velocity of the kicking
@@ -345,6 +362,7 @@ public class LongJumpManager : MonoBehaviour
     IEnumerator waitAfterJump() //holds the player for x seconds after they jump
     {
         yield return new WaitForSeconds(1);
+        bool record = false;
         //-1899.73 At 0 feet 
         //-1864.7 At 19 feet
         //-1875.03 At 16 feet
@@ -352,16 +370,17 @@ public class LongJumpManager : MonoBehaviour
         {
             updatePlayerBanner(-1000);
         } else {
-            float spacesPerInch = PublicData.spacesPerInch; //16 feet minus 19 feet divided by the inches in 3 feet
-            float totalInches = (1930.4792068f + player.transform.position.x) / spacesPerInch; //finds total inches that have been jumped (distance jumped divided by spaces per inch of the sand)
-            if (currentJumpNumber == 0) //fix random bugs for jumping distance
+            float spacesPerInch = ljSpaces; //16 feet minus 19 feet divided by the inches in 3 feet
+            //was 1930.4792068f
+            float totalInches = (-1*jumpBoard.transform.position.x + player.transform.position.x) / spacesPerInch; //finds total inches that have been jumped (distance jumped divided by spaces per inch of the sand)
+            /*if (currentJumpNumber == 0) //fix random bugs for jumping distance
             {
                 totalInches -= 2;
             } else
             {
                 totalInches += 5;
-            }
-            totalInches += boardDistance - 96;
+            }*/
+            //totalInches += boardDistance - 96;
             if (totalInches > Int32.Parse(PublicData.gameData.leaderboardList[1][1][0])/100.0f) //game record
             {
                 PublicData.gameData.personalBests.longJump = totalInches;
@@ -370,6 +389,7 @@ public class LongJumpManager : MonoBehaviour
                 leadF.checkForOwnPlayer(1, 20); //checks to make sure it can stay in the top 20
                 leaderboardManager.addMarkLabelToPlayer(1);
                 leaderboardManager.showRecordBanner(2);
+                record = true;
             }
             else if (totalInches > PublicData.gameData.personalBests.longJump) //checks for a new personal record
             {
@@ -379,16 +399,18 @@ public class LongJumpManager : MonoBehaviour
                 PublicData.gameData.personalBests.longJump = leaderboardManager.roundToNearest(0.25f,totalInches);
                 PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.longJump = leaderboardManager.roundToNearest(0.25f, totalInches); ;
                 leaderboardManager.addMarkLabelToPlayer(3);
-
-            } else if (totalInches > PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.longJump)
+                record = true;
+            }
+            else if (totalInches > PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.longJump)
             {
                 PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.longJump = leaderboardManager.roundToNearest(0.25f, totalInches); ;
                 leaderboardManager.addMarkLabelToPlayer(2);
                 leaderboardManager.showRecordBanner(0);
+                record = true;
             }
             updatePlayerBanner(leaderboardManager.roundToNearest(0.25f, totalInches));
         }
-        afterJump();
+        afterJump(record);
        
     }
     
@@ -410,16 +432,18 @@ public class LongJumpManager : MonoBehaviour
         
     }
 
-    private void afterJump()
+    private void afterJump(bool record)
     {
+        boardChangeButton.gameObject.SetActive(false);
         jumpButton.SetActive(false);
         leaderboardManager.showCurrentPlayerMarks(currentPlayerBanner, 3); //updates and shows the player leaderboard
         currentJumpNumber++; //inceases to the next jump
+        player.GetComponentInChildren<Animator>().speed = 1;
         foulImage.gameObject.SetActive(false);
         if (isFoul) //if scratched
         {
             player.GetComponentInChildren<Animator>().Play("Upset"); //Animation for after the jump
-        } else if (true) //if got a personal record TODO
+        } else if (record) 
         {
             player.GetComponentInChildren<Animator>().Play("Exited"); //Animation for after the jump
         } else
@@ -428,7 +452,7 @@ public class LongJumpManager : MonoBehaviour
         }
         frontCamera.enabled = true;
         jumpingCamera.enabled = false;
-        player.transform.position = new Vector3(-1966, 226.73f, -370.56f); //makes the player in the middle of the runway for show
+        player.transform.position = new Vector3(-1874.80005f, 226.729996f, -369.709991f); //makes the player in the middle of the runway for show
         runningMeter.runningSpeed = 0; //resets running speed
         StartCoroutine(waitAfterPersonalBanner(3));
     }
@@ -459,6 +483,13 @@ public class LongJumpManager : MonoBehaviour
         leaderboardManager.showUpdatedLeaderboard();
     }
 
+
+   private float curveValue(float value, float maxValue)
+    {
+        float aVal = (float)(maxValue / Math.Sqrt(10));
+        return (float)(aVal * Math.Sqrt(value));
+    }
+
     IEnumerator jumpMeterHold(float time) //holds the meter forzen for time so you can she what it landed on
     {
         yield return new WaitForSeconds(time);
@@ -472,14 +503,18 @@ public class LongJumpManager : MonoBehaviour
         {
             powerPercent = 1 - ((averageSpeed - 8500) / 4500);
         }
-        float power = 5 + PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel * 1;
-        power += PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel * 0.1f;
+        //curve formulas
+        float power = (float)(8.5f + curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 6));
+        power += curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 1);
+        power += curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 2);
+        if (godMode) powerPercent = 1;
         power *= powerPercent;
         float jumpPercent = 1 - (Math.Abs(100 - jumpMeter.jumpMeterSpeed) / 100);
+        if (godMode) jumpPercent = 1;
         power *= jumpPercent;
         power += 10;
         player.GetComponentInChildren<Animator>().Play("LongJump");
-        player.GetComponentInChildren<Animator>().speed = power * powerToAnimationSpeedRatio;
+        player.GetComponentInChildren<Animator>().speed = 1- power * powerToAnimationSpeedRatio;
         player.GetComponent<Rigidbody>().velocity = new Vector3(power, power*0.6f, 0); //make charcter jump
         player.GetComponent<Rigidbody>().useGravity = true;
         jumpButton.SetActive(true); //allows pike

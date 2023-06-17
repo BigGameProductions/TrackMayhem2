@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 
 public class PoleVaultManager : MonoBehaviour
 {
@@ -71,6 +72,8 @@ public class PoleVaultManager : MonoBehaviour
     private Vector3 playerPikeRotation = new Vector3(-3, 0, 10);
 
     private int currentJumpNumber = 0;
+
+    [SerializeField] EventSystem ev;
 
 
     bool inCinematic = true; //changes to false once cinematic is over
@@ -522,6 +525,7 @@ public class PoleVaultManager : MonoBehaviour
             leaderboardManager.passToHeight(currentBarHeight, openingHeight);
         }
         openingHeight = currentBarHeight;
+        ev.SetSelectedGameObject(null);
     }
 
     public void changeBarHeight(int direction)

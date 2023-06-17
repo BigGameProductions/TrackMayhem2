@@ -40,6 +40,11 @@ public class DiscusManager : MonoBehaviour
 
     private float[] perfectPiviotPoints = new float[] { 0.566f, 0.6733f, 0.8f };
     private float[] piviotPercents = new float[3];
+    private float[] secondPiviotPercents = new float[3];
+
+    private GameObject[] pivotBars = new GameObject[3];
+
+    private int ringAnimationStage = 0;
 
     private int jumpClicks = 0; //amount of times the player has clicked for the meter
 
@@ -53,13 +58,13 @@ public class DiscusManager : MonoBehaviour
         shotput.transform.localPosition = new Vector3(-0.00200000009f, 0.140000001f, 0.0329999998f); //alligns shot to player hand
         shotput.transform.localEulerAngles = new Vector3(-94.45f, 76.457f,-75.442f); //alligns shot to player hand
         player.GetComponentInChildren<Animator>().Play("DiscusThrow");
-        player.GetComponentInChildren<Animator>().speed = 0;
         player.GetComponentsInChildren<Transform>()[1].eulerAngles = new Vector3(0, 90, 0);
         ringAnimation.speed = 0;
         controlsCanvas.enabled = false;
         ringAnimation.gameObject.SetActive(false);
         jumpButton.gameObject.SetActive(false);
         shotput.GetComponent<BoxCollider>().enabled = false;
+        player.GetComponentInChildren<Animator>().speed = 0;
     }
 
 
@@ -67,6 +72,41 @@ public class DiscusManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (ringAnimationStage == 2 && ringAnimation.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.99)
+        {
+            ringAnimationStage = 3;
+            player.GetComponentInChildren<Animator>().speed = 0.6f;
+            ringAnimation.gameObject.SetActive(false);
+            foreach (GameObject go in pivotBars)
+            {
+                if (go != null)
+                {
+                    Destroy(go);
+                }
+            }
+            pivotBars[0] = null;
+            pivotBars[0] = null;
+            pivotBars[0] = null;
+        }
+        if (ringAnimationStage == 1 && ringAnimation.GetCurrentAnimatorStateInfo(0).normalizedTime>0.99)
+        {
+            ringAnimation.Play("RingBarAnimationsBack");
+            jumpClicks = 0;
+            ringAnimationStage = 2;
+            ringAnimation.speed = 0.85f;
+            player.GetComponentInChildren<Animator>().speed = 0.3f;
+            foreach (GameObject go in pivotBars)
+            {
+                if (go != null)
+                {
+                    Destroy(go);
+                }
+            }
+            pivotBars[0] = null;
+            pivotBars[0] = null;
+            pivotBars[0] = null;
+        }
+       
         if (shotput.transform.position.y < 227.5 && !measure && !isRunning)
         {
             measure = true;
@@ -86,7 +126,7 @@ public class DiscusManager : MonoBehaviour
             shotCamera.transform.eulerAngles = new Vector3(30, 0, 0);
             shotput.transform.eulerAngles = new Vector3(0, 0, 0);
         }
-        if (player.GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 0.35 && !measure)
+        /*if (player.GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 0.35 && !measure)
         {
             runButton.gameObject.SetActive(false);
             runMeter.runMeterSlider.gameObject.SetActive(false);
@@ -99,7 +139,7 @@ public class DiscusManager : MonoBehaviour
                 ringAnimation.speed = 0.5f;
             }
             player.GetComponentInChildren<Animator>().speed = 0.6f;
-        }
+        }*/
         if (playerCamera.enabled && !leaderboardManager.cinematicCamera.gameObject.activeInHierarchy && isRunning) //runs when the player is in the running stage
         {
             runMeter.updateRunMeter();
@@ -117,21 +157,13 @@ public class DiscusManager : MonoBehaviour
             didThrow = true;
             shotput.transform.parent = null;
             shotput.GetComponent<Rigidbody>().useGravity = true; //makes it able to fall
-            float averageSpeed = runMeter.getAverageSpeed(); //gets average running speed
             float totalThrowPower = 0;
-            float runPowerPercent = 0;
-            if (averageSpeed <= 8500) //sets percentage based on distance from 0 to 8500. 8500 is considered the perfect run
-            {
-                runPowerPercent = averageSpeed / 8500;
-            }
-            else //sets from 0 to 4500 for the top part
-            {
-                runPowerPercent = 1 - ((averageSpeed - 8500) / 4500);
-            }
-            totalThrowPower += runPowerPercent;
-            totalThrowPower += piviotPercents[0];
-            totalThrowPower += piviotPercents[1];
+            totalThrowPower += piviotPercents[0]/2;
+            totalThrowPower += piviotPercents[1]/2;
             totalThrowPower += piviotPercents[2];
+            totalThrowPower += secondPiviotPercents[0]/2;
+            totalThrowPower += secondPiviotPercents[1]/2;
+            totalThrowPower += secondPiviotPercents[2];
             float power = 7 * totalThrowPower;
             power += 2;
             shotput.GetComponent<Rigidbody>().AddForce(new Vector3(-1 * power, power * 0.5f, 0), ForceMode.Impulse); //adds the throwing force
@@ -150,7 +182,7 @@ public class DiscusManager : MonoBehaviour
             }
             if (player.GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime <= 0.35)
             {
-                player.GetComponentInChildren<Animator>().speed = (float)(0.5 * (speed / PublicData.averageSpeedDuringRun));
+                //player.GetComponentInChildren<Animator>().speed = (float)(0.5 * (speed / PublicData.averageSpeedDuringRun));
             }
             runMeter.updateTimeElapsed();
 
@@ -243,7 +275,6 @@ public class DiscusManager : MonoBehaviour
         ringAnimation.speed = 0;
         ringAnimation.gameObject.SetActive(false);
         jumpButton.gameObject.SetActive(false);
-        runMeter.runMeterSlider.gameObject.SetActive(true);
         runButton.gameObject.SetActive(true);
         runMeter.runningSpeed = 0;
         player.GetComponentsInChildren<Transform>()[1].localPosition = new Vector3(0, 0, 0);
@@ -257,30 +288,49 @@ public class DiscusManager : MonoBehaviour
 
     public void runButtonPressed()
     {
-        if (playerCamera.enabled && !leaderboardManager.cinematicCamera.gameObject.activeInHierarchy && isRunning && runMeter.runMeterSlider.gameObject.activeInHierarchy)
+        if (leaderboardManager.leaderBoardVisble()) //hides the leaderboard if the player clicks
         {
-            infoButton.gameObject.SetActive(false);
-            runMeter.increaseHeight();
-            if (leaderboardManager.leaderBoardVisble()) //hides the leaderboard if the player clicks
-            {
-                leaderboardManager.hidePersonalBanner();
-            }
+            leaderboardManager.hidePersonalBanner();
         }
+        jumpButton.gameObject.SetActive(true);
+        player.GetComponentInChildren<Animator>().speed = 0.2f;
+        ringAnimation.gameObject.SetActive(true);
+        ringAnimation.Play("RingBarAnimations");
+        ringAnimationStage = 1;
+        runButton.gameObject.SetActive(false);
+        ringAnimation.speed = 0.65f;
+        isRunning = false;
     }
 
     public void jumpButtonPressed()
     {
         if (!isRunning && jumpClicks < 3)
         {
-            Instantiate(ringAnimation.gameObject.GetComponentsInChildren<Transform>()[1], ringAnimation.transform);
+            Transform tf = Instantiate(ringAnimation.gameObject.GetComponentsInChildren<Transform>()[1], ringAnimation.transform);
             float clickTime = ringAnimation.GetCurrentAnimatorStateInfo(0).normalizedTime;
-            float timeDiff = Math.Abs(perfectPiviotPoints[jumpClicks] - clickTime);
+            float timeDiff = 1;
+            if (ringAnimationStage == 1)
+            {
+                timeDiff = Math.Abs(perfectPiviotPoints[jumpClicks] - clickTime);
+            }
+            else
+            {
+                timeDiff = Math.Abs(1-perfectPiviotPoints[2-jumpClicks] - clickTime);
+            }
             float totalPowerPercentage = 0;
             if (timeDiff < 0.05)
             {
                 totalPowerPercentage = 1 - (timeDiff / 0.05f);
             }
-            piviotPercents[jumpClicks] = totalPowerPercentage;
+            if (ringAnimationStage == 1)
+            {
+                piviotPercents[jumpClicks] = totalPowerPercentage;
+
+            } else
+            {
+                secondPiviotPercents[jumpClicks] = totalPowerPercentage;
+            }
+            pivotBars[jumpClicks] = tf.gameObject;
             jumpClicks++;
         }
 

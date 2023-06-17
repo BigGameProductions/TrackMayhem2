@@ -5368,22 +5368,22 @@ PrefabInstance:
     - target: {fileID: 127824415785865332, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1048310999}
     - target: {fileID: 127824415785865332, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: jumpButtonPressed
       objectReference: {fileID: 0}
     - target: {fileID: 127824415785865332, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: ShotputManager, Assembly-CSharp
+      value: DiscusManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 127824416417995680, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.63
       objectReference: {fileID: 0}
     - target: {fileID: 127824416417995680, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 127824416783502255, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_text
@@ -5395,15 +5395,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 127824416806786617, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.63
       objectReference: {fileID: 0}
     - target: {fileID: 127824416806786617, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 127824416806786617, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 0.63
       objectReference: {fileID: 0}
     - target: {fileID: 127824416809933534, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_IsActive
@@ -5513,6 +5513,10 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 127824417794950265, guid: d077e6698862e4979974e57da8147e7b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 127824417807774298, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
       value: 1
@@ -5520,14 +5524,14 @@ PrefabInstance:
     - target: {fileID: 127824417807774298, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1048310999}
     - target: {fileID: 127824417807774298, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: runButtonPressed
       objectReference: {fileID: 0}
     - target: {fileID: 127824417807774298, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: ShotputManager, Assembly-CSharp
+      value: DiscusManager, Assembly-CSharp
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d077e6698862e4979974e57da8147e7b, type: 3}
@@ -7818,7 +7822,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 933152170}
   m_LocalRotation: {x: 0.1682457, y: -0, z: -0, w: 0.98574513}
-  m_LocalPosition: {x: -0.04, y: 2.0900016, z: -2.767}
+  m_LocalPosition: {x: -0.04, y: 2.0900016, z: -3.156}
   m_LocalScale: {x: 0.33333334, y: 0.33333334, z: 0.33333337}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8359,8 +8363,8 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1319040970}
   m_LocalRotation: {x: 0.5515723, y: -0, z: -0, w: 0.83412707}
-  m_LocalPosition: {x: 0, y: 0, z: -278.1}
-  m_LocalScale: {x: 2, y: 3, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -278.6}
+  m_LocalScale: {x: 2.5, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1862687024}
@@ -8369,7 +8373,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 66.95, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0.4, y: 173.20001}
+  m_AnchoredPosition: {x: 0.4, y: 173}
   m_SizeDelta: {x: 16, y: 9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!65 &1375609124
@@ -13499,9 +13503,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   eventName: Discus
   useSeeded: 1
-  seededMark: 360
+  seededMark: 1200
   seedSpreadDown: 60
-  seedSpreadUp: 24
+  seedSpreadUp: 60
   seedRoundInches: 0.25
   leaderboardBanners:
   - {fileID: 1307321860}

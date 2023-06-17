@@ -5628,7 +5628,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 467020785}
   m_LocalRotation: {x: 0, y: 0.98574466, z: -0.1682485, w: 0}
-  m_LocalPosition: {x: 0.15, y: 1.77, z: 2.93}
+  m_LocalPosition: {x: 0.1, y: 1.77, z: 3.6}
   m_LocalScale: {x: 0.33333334, y: 0.33333334, z: 0.33333337}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5803,6 +5803,24 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7fa885e16294442098e07e2584c273dd, type: 3}
+--- !u!1 &695394296 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7223149245748267872, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
+  m_PrefabInstance: {fileID: 1848461592}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &695394300
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 695394296}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 7078.416, y: 4089.3713, z: 57.609226}
+  m_Center: {x: -3539.2063, y: 2044.6849, z: -28.804626}
 --- !u!1 &703105422
 GameObject:
   m_ObjectHideFlags: 0
@@ -6164,10 +6182,11 @@ MonoBehaviour:
   frontCamera: {fileID: 467020788}
   runningSpeedRatio: 0.004
   animationRunningSpeedRatio: 0.008
-  powerToAnimationSpeedRatio: 0.07
+  powerToAnimationSpeedRatio: 0.02
   pullInLegPower: 7
   jumpButton: {fileID: 1037329393}
   runButton: {fileID: 1146094041}
+  ev: {fileID: 2038018837}
   foulImage: {fileID: 101636708}
   sandEffect: {fileID: 1807054024}
   jumpSparkle: {fileID: 165454587}
@@ -6180,6 +6199,7 @@ MonoBehaviour:
   jumpBoard: {fileID: 1848461594}
   boardChangeCamera: {fileID: 1873397050}
   boardChangeText: {fileID: 2065781385}
+  godMode: 0
 --- !u!4 &1139171310
 Transform:
   m_ObjectHideFlags: 0
@@ -6403,8 +6423,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 354.33008, y: 118.10989, z: 6.294158e-13}
-  m_Center: {x: -2279.042, y: 3951.5752, z: 2.1058221e-11}
+  m_Size: {x: 354.33, y: 118.11015, z: 9.745022}
+  m_Center: {x: -2279.042, y: 3951.5752, z: -4.8725133}
 --- !u!114 &1353255058 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1107348416157956522, guid: 76f6e4cd7ecc94f0db66c1d8656e5288, type: 3}
@@ -6650,7 +6670,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Board: 8'''
+  m_text: 'Board: 4'''
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1317bf442eeb4414aa12873bd4d6f889, type: 2}
   m_sharedMaterial: {fileID: -6847366294586650220, guid: 1317bf442eeb4414aa12873bd4d6f889, type: 2}
@@ -6677,7 +6697,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 28.55
+  m_fontSize: 25.6
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -6713,7 +6733,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 1.9528198, w: 3.0436401}
+  m_margin: {x: 6.5286865, y: 0, z: 5.4211426, w: 4.2677917}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -12246,6 +12266,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1142876769911877907, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.99644303
+      objectReference: {fileID: 0}
+    - target: {fileID: 1142876769911877907, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.0261201
+      objectReference: {fileID: 0}
+    - target: {fileID: 1142876769911877907, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -8.48
+      objectReference: {fileID: 0}
+    - target: {fileID: 1142876769911877907, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -102.6
+      objectReference: {fileID: 0}
     - target: {fileID: 1622703310411851159, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
       propertyPath: m_Name
       value: LongJumpBoard8ft
@@ -12257,6 +12293,38 @@ PrefabInstance:
     - target: {fileID: 2175247523573502571, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2841328091939001555, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3050672691419859902, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3188001463256235368, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1083
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508353387353329829, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.0180166
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508353387353329829, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.0052414
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508353387353329829, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 41.661
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508353387353329829, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -19.701
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508353387353329829, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.4
       objectReference: {fileID: 0}
     - target: {fileID: 6202900056485545337, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
       propertyPath: m_CastShadows
@@ -12594,7 +12662,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Change Board to 8'
+  m_text: Change Board to 4'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1317bf442eeb4414aa12873bd4d6f889, type: 2}
   m_sharedMaterial: {fileID: -6847366294586650220, guid: 1317bf442eeb4414aa12873bd4d6f889, type: 2}

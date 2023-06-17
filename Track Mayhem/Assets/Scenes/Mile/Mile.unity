@@ -10197,14 +10197,14 @@ PrefabInstance:
     - target: {fileID: 127824417807774298, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 767825509}
     - target: {fileID: 127824417807774298, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: buttonPressed
       objectReference: {fileID: 0}
     - target: {fileID: 127824417807774298, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: hundredMeterController, Assembly-CSharp
+      value: FifteenHundredManager, Assembly-CSharp
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d077e6698862e4979974e57da8147e7b, type: 3}

@@ -43,6 +43,8 @@ public class FourHundredManager : MonoBehaviour
     private float[] competitorsStartSpeedList = new float[8]; //start speed of all the competitors
     private float[] competitorsMaxSpeedList = new float[8]; //max speed of all the competitors
 
+    private float[] competitorsLapTimes = new float[8]; //lap time for all the competitors
+
 
     bool isRunning = false; //if gun has gone off
     bool runPressed = false; //if the run button is pressed
@@ -82,23 +84,42 @@ public class FourHundredManager : MonoBehaviour
         runButton.gameObject.SetActive(false);
         player.GetComponent<Animator>().speed = 0;
         runningMeter.runningBar.transform.parent.gameObject.SetActive(false);
-        foreach (GameObject go in competitorsList) //gets all competitors in the blocks
+        for (int i=0; i<competitorsList.Length; i++)
         {
-            go.GetComponentsInChildren<Animator>()[1].Play("BlockStart");
+            if (i+1 != currentLane)
+            {
+                competitorsList[i].GetComponentsInChildren<Animator>()[0].Play("BlockStart");
+                setStartingPosition(i+1, false, competitorsList[i].transform);
+            } else
+            {
+                competitorsList[i].SetActive(false);
+            }
+
         }
+        setStartingPosition(currentLane, true, player.transform);
         energyBar.gameObject.SetActive(false);
 
+        
+
+
+    }
+
+    private void setStartingPosition(int lanePosition, bool isPlayer, Transform tf)
+    {
+        if (isPlayer)
+        {
+            lanePosition = currentLane;
+            lapTimeProgress = laneTimeOffset * (lanePosition - 1);
+        }
         zOffset = -16;
-        lapTimeProgress = laneTimeOffset * (currentLane - 1);
+        competitorsLapTimes[lanePosition-1] = laneTimeOffset * (lanePosition - 1);
         float circleRad = ((308.8f - 16.39f) / 2.0f);//start and end pos
         Vector3 ogPos = new Vector3(-2162.03f, 226.73f, circleRad * -1); //start is -16.39
-        circleRad += (laneSpace * (currentLane - 1));
-        Vector3 unitCirclePos = new Vector3((float)Math.Cos((Math.PI/((100+stagger200Marks[currentLane-1])/100f)) * lapTimeProgress), player.transform.position.y, (float)Math.Sin((Math.PI / ((100 + stagger200Marks[currentLane-1]) / 100f)) * lapTimeProgress));
+        circleRad += (laneSpace * (lanePosition - 1));
+        Vector3 unitCirclePos = new Vector3((float)Math.Cos((Math.PI / ((100 + stagger200Marks[lanePosition - 1]) / 100f)) * competitorsLapTimes[lanePosition - 1]), player.transform.position.y, (float)Math.Sin((Math.PI / ((100 + stagger200Marks[lanePosition - 1]) / 100f)) * competitorsLapTimes[lanePosition - 1]));
         //player.transform.position = ogPos;
-        player.transform.position = new Vector3(circleRad * unitCirclePos.z * -1, 0, (circleRad * unitCirclePos.x) + zOffset) + ogPos;
-        player.transform.eulerAngles = new Vector3(0, 270 - (180/(((100 + stagger200Marks[currentLane - 1]) / 100f)) * lapTimeProgress), 0);
-
-
+        tf.position = new Vector3(circleRad * unitCirclePos.z * -1, 0, (circleRad * unitCirclePos.x) + zOffset) + ogPos;
+        tf.eulerAngles = new Vector3(0, 270 - (180 / (((100 + stagger200Marks[lanePosition - 1]) / 100f)) * competitorsLapTimes[lanePosition - 1]), 0);
     }
 
     public void buttonPressed(int code)
@@ -157,10 +178,7 @@ public class FourHundredManager : MonoBehaviour
                 Debug.Log("Lane 4 " + eventTimer + ":" + leaderboardManager.getPlayersInLaneOrder()[3].bestMark);
                 finished = true;
             }*/
-            if (isRunning && player.transform.position.x < -2125 && !finished && !usedLean)
-            {
-                jumpButton.gameObject.SetActive(true);
-            }
+            
             if ((Input.GetKeyDown(KeyCode.Space) || runPressed) && runningMeter.runMeterSlider.gameObject.activeInHierarchy && !finished && !foulImage.gameObject.activeInHierarchy) //updating speed on click
             {
                 runPressed = false;
@@ -216,7 +234,7 @@ public class FourHundredManager : MonoBehaviour
             {
                 if (go.activeInHierarchy) //stop animator warning
                 {
-                    go.GetComponentsInChildren<Animator>()[1].Play("BlockStartUp");
+                    go.GetComponentsInChildren<Animator>()[0].Play("BlockStartUp");
                 }
             }
             player.GetComponentsInChildren<Animator>()[1].Play("BlockStartUp");
@@ -248,13 +266,15 @@ public class FourHundredManager : MonoBehaviour
         yield return new WaitForSeconds(delay);
         if (competitorsList[index].activeInHierarchy) //stop animator warning
         {
-            competitorsList[index].GetComponentsInChildren<Animator>()[1].Play("Running");
+            competitorsList[index].GetComponentsInChildren<Animator>()[0].Play("Running");
             float time = leaderboardManager.getPlayersInLaneOrder()[index].bestMark;
             //float time = 13.87f;
-            time -= delay;
+            /*time -= delay;
             competitorsMaxSpeedList[index] = (275.05f / ((0.75f * time) / 0.02f)) / runningSpeedRatio;//spaces per second was 0.55
             competitorsAccelSpeedList[index] = time / 6; //was 0.4
-            competitorsStartSpeedList[index] = 90;
+            competitorsStartSpeedList[index] = 90;*/
+            competitorsSpeedList[index] = 1;
+            competitorsMaxSpeedList[index] = UnityEngine.Random.Range(150, 200);
         }
 
     }
@@ -269,6 +289,48 @@ public class FourHundredManager : MonoBehaviour
         leaderboardManager.addPlayerTime(0);
         SceneManager.LoadScene("EndScreen");
 
+    }
+
+    private void moveCharacterOnLane(float lapTime, int lanePosition, Transform tf)
+    {
+        //other end z is -308.22
+        float curveTime = ((100 + stagger200Marks[lanePosition - 1]) / 100f);
+        if (lapTime < curveTime)
+        {
+            float circleRad = ((308.8f - 16.39f) / 2.0f);//start and end pos
+            Vector3 ogPos = new Vector3(-2162.03f, 226.73f, circleRad * -1); //start is -16.39
+            circleRad += (laneSpace * (lanePosition - 1));
+            Vector3 unitCirclePos = new Vector3((float)Math.Cos((Math.PI / curveTime) * lapTime), tf.position.y, (float)Math.Sin((Math.PI / curveTime) * lapTime));
+            //player.transform.position = ogPos;
+            tf.position = new Vector3(circleRad * unitCirclePos.z * -1, 0, (circleRad * unitCirclePos.x) + zOffset) + ogPos;
+            tf.eulerAngles = new Vector3(0, 270 - (180 / curveTime * lapTime), 0);
+        }
+        else if (lapTime < curveTime + 1)
+        {
+            if (fourHundredBlocks.activeInHierarchy)
+            {
+                fourHundredBlocks.SetActive(false);
+            }
+            //-1832 for hundred meter end
+            //-2162.03 for start
+            float diff = 2162.03f - 1832f;
+            tf.position = new Vector3(-2162.03f + (diff * (lapTime - curveTime)), tf.position.y, tf.position.z);
+        }
+        else if (lapTime < curveTime * 2 + 1)
+        {
+            float circleRad = ((308.22f - 16.39f) / 2.0f);//start and end pos
+            Vector3 ogPos = new Vector3(-1832, 226.73f, circleRad * -1); //start is -16.39
+            circleRad += (laneSpace * (lanePosition - 1));
+            Vector3 unitCirclePos = new Vector3((float)Math.Cos((Math.PI / curveTime) * (lapTime - 1 - curveTime)), tf.position.y, (float)Math.Sin((Math.PI / curveTime) * (lapTime - 1 - curveTime)));
+            //player.transform.position = ogPos;
+            tf.position = new Vector3(circleRad * unitCirclePos.z, 0, (circleRad * -1 * unitCirclePos.x) + zOffset) + ogPos;
+            tf.eulerAngles = new Vector3(0, 90 - (180 / curveTime * (lapTime - 1 - curveTime)), 0);
+        }
+        else if (lapTime < curveTime * 2 + 2)
+        {
+            float diff = 2162.03f - 1832f;
+            tf.position = new Vector3(-1832 - (diff * (lapTime - (curveTime * 2 + 1))), tf.position.y, tf.position.z);
+        }
     }
 
     private void FixedUpdate()
@@ -289,47 +351,19 @@ public class FourHundredManager : MonoBehaviour
                 energyBar.value += energyGain;
             }
             //math for arch
-            //other end z is -308.22
-            float curveTime = ((100 + stagger200Marks[currentLane - 1]) / 100f);
-            if (lapTimeProgress < curveTime)
+            moveCharacterOnLane(lapTimeProgress, currentLane, player.transform);
+            for (int i = 0; i < competitorsLapTimes.Length; i++)
             {
-                float circleRad = ((308.8f - 16.39f) / 2.0f);//start and end pos
-                Vector3 ogPos = new Vector3(-2162.03f, 226.73f, circleRad * -1); //start is -16.39
-                circleRad += (laneSpace * (currentLane - 1));
-                Vector3 unitCirclePos = new Vector3((float)Math.Cos((Math.PI / curveTime) * lapTimeProgress), player.transform.position.y, (float)Math.Sin((Math.PI / curveTime) * lapTimeProgress));
-                //player.transform.position = ogPos;
-                player.transform.position = new Vector3(circleRad * unitCirclePos.z*-1, 0, (circleRad * unitCirclePos.x) + zOffset) + ogPos;
-                player.transform.eulerAngles = new Vector3(0, 270-(180/curveTime*lapTimeProgress), 0);
-            } else if (lapTimeProgress < curveTime + 1)
-            {
-                if (fourHundredBlocks.activeInHierarchy)
+                if (i + 1 != currentLane)
                 {
-                    fourHundredBlocks.SetActive(false);
+                    moveCharacterOnLane(competitorsLapTimes[i], i + 1, competitorsList[i].transform);
                 }
-                //-1832 for hundred meter end
-                //-2162.03 for start
-                float diff = 2162.03f - 1832f;
-                player.transform.position = new Vector3(-2162.03f + (diff * (lapTimeProgress - curveTime)), player.transform.position.y, player.transform.position.z);
-            } else if (lapTimeProgress < curveTime*2+1)
-            {
-                float circleRad = ((308.22f - 16.39f) / 2.0f);//start and end pos
-                Vector3 ogPos = new Vector3(-1832, 226.73f, circleRad * -1); //start is -16.39
-                circleRad += (laneSpace * (currentLane - 1));
-                Vector3 unitCirclePos = new Vector3((float)Math.Cos((Math.PI / curveTime) * (lapTimeProgress-1-curveTime)), player.transform.position.y, (float)Math.Sin((Math.PI / curveTime) * (lapTimeProgress-1-curveTime)));
-                //player.transform.position = ogPos;
-                player.transform.position = new Vector3(circleRad * unitCirclePos.z , 0, (circleRad * -1 * unitCirclePos.x) + zOffset) + ogPos;
-                player.transform.eulerAngles = new Vector3(0, 90 - (180/curveTime * (lapTimeProgress-1-curveTime)), 0);
             }
-            else if (lapTimeProgress < curveTime*2+2)
-            {
-                float diff = 2162.03f - 1832f;
-                player.transform.position = new Vector3(-1832 - (diff * (lapTimeProgress - (curveTime*2+1))), player.transform.position.y, player.transform.position.z);
-            }
-            
+
             //math for arch
             //player.transform.Translate(new Vector3(0, 0, speed * runningSpeedRatio)); //making character move according to run meter
             player.GetComponentsInChildren<Animator>()[1].speed = speed * animationRunningSpeedRatio; //making the animation match the sunning speed
-            for (int i = 0; i < competitorsList.Length; i++)
+            /*for (int i = 0; i < competitorsList.Length; i++)
             {
                 //float time = 13.87f;
                 float time = leaderboardManager.getPlayersInLaneOrder()[i].bestMark;
@@ -355,14 +389,28 @@ public class FourHundredManager : MonoBehaviour
                 {
                     competitorsList[i].GetComponentsInChildren<Animator>()[1].Play("RunningLean");
                 }
-            }
+            }*/
             if (!finished)
             {
                 runningMeter.updateTimeElapsed();
                 eventTimer += Time.deltaTime;
+                for(int i=0; i< competitorsLapTimes.Length;i++)
+                {
+                    if (i+1 == currentLane)
+                    {
+                        competitorsLapTimes[i] = speed / 75000f;
+                    } else
+                    {
+                        if (competitorsSpeedList[i] != 0)
+                        {
+                            competitorsLapTimes[i] += competitorsMaxSpeedList[i] / 75000f;
+                        }
+                    }
+                }
                 lapTimeProgress += speed/75000; //normal mode
-                //lapTimeProgress += 0.005f; //fast mode
-                lapTimeProgress = Math.Min(lapTimeProgress, 4); //cap progress at 2
+                                                //lapTimeProgress += 0.005f; //fast mode
+                float curveTime = ((100 + stagger200Marks[currentLane - 1]) / 100f);
+                lapTimeProgress = Math.Min(lapTimeProgress,curveTime*2+2); //cap progress at 2
                 //runningMeter.barDecreaseSpeed = Math.Min(startingBarDecreaseSpeed + (eventTimer * 20), 400); //make the bar decrease faster as you go on
                 //runningMeter.speedPerClick = 75 + (eventTimer * 5);
             }
@@ -412,4 +460,5 @@ public class FourHundredManager : MonoBehaviour
 }
 
 //TODO fix lean going diffrent ways
+//TODO even out lanes
 

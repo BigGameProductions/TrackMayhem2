@@ -184,21 +184,29 @@ MonoBehaviour:
   controlCanvas: {fileID: 1062670328}
   energyDepletion: 0.01
   energyGain: 0.005
-  competitorsList: []
+  competitorsList:
+  - {fileID: 637744842}
+  - {fileID: 963109450}
+  - {fileID: 1405264529}
+  - {fileID: 1698194055}
+  - {fileID: 1740572804}
+  - {fileID: 2137171382}
+  - {fileID: 1577912369}
+  - {fileID: 1750948631}
   laneZValues: []
-  currentLane: 8
+  currentLane: 4
   laneSpace: 4.9
   laneTimeOffset: 0.065
   zOffset: -16.5
   fourHundredBlocks: {fileID: 1061238987}
   stagger200Marks:
   - 0
-  - 3.52
-  - 7.35
-  - 11.19
-  - 15.02
-  - 18.85
-  - 22.68
+  - 8.52
+  - 9
+  - 11
+  - 13.02
+  - 16.3
+  - 19.5
   - 23
 --- !u!65 &9169576
 BoxCollider:
@@ -11780,14 +11788,14 @@ PrefabInstance:
     - target: {fileID: 127824417807774298, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 9000154}
     - target: {fileID: 127824417807774298, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: buttonPressed
       objectReference: {fileID: 0}
     - target: {fileID: 127824417807774298, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: hundredMeterController, Assembly-CSharp
+      value: FourHundredManager, Assembly-CSharp
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d077e6698862e4979974e57da8147e7b, type: 3}
@@ -23525,7 +23533,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2109521706
 Transform:
   m_ObjectHideFlags: 0

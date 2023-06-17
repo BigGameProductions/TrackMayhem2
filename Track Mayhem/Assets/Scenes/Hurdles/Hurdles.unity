@@ -2305,7 +2305,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &217534337
 Transform:
   m_ObjectHideFlags: 0
@@ -2314,7 +2314,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 217534336}
   m_LocalRotation: {x: 0, y: 0.7071068, z: -0, w: -0.7071068}
-  m_LocalPosition: {x: -1768.96, y: 226.87, z: 7.55}
+  m_LocalPosition: {x: -1728.9, y: 226.87, z: 7.55}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -10701,7 +10701,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   eventName: Hurdles
   useSeeded: 0
-  seededMark: 1350
+  seededMark: 1550
   seedSpreadDown: 50
   seedSpreadUp: 50
   seedRoundInches: 1
@@ -18787,7 +18787,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1549503388}
   m_LocalRotation: {x: 0, y: 0.7071068, z: -0, w: -0.7071068}
-  m_LocalPosition: {x: -1728.85, y: 226.73, z: -6.74}
+  m_LocalPosition: {x: -1814.6, y: 226.73, z: -6.74}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -19807,7 +19807,15 @@ MonoBehaviour:
   jumpButton: {fileID: 2023677929}
   infoButton: {fileID: 2023677923}
   controlCanvas: {fileID: 2023677922}
-  competitorsList: []
+  competitorsList:
+  - {fileID: 1656607636}
+  - {fileID: 1418890019}
+  - {fileID: 980353773}
+  - {fileID: 582361843}
+  - {fileID: 667040622}
+  - {fileID: 301985182}
+  - {fileID: 1554554173}
+  - {fileID: 685089929}
   laneZValues: []
   basePlayer: {fileID: 563283905}
   hcd: {fileID: 1549503391}
@@ -24956,14 +24964,14 @@ PrefabInstance:
     - target: {fileID: 127824415785865332, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1896858765}
     - target: {fileID: 127824415785865332, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: buttonPressed
       objectReference: {fileID: 0}
     - target: {fileID: 127824415785865332, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: hundredMeterController, Assembly-CSharp
+      value: HurdlesManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 127824415785865332, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
@@ -25124,14 +25132,14 @@ PrefabInstance:
     - target: {fileID: 127824417807774298, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1896858765}
     - target: {fileID: 127824417807774298, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: buttonPressed
       objectReference: {fileID: 0}
     - target: {fileID: 127824417807774298, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: hundredMeterController, Assembly-CSharp
+      value: HurdlesManager, Assembly-CSharp
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d077e6698862e4979974e57da8147e7b, type: 3}
@@ -32898,3 +32906,16 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 26.30249, y: 2.114114, z: 2.2106636}
   m_Center: {x: -13.374634, y: 2.8679273, z: 0.60533065}
+--- !u!65 &2145480066
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2145480041}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 26.30249, y: 1.656713, z: 2.2106636}
+  m_Center: {x: -13.374634, y: 44.8759, z: 0.60533065}

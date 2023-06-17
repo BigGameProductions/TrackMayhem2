@@ -18,6 +18,8 @@ public class RunnerInformation
 
     public PersonalBests characterBests;
 
+    public EventPrefs eventPrefs;
+
     public RunnerInformation(int id, bool unlocked)
     {
         this.runnerId = id;

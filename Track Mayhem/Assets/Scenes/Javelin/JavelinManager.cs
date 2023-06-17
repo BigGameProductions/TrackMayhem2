@@ -197,7 +197,6 @@ public class JavelinManager : MonoBehaviour
         {
             player.GetComponentInChildren<Animator>().Play("JavelinThrow");
             isRunning = false;
-            Debug.Log("CAlled");
         }
     }
 

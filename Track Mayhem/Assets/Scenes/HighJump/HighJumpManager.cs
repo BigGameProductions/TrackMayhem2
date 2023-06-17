@@ -92,6 +92,10 @@ public class HighJumpManager : MonoBehaviour
 
     [SerializeField] private EventSystem ev;
 
+    private bool jumpButtonHeld;
+
+    public bool godMode;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -111,6 +115,15 @@ public class HighJumpManager : MonoBehaviour
         player.GetComponent<Animator>().speed = 0;
         player.GetComponent<Animator>().Play("HighJumpRun");
         leaderboardManager.cinematicCamera.GetComponent<Animator>().SetInteger("event", 2); //sets animator to the current event
+        EventTrigger trigger = jumpButton.AddComponent<EventTrigger>();
+        var pointerDown = new EventTrigger.Entry();
+        pointerDown.eventID = EventTriggerType.PointerDown;
+        pointerDown.callback.AddListener((e) => { jumpButtonHeld = true; if (isRunning) jumpButtonPressed(); });
+        trigger.triggers.Add(pointerDown);
+        var pointerUp = new EventTrigger.Entry();
+        pointerUp.eventID = EventTriggerType.PointerUp;
+        pointerUp.callback.AddListener((e) => jumpButtonHeld = false);
+        trigger.triggers.Add(pointerUp);
 
 
         //player.transform.position = startingPosition; //puts player in starting position
@@ -141,7 +154,7 @@ public class HighJumpManager : MonoBehaviour
     {
         jumpMeter.updateJumpMeter();
 
-        if (Input.GetKey(KeyCode.P))
+        if (Input.GetKey(KeyCode.P) || jumpButtonHeld)
         {
             onJumpButtonDown();
         }
@@ -174,6 +187,11 @@ public class HighJumpManager : MonoBehaviour
                     runPowerPercentage = 1 - ((averageSpeed - 8500) / 4500);
 
                 }
+                if (godMode)
+                {
+                    runPowerPercentage = 1;
+                    anglePower = 1;
+                }
                 rb.AddForce(new Vector3(runPowerPercentage*7, anglePower*9 + runPowerPercentage*3, 0), ForceMode.Impulse);
                 player.GetComponentsInChildren<Animator>()[1].Play("HighJumpJump");
                 player.GetComponentsInChildren<Animator>()[1].speed = 1;
@@ -196,8 +214,9 @@ public class HighJumpManager : MonoBehaviour
         if (!hasPiked && player.GetComponentsInChildren<Animator>()[1].GetCurrentAnimatorStateInfo(0).IsName("HighJumpJump") && player.GetComponentsInChildren<Animator>()[1].GetCurrentAnimatorStateInfo(0).normalizedTime > 0.67f)
         {
             player.GetComponentsInChildren<Animator>()[1].speed = 0;
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space) || jumpPressed)
             {
+                jumpPressed = false;
                 hasPiked = true;
                 player.GetComponentsInChildren<Animator>()[1].speed = 1;
             }
@@ -393,6 +412,15 @@ public class HighJumpManager : MonoBehaviour
 
 
 
+        }
+    }
+
+    public void jumpButtonPressed()
+    {
+        if (playerCamera.enabled && !leaderboardManager.cinematicCamera.gameObject.activeInHierarchy && isRunning)
+        {
+            player.GetComponentInChildren<Animator>().Play("JavelinThrow");
+            isRunning = false;
         }
     }
 
