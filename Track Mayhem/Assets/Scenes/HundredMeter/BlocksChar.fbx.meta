@@ -7,14 +7,20 @@ ModelImporter:
       74: -6842666708266138392
     second: Armature|Armature.001|mixamo.com|Layer0
   - first:
-      74: 871566583773788088
-    second: Armature|BlockStart
+      74: 405751779608671491
+    second: Armature|BlockStart.001
   - first:
-      74: 1235302755513275661
-    second: Armature|BlockStartUp
+      74: 3248394180752311366
+    second: Armature|BlockStartNEw
   - first:
-      74: 8141992157680281399
-    second: Armature|RunningLean
+      74: 9030770580604088230
+    second: Armature|BlockStartNewStartUp
+  - first:
+      74: 5071559519642530186
+    second: Armature|BlockStartUpNew
+  - first:
+      74: 7471017877179705623
+    second: Ch36|BlockStart.001
   externalObjects: {}
   materials:
     materialImportMode: 2

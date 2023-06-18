@@ -17,7 +17,7 @@ public static class PublicData
 
     public static GameData gameData; //stores all the game data that has been saved for the game
     public static int currentRunnerOn = 0; //shows the current runner that the player is on
-    public static int currentRunnerUsing = 1;//shows the current runner that play is using for events
+    public static int currentRunnerUsing = 0;//shows the current runner that play is using for events
     public static int currentBoxOpening = 0; //the id of the current chest that is being opened between main menu and opening scene
 
     public static float spacesPerInch = (1875.03f - 1864.7f) / 36f; //spaces per inch for the game

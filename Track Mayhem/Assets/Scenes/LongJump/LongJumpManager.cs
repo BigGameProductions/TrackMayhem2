@@ -73,12 +73,15 @@ public class LongJumpManager : MonoBehaviour
 
     public bool godMode;
 
+    private float timeDiff = 10;
+
     
     // Start is called before the first frame update
     void Start()
     {
 
         boardChangeButton.gameObject.SetActive(false);
+        jumpMeter.jumpBar.gameObject.transform.parent.GetComponent<Animator>().speed = 0;
         startingBoardX = jumpBoard.transform.position.x;
         controlsCanvas.enabled = false;
         jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Takeoff";
@@ -136,6 +139,7 @@ public class LongJumpManager : MonoBehaviour
     }
 
     // Update is called once per frame
+    [Obsolete]
     void Update()
     {
         if (runningCamera.enabled && !leaderboardManager.cinematicCamera.gameObject.activeInHierarchy) //change this so it works for enabled
@@ -180,7 +184,7 @@ public class LongJumpManager : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.P) || jumpPressed) //if the player presses the jump button
             {
-                if (!isFoul)
+                if (!isFoul && player.transform.position.x < jumpBoard.transform.position.x)
                 {
                     jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Jump";
                     jumpPressed = false;
@@ -190,9 +194,10 @@ public class LongJumpManager : MonoBehaviour
                     runningMeter.runMeterSlider.gameObject.SetActive(false); //hide run meter
                     player.GetComponentInChildren<Animator>().speed = 0; //make running animation stop
                     jumpMeter.jumpBar.gameObject.transform.parent.gameObject.SetActive(true); //sets the jump meter to showing
-                    jumpMeter.setToRegularSpeed(); //setting the bar speed to normal speed
+                    //jumpMeter.setToRegularSpeed(); //setting the bar speed to normal speed
+                    jumpMeter.jumpBar.gameObject.transform.parent.GetComponent<Animator>().speed = 4;
                     float averageSpeed = runningMeter.getAverageSpeed();
-                    if (averageSpeed > 7500 && averageSpeed < 9500)
+                    if (averageSpeed > 8000 && averageSpeed < 9000)
                     {
                         jumpSparkle.startColor = Color.green;
                     }
@@ -215,35 +220,45 @@ public class LongJumpManager : MonoBehaviour
             jumpMeter.updateJumpMeter();
             if (Input.GetKeyDown(KeyCode.Space) || jumpPressed) //makes jump
             {
-                if (playerLeftFoot.transform.position.x > jumpBoard.transform.position.x || playerRightFoot.transform.position.x > jumpBoard.transform.position.x)
+                if (!isFoul)
                 {
-                    isFoul = true; //set the foul to true
-                    foulImage.gameObject.SetActive(true);
-                    foulImage.GetComponent<Animator>().Play("FoulSlide");
+                    if (playerLeftFoot.transform.position.x > jumpBoard.transform.position.x || playerRightFoot.transform.position.x > jumpBoard.transform.position.x)
+                    {
+                        isFoul = true; //set the foul to true
+                        foulImage.gameObject.SetActive(true);
+                        foulImage.GetComponent<Animator>().Play("FoulSlide");
+                    }
+                    jumpButton.SetActive(false); //hides button until pike
+                    jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Pike";
+                    jumpPressed = false;
+                    //jumpMeter.MakeJump();
+                    jumpMeter.jumpBar.gameObject.transform.parent.GetComponent<Animator>().speed = 0;
+                    float time = jumpMeter.jumpBar.gameObject.transform.parent.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime;
+                    time = time % (int)time;
+                    if (time < 0.5)
+                    {
+                        timeDiff = Math.Abs(time - 0.25f);
+                    }
+                    else
+                    {
+                        timeDiff = Math.Abs(time - 0.75f);
+                    }
+                    if (timeDiff < 0.035)
+                    {
+                        jumpSparkle.startColor = Color.green;
+                    }
+                    else if (timeDiff < 0.1)
+                    {
+                        jumpSparkle.startColor = Color.yellow;
+                    }
+                    else
+                    {
+                        jumpSparkle.startColor = Color.red;
+                    }
+                    jumpSparkle.Play();
+                    StartCoroutine(jumpMeterHold(0.5f)); //calls waiting method 
                 }
-                jumpButton.SetActive(false); //hides button until pike
-                jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Pike";
-                jumpPressed = false;
-                jumpMeter.MakeJump();
-                float jumpMeterSpeed = jumpMeter.jumpMeterSpeed;
-                if (jumpMeterSpeed > 66.6 && jumpMeterSpeed < 132.6)
-                {
-                    jumpSparkle.startColor = Color.green;
-                }
-                else if (jumpMeterSpeed < 66.6 && jumpMeterSpeed > 33.3)
-                {
-                    jumpSparkle.startColor = Color.yellow;
-                }
-                else if (jumpMeterSpeed > 132.6 && jumpMeterSpeed < 164.6)
-                {
-                    jumpSparkle.startColor = Color.yellow;
-                }
-                else
-                {
-                    jumpSparkle.startColor = Color.red;
-                }
-                jumpSparkle.Play();
-                StartCoroutine(jumpMeterHold(0.5f)); //calls waiting method 
+                
             }
         }
         if (player.GetComponent<Rigidbody>().useGravity) //if in jumping animation
@@ -328,18 +343,22 @@ public class LongJumpManager : MonoBehaviour
     IEnumerator jumpMeterTimeLimit(float time) //waits x seconds before saying the player has taken too long with their jumping meter
     {
         yield return new WaitForSeconds(time);
-        if (jumpMeter.jumpBar.transform.parent.gameObject.activeInHierarchy)
-        {
-            jumpMeter.jumpBar.transform.parent.gameObject.SetActive(false);
-            runningCamera.enabled = true;
-            runningMeter.runningSpeed = 10000;
-            foulImage.gameObject.SetActive(true);
-            foulImage.GetComponent<Animator>().Play("FoulSlide");
-            yield return new WaitForSeconds(1.5f);
-            runningCamera.enabled = false;
-            updatePlayerBanner(-1000);
-            afterJump(false);
+        if (!isFoul) {
+            if (jumpMeter.jumpBar.transform.parent.gameObject.activeInHierarchy)
+            {
+                jumpMeter.jumpBar.transform.parent.gameObject.SetActive(false);
+                runningCamera.enabled = true;
+                runningMeter.runningSpeed = 10000;
+                foulImage.gameObject.SetActive(true);
+                foulImage.GetComponent<Animator>().Play("FoulSlide");
+                yield return new WaitForSeconds(1.5f);
+                runningCamera.enabled = false;
+                updatePlayerBanner(-1000);
+                afterJump(false);
+            }
         }
+
+        
 
     }
 
@@ -499,7 +518,8 @@ public class LongJumpManager : MonoBehaviour
         if (averageSpeed <= 8500) //sets percentage based on distance from 0 to 8500. 8500 is considered the perfect run
         {
             powerPercent = averageSpeed / 8500;
-        } else //sets from 0 to 4500 for the top part
+        }
+        else //sets from 0 to 4500 for the top part
         {
             powerPercent = 1 - ((averageSpeed - 8500) / 4500);
         }
@@ -509,15 +529,16 @@ public class LongJumpManager : MonoBehaviour
         power += curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 2);
         if (godMode) powerPercent = 1;
         power *= powerPercent;
-        float jumpPercent = 1 - (Math.Abs(100 - jumpMeter.jumpMeterSpeed) / 100);
+        float jumpPercent = 1 - (timeDiff / 0.25f);
         if (godMode) jumpPercent = 1;
         power *= jumpPercent;
         power += 10;
         player.GetComponentInChildren<Animator>().Play("LongJump");
-        player.GetComponentInChildren<Animator>().speed = 1- power * powerToAnimationSpeedRatio;
-        player.GetComponent<Rigidbody>().velocity = new Vector3(power, power*0.6f, 0); //make charcter jump
+        player.GetComponentInChildren<Animator>().speed = 1 - power * powerToAnimationSpeedRatio;
+        player.GetComponent<Rigidbody>().velocity = new Vector3(power, power * 0.6f, 0); //make charcter jump
         player.GetComponent<Rigidbody>().useGravity = true;
         jumpButton.SetActive(true); //allows pike
+
     }
 
     private void FixedUpdate()
@@ -540,11 +561,8 @@ public class LongJumpManager : MonoBehaviour
 }
 
 
-//TODO extend sand pit
 
-//TODO effects. Make them more accurate and look nicer
 
-//TODO fix the ending not sorting banners right
 
 //TODO determine to round the marks or not
 

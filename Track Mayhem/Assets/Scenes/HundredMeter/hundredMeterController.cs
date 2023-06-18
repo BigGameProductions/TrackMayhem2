@@ -32,6 +32,8 @@ public class hundredMeterController : MonoBehaviour
 
     [SerializeField] private float[] laneZValues;
 
+    [SerializeField] private ParticleSystem jumpSparkle;
+
     private float[] competitorsSpeedList = new float[8]; //speed of all the competitors
     private float[] competitorsAccelSpeedList = new float[8]; //acceleration of all the competitors
     private float[] competitorsStartSpeedList = new float[8]; //start speed of all the competitors
@@ -56,12 +58,15 @@ public class hundredMeterController : MonoBehaviour
 
     float playerTime = 0;
 
+    public bool godMode;
+
     // Start is called before the first frame update
     void Start()
     {
         itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform); //inits the runner into the current scene
         controlCanvas.enabled = false;
         setText.enabled = false;
+        leaderboardManager.cinematicCamera.GetComponent<Animator>().SetInteger("event", 0);
         foulImage.gameObject.SetActive(false);
         foulImage.GetComponentInChildren<TextMeshProUGUI>().text = "False Start";
         jumpButton.gameObject.SetActive(false);
@@ -90,6 +95,7 @@ public class hundredMeterController : MonoBehaviour
     }
 
     // Update is called once per frame
+    [Obsolete]
     void Update()
     {
         if (!leaderboardManager.cinematicCamera.gameObject.activeInHierarchy)
@@ -104,7 +110,7 @@ public class hundredMeterController : MonoBehaviour
                 {
                     if (laneOrders[i].isPlayer)
                     {
-                        player.transform.position = competitorsList[i].transform.position - new Vector3(-2.3f,0,0);
+                        player.transform.position = competitorsList[i].transform.position - new Vector3(-2.1f,0,0);
                         competitorsList[i].SetActive(false);
                     }
                 }
@@ -156,6 +162,23 @@ public class hundredMeterController : MonoBehaviour
                 {
                     started = true;
                     player.GetComponentInChildren<Animator>().Play("Running");
+                    if (setText.text == "GO")
+                    {
+                        if (eventTimer < 0.25)
+                        {
+                            jumpSparkle.startColor = Color.green;
+                        }
+                        else if (eventTimer < 0.4)
+                        {
+                            jumpSparkle.startColor = Color.yellow;
+                        }
+                        else
+                        {
+                            jumpSparkle.startColor = Color.red;
+                        }
+                        jumpSparkle.Play();
+                    }
+                    
                 }
                 runPressed = false;
                 runningMeter.increaseHeight();
@@ -175,6 +198,8 @@ public class hundredMeterController : MonoBehaviour
                 playerCamera.enabled = true;
                 setText.enabled = true;
                 player.GetComponentInChildren<Animator>().Play("BlockStart");
+                setText.gameObject.transform.parent.GetComponent<Animator>().Play("FadeText");
+                setText.gameObject.transform.parent.GetComponent<Animator>().speed = 0.5f;
                 StartCoroutine(showSet(3));
             }
         }
@@ -186,6 +211,8 @@ public class hundredMeterController : MonoBehaviour
         if (!foulImage.gameObject.activeInHierarchy)
         {
             setText.text = "Set";
+            setText.gameObject.transform.parent.GetComponent<Animator>().Play("FadeText");
+            setText.gameObject.transform.parent.GetComponent<Animator>().speed = 0.75f;
             foreach (GameObject go in competitorsList) //gets all competitors up in the set position
             {
                 if (go.activeInHierarchy) //stop animator warning
@@ -206,6 +233,7 @@ public class hundredMeterController : MonoBehaviour
         if (!foulImage.gameObject.activeInHierarchy)
         {
             setText.text = "GO";
+            setText.gameObject.transform.parent.GetComponent<Animator>().Play("FadeText");
             isRunning = true;
             for (int i=0; i<competitorsList.Length;i++)
             {
@@ -254,6 +282,9 @@ public class hundredMeterController : MonoBehaviour
             {
                 speed = PublicData.averageSpeedDuringRun - (speed - PublicData.averageSpeedDuringRun); //makes it so over slows you down
             }
+            if (godMode) speed = PublicData.averageSpeedDuringRun;
+            speed -= 11.4f;
+            speed = Math.Max(speed, 0);
             player.transform.Translate(new Vector3(0, 0, speed * runningSpeedRatio)); //making character move according to run meter
             player.GetComponentInChildren<Animator>().speed = speed * animationRunningSpeedRatio; //making the animation match the sunning speed
             for (int i=0; i<competitorsList.Length; i++)
