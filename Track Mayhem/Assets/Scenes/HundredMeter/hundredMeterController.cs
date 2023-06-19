@@ -33,6 +33,7 @@ public class hundredMeterController : MonoBehaviour
     [SerializeField] private float[] laneZValues;
 
     [SerializeField] private ParticleSystem jumpSparkle;
+    [SerializeField] private ParticleSystem runTrail;
 
     private float[] competitorsSpeedList = new float[8]; //speed of all the competitors
     private float[] competitorsAccelSpeedList = new float[8]; //acceleration of all the competitors
@@ -58,6 +59,8 @@ public class hundredMeterController : MonoBehaviour
 
     float playerTime = 0;
 
+    [SerializeField] LeanDetector leadD;
+
     public bool godMode;
 
     // Start is called before the first frame update
@@ -79,6 +82,7 @@ public class hundredMeterController : MonoBehaviour
             itemStorage.initRunner(charNum, go.transform);
             go.GetComponentInChildren<Animator>().Play("BlockStart");
         }
+        runTrail.gameObject.SetActive(false);
 
     }
 
@@ -116,7 +120,7 @@ public class hundredMeterController : MonoBehaviour
                 }
             }
             runningMeter.updateRunMeter();
-            if (isRunning && player.transform.position.x <= -2161.52 && !finished)
+            if (isRunning && leadD.endRace && !finished) // player.transform.position.x <= -2161.52
             {
                 finished = true;
                 playerTime = eventTimer;
@@ -192,6 +196,18 @@ public class hundredMeterController : MonoBehaviour
                 usedLean = true;
                 jumpButton.gameObject.SetActive(false);
                 player.GetComponentInChildren<Animator>().Play("RunningLean");
+                float distanceDiff = (float)Math.Abs(-2157.41 - player.transform.position.x);
+                if (distanceDiff < 1)
+                {
+                    jumpSparkle.startColor = Color.green;
+                } else if (distanceDiff < 2)
+                {
+                    jumpSparkle.startColor = Color.yellow;
+                } else
+                {
+                    jumpSparkle.startColor = Color.red;
+                }
+                jumpSparkle.Play();
             }
             if (!playerCamera.enabled)
             {
@@ -283,10 +299,12 @@ public class hundredMeterController : MonoBehaviour
                 speed = PublicData.averageSpeedDuringRun - (speed - PublicData.averageSpeedDuringRun); //makes it so over slows you down
             }
             if (godMode) speed = PublicData.averageSpeedDuringRun;
-            speed -= 11.4f;
+            speed -= 12.7f;
             speed = Math.Max(speed, 0);
             player.transform.Translate(new Vector3(0, 0, speed * runningSpeedRatio)); //making character move according to run meter
             player.GetComponentInChildren<Animator>().speed = speed * animationRunningSpeedRatio; //making the animation match the sunning speed
+            //player.GetComponentsInChildren<Transform>()[1].localPosition = new Vector3(player.GetComponentsInChildren<Transform>()[1].localPosition.x, 0, player.GetComponentsInChildren<Transform>()[1].localPosition.z);
+            //player.GetComponentsInChildren<Transform>()[1].localEulerAngles = new Vector3(0, 0, 0);
             for (int i=0; i<competitorsList.Length; i++)
             {
                 if (competitorsMarkedTimeList[i])
@@ -316,6 +334,15 @@ public class hundredMeterController : MonoBehaviour
                 {
                     competitorsList[i].GetComponentInChildren<Animator>().Play("RunningLean");
                 }
+            }
+            float avSpeed = runningMeter.getAverageSpeed();
+            if (avSpeed > 8000)
+            {
+                runTrail.gameObject.SetActive(true);
+                runTrail.startSpeed = (avSpeed - 8000)/20;
+            } else
+            {
+                runTrail.gameObject.SetActive(false);
             }
             eventTimer += Time.deltaTime;
             if (!finished)
