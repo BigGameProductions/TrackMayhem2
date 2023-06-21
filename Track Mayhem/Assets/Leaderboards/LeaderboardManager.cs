@@ -608,6 +608,7 @@ public class LeaderboardManager : MonoBehaviour
         if (useSeeded)
         {
             basedSeed = getMarkForEvent(theEvent, true);
+            if (useTime) basedSeed *= 100;
         }
         float finalMark = roundToNearest(seedRoundInches, UnityEngine.Random.Range((float)basedSeed - seedSpreadDown, basedSeed + seedSpreadUp + 1f));
         if (useTime)

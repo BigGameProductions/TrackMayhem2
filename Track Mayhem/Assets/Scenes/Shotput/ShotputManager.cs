@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -45,10 +46,20 @@ public class ShotputManager : MonoBehaviour
 
     private bool measure = false; //if the shot has been measured
 
+    private GameObject[] barObjects = new GameObject[3];
+
+    [SerializeField] private ParticleSystem jumpSparkle;
+    [SerializeField] private ParticleSystem shotputSparkle;
+
+    public bool godMode;
+
     // Start is called before the first frame update
+    [Obsolete]
     void Start()
     {
         itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform, basePlayer); //inits the runner into the current scene
+        jumpSparkle.transform.parent = player.GetComponentsInChildren<Transform>()[1];
+        leaderboardManager.cinematicCamera.GetComponent<Animator>().SetInteger("event", 3);
         shotput.transform.SetParent(player.GetComponentsInChildren<Transform>()[rightHandTransformPosition]); //sets the parent of the pole to 
         shotput.transform.localPosition = new Vector3(-0.00200000009f, 0.140000001f, 0.0329999998f); //alligns shot to player hand
         player.GetComponentInChildren<Animator>().Play("ShotputThrow");
@@ -58,18 +69,25 @@ public class ShotputManager : MonoBehaviour
         controlsCanvas.enabled = false;
         ringAnimation.gameObject.SetActive(false);
         jumpButton.gameObject.SetActive(false);
+        EventTrigger trigger = jumpButton.gameObject.AddComponent<EventTrigger>();
+        var pointerDown = new EventTrigger.Entry();
+        pointerDown.eventID = EventTriggerType.PointerDown;
+        pointerDown.callback.AddListener((e) => jumpButtonPressed());
+        trigger.triggers.Add(pointerDown);
     }
 
 
 
     // Update is called once per frame
+    [Obsolete]
     void Update()
     {
         if (shotput.transform.position.y < 227.5 && !measure && !isRunning)
         {
             measure = true;
+            shotputSparkle.Play(); 
             float totalDistance = -1779.07f-shotput.transform.position.x;
-            totalInches = 2 * leaderboardManager.roundToNearest(0.25f, totalDistance / PublicData.spacesPerInch);
+            totalInches = 2 * leaderboardManager.roundToNearest(0.25f, totalDistance / (PublicData.spacesPerInch*0.79f));
             updatePlayerBanner(totalInches);
             StartCoroutine(showPersonalBanner(2));
         }
@@ -83,7 +101,7 @@ public class ShotputManager : MonoBehaviour
             shotCamera.transform.eulerAngles = new Vector3(30, 0, 0);
             shotput.transform.eulerAngles = new Vector3(0, 0, 0);
         }
-        if (player.GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 0.35 && !measure)
+        if (player.GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 0.35 && !measure && isRunning)
         {
             runButton.gameObject.SetActive(false);
             runMeter.runMeterSlider.gameObject.SetActive(false);
@@ -96,6 +114,18 @@ public class ShotputManager : MonoBehaviour
                 ringAnimation.speed = 0.5f;
             }
             player.GetComponentInChildren<Animator>().speed = 0.6f;
+            float avSpeed = runMeter.getAverageSpeed();
+            if (avSpeed > 7750 && avSpeed < 8000)
+            {
+                jumpSparkle.startColor = Color.green;
+            } else if (avSpeed > 7300 && avSpeed < 10000)
+            {
+                jumpSparkle.startColor = Color.yellow;
+            } else
+            {
+                jumpSparkle.startColor = Color.red;
+            }
+            jumpSparkle.Play();
         }
         if (playerCamera.enabled && !leaderboardManager.cinematicCamera.gameObject.activeInHierarchy && isRunning) //runs when the player is in the running stage
         {
@@ -125,12 +155,24 @@ public class ShotputManager : MonoBehaviour
             {
                 runPowerPercent = 1 - ((averageSpeed - 8500) / 4500);
             }
+            if (godMode)
+            {
+                runPowerPercent = 1;
+                piviotPercents[0] = 1;
+                piviotPercents[1] = 1;
+                piviotPercents[2] = 1;
+            }
             totalThrowPower += runPowerPercent;
             totalThrowPower += piviotPercents[0];
             totalThrowPower += piviotPercents[1];
             totalThrowPower += piviotPercents[2];
-            float power = 3 * totalThrowPower;
-            power += 2;
+            float maxPower = 77;
+            maxPower += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 80);
+            maxPower += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 30);
+            maxPower += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 17);
+            maxPower += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 15);
+            float power = (totalThrowPower / 4f) * maxPower;
+            power += 50;
             shotput.GetComponent<Rigidbody>().AddForce(new Vector3(-1*power, power*0.75f, 0), ForceMode.Impulse); //adds the throwing force
             StartCoroutine(changeCameraAngle(1));
         }
@@ -185,6 +227,8 @@ public class ShotputManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         leaderboardManager.showCurrentPlayerMarks(currentPlayerBanner, 3); //updates and shows the player leaderboard
+        player.transform.position = new Vector3(-1772.14001f, 226.729996f, -115.019997f);
+        player.GetComponentsInChildren<Transform>()[1].localPosition = new Vector3(0, 0, 0);
         currentThrowNumber++; //inceases to the next jump
         playerCamera.enabled = true;
         shotCamera.enabled = false;
@@ -210,9 +254,9 @@ public class ShotputManager : MonoBehaviour
             leaderboardManager.addMarkLabelToPlayer(3);
 
         }
-        else if (totalInches > PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.longJump)
+        else if (totalInches > PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.shotput)
         {
-            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.longJump = leaderboardManager.roundToNearest(0.25f, totalInches); ;
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.shotput = leaderboardManager.roundToNearest(0.25f, totalInches); ;
             leaderboardManager.addMarkLabelToPlayer(2);
             leaderboardManager.showRecordBanner(0);
         }
@@ -247,6 +291,14 @@ public class ShotputManager : MonoBehaviour
         jumpClicks = 0;
         didThrow = false;
         piviotPercents = new float[3];
+        foreach (GameObject go in barObjects)
+        {
+            Destroy(go);
+        }
+        barObjects[0] = null;
+        barObjects[1] = null;
+        barObjects[2] = null;
+
     }
 
     public void runButtonPressed()
@@ -262,18 +314,31 @@ public class ShotputManager : MonoBehaviour
         }
     }
 
+    [Obsolete]
     public void jumpButtonPressed()
     {
         if (!isRunning && jumpClicks < 3)
         {
-            Instantiate(ringAnimation.gameObject.GetComponentsInChildren<Transform>()[1], ringAnimation.transform);
+            GameObject go = Instantiate(ringAnimation.gameObject.GetComponentsInChildren<Transform>()[1], ringAnimation.transform).gameObject;
+            barObjects[jumpClicks] = go;
             float clickTime = ringAnimation.GetCurrentAnimatorStateInfo(0).normalizedTime;
             float timeDiff = Math.Abs(perfectPiviotPoints[jumpClicks] - clickTime);
             float totalPowerPercentage = 0;
             if (timeDiff < 0.05)
             {
                 totalPowerPercentage = 1 - (timeDiff / 0.05f);
+                if (totalPowerPercentage > 0.75)
+                {
+                    jumpSparkle.startColor = Color.green;
+                } else
+                {
+                    jumpSparkle.startColor = Color.yellow;
+                }
+            } else
+            {
+                jumpSparkle.startColor = Color.red;
             }
+            jumpSparkle.Play();
             piviotPercents[jumpClicks] = totalPowerPercentage;
             jumpClicks++;
         }

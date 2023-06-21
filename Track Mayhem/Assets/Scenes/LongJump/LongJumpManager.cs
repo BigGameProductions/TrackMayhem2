@@ -113,7 +113,7 @@ public class LongJumpManager : MonoBehaviour
 
         //jumpMeter.jumpBarSpeed -= PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel * 20; //makes the jump abr go slower
 
-        pullInLegPower += curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 5);
+        pullInLegPower += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 5);
 
         boardDistance = PublicData.getCharactersInfo(PublicData.currentRunnerUsing).eventPrefs.longJumpBoard;
         boardChangeButton.GetComponentInChildren<TextMeshProUGUI>().text = "Board: " + boardDistance / 12 + "'";
@@ -503,11 +503,7 @@ public class LongJumpManager : MonoBehaviour
     }
 
 
-   private float curveValue(float value, float maxValue)
-    {
-        float aVal = (float)(maxValue / Math.Sqrt(10));
-        return (float)(aVal * Math.Sqrt(value));
-    }
+
 
     IEnumerator jumpMeterHold(float time) //holds the meter forzen for time so you can she what it landed on
     {
@@ -524,9 +520,9 @@ public class LongJumpManager : MonoBehaviour
             powerPercent = 1 - ((averageSpeed - 8500) / 4500);
         }
         //curve formulas
-        float power = (float)(8.5f + curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 6));
-        power += curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 1);
-        power += curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 2);
+        float power = (float)(8.5f + PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 6));
+        power += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 1);
+        power += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 2);
         if (godMode) powerPercent = 1;
         power *= powerPercent;
         float jumpPercent = 1 - (timeDiff / 0.25f);

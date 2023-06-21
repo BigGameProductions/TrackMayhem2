@@ -6,5 +6,6 @@ using UnityEngine;
 public class EventPrefs
 {
     public float longJumpBoard = 48;
+    public float highJumpOpenHeight = 36;
 
 }

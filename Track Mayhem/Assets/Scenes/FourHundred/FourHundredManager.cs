@@ -38,10 +38,14 @@ public class FourHundredManager : MonoBehaviour
 
     [SerializeField] private float[] laneZValues;
 
+    PlayerBanner[] laneOrders;
+
     private float[] competitorsSpeedList = new float[8]; //speed of all the competitors
     private float[] competitorsAccelSpeedList = new float[8]; //acceleration of all the competitors
     private float[] competitorsStartSpeedList = new float[8]; //start speed of all the competitors
     private float[] competitorsMaxSpeedList = new float[8]; //max speed of all the competitors
+    private bool[] competitorsMarkedTimeList = new bool[8]; //max speed of all the competitors
+
 
     private float[] competitorsLapTimes = new float[8]; //lap time for all the competitors
 
@@ -67,6 +71,8 @@ public class FourHundredManager : MonoBehaviour
     public float zOffset;
 
     PlayerBanner currentPlayerBanner;
+
+    public bool godMode;
 
     [SerializeField] private GameObject fourHundredBlocks;
     [SerializeField] private float[] stagger200Marks;
@@ -96,11 +102,8 @@ public class FourHundredManager : MonoBehaviour
             }
 
         }
-        setStartingPosition(currentLane, true, player.transform);
         energyBar.gameObject.SetActive(false);
-
-        
-
+        setText.gameObject.transform.parent.GetComponent<Animator>().speed = 0;
 
     }
 
@@ -114,7 +117,7 @@ public class FourHundredManager : MonoBehaviour
         zOffset = -16;
         competitorsLapTimes[lanePosition-1] = laneTimeOffset * (lanePosition - 1);
         float circleRad = ((308.8f - 16.39f) / 2.0f);//start and end pos
-        Vector3 ogPos = new Vector3(-2162.03f, 226.73f, circleRad * -1); //start is -16.39
+        Vector3 ogPos = new Vector3(-2162.03f, 226.7f, circleRad * -1); //start is -16.39
         circleRad += (laneSpace * (lanePosition - 1));
         Vector3 unitCirclePos = new Vector3((float)Math.Cos((Math.PI / ((100 + stagger200Marks[lanePosition - 1]) / 100f)) * competitorsLapTimes[lanePosition - 1]), player.transform.position.y, (float)Math.Sin((Math.PI / ((100 + stagger200Marks[lanePosition - 1]) / 100f)) * competitorsLapTimes[lanePosition - 1]));
         //player.transform.position = ogPos;
@@ -155,30 +158,49 @@ public class FourHundredManager : MonoBehaviour
                 runButton.gameObject.SetActive(true); //show controls
                 energyBar.gameObject.SetActive(true);
                 runningMeter.runningBar.transform.parent.gameObject.SetActive(true); //show controls
-                /*PlayerBanner[] laneOrders = leaderboardManager.getPlayersInLaneOrder();
+                laneOrders = leaderboardManager.getPlayersInLaneOrder();
                 for (int i = 0; i < laneOrders.Length; i++)
                 {
                     if (laneOrders[i].isPlayer)
                     {
-                        player.transform.position = competitorsList[i].transform.position - new Vector3(-2.3f, 0, 0);
+                        setStartingPosition(currentLane, true, player.transform);
+                        //player.transform.position = competitorsList[i].transform.position - new Vector3(-2.3f, 0, 0);
+                        currentLane = i + 1;
                         competitorsList[i].SetActive(false);
                     }
-                }*/
+                }
             }
             runningMeter.updateRunMeter();
             float curveTime = ((100 + stagger200Marks[currentLane - 1]) / 100f);
-            if (isRunning && lapTimeProgress==(curveTime*2+2) && !finished)
+            if (isRunning && lapTimeProgress>=(curveTime*2+2) && !finished)
             {
                 finished = true;
                 eventTimer *= 2;
+                runningMeter.runMeterSlider.gameObject.SetActive(false);
+                runButton.gameObject.SetActive(false);
                 StartCoroutine(waitAfterFinish(2));
             }
-           /*if (isRunning && competitorsList[3].transform.position.x <= -2161.52)
+            for (int i=0; i<competitorsList.Length; i++)
             {
-                Debug.Log("Lane 4 " + eventTimer + ":" + leaderboardManager.getPlayersInLaneOrder()[3].bestMark);
-                finished = true;
-            }*/
-            
+                GameObject go = competitorsList[i];
+                if (i+1 != currentLane)
+                {
+                    float curveTimePersonal = ((100 + stagger200Marks[i]) / 100f);
+                    if (competitorsLapTimes[i] >= curveTimePersonal*2+2 && !competitorsMarkedTimeList[Int32.Parse(go.name[4].ToString()) - 1])
+                    {
+                        competitorsMarkedTimeList[Int32.Parse(go.name[4].ToString()) - 1] = true;
+                        PlayerBanner pb = laneOrders[Int32.Parse(go.name[4].ToString()) - 1];
+                        leaderboardManager.changeBannerBest(pb.flagNumber, pb.player, eventTimer*2);
+                    }
+                }
+                
+            }
+            /*if (isRunning && competitorsList[3].transform.position.x <= -2161.52)
+             {
+                 Debug.Log("Lane 4 " + eventTimer + ":" + leaderboardManager.getPlayersInLaneOrder()[3].bestMark);
+                 finished = true;
+             }*/
+
             if ((Input.GetKeyDown(KeyCode.Space) || runPressed) && runningMeter.runMeterSlider.gameObject.activeInHierarchy && !finished && !foulImage.gameObject.activeInHierarchy) //updating speed on click
             {
                 runPressed = false;
@@ -219,6 +241,8 @@ public class FourHundredManager : MonoBehaviour
                 playerCamera.enabled = true;
                 setText.enabled = true;
                 player.GetComponentsInChildren<Animator>()[1].Play("BlockStart");
+                setText.gameObject.transform.parent.GetComponent<Animator>().Play("FadeText");
+                setText.gameObject.transform.parent.GetComponent<Animator>().speed = 0.75f;
                 StartCoroutine(showSet(3));
             }
         }
@@ -230,6 +254,8 @@ public class FourHundredManager : MonoBehaviour
         if (!foulImage.gameObject.activeInHierarchy)
         {
             setText.text = "Set";
+            setText.gameObject.transform.parent.GetComponent<Animator>().Play("FadeText");
+            setText.gameObject.transform.parent.GetComponent<Animator>().speed = 0.75f;
             foreach (GameObject go in competitorsList) //gets all competitors up in the set position
             {
                 if (go.activeInHierarchy) //stop animator warning
@@ -250,6 +276,8 @@ public class FourHundredManager : MonoBehaviour
         if (!foulImage.gameObject.activeInHierarchy)
         {
             setText.text = "GO";
+            setText.gameObject.transform.parent.GetComponent<Animator>().Play("FadeText");
+            setText.gameObject.transform.parent.GetComponent<Animator>().speed = 0.75f;
             isRunning = true;
             for (int i = 0; i < competitorsList.Length; i++)
             {
@@ -330,6 +358,10 @@ public class FourHundredManager : MonoBehaviour
         {
             float diff = 2162.03f - 1832f;
             tf.position = new Vector3(-1832 - (diff * (lapTime - (curveTime * 2 + 1))), tf.position.y, tf.position.z);
+        } else if (lapTime >= curveTime*2+2)
+        {
+            float diff = 2162.03f - 1832f;
+            tf.position = new Vector3(-1832- (diff * (lapTime - (curveTime * 2 + 1))), tf.position.y, tf.position.z);
         }
     }
 
@@ -338,6 +370,16 @@ public class FourHundredManager : MonoBehaviour
         if ((playerCamera.enabled && isRunning) || finished)
         {
             float speed = runningMeter.runningSpeed;
+            if (godMode)
+            {
+                if (energyBar.value >0)
+                {
+                    speed = 221;
+                } else
+                {
+                    speed = PublicData.averageSpeedDuringRun - 1;
+                }
+            }
             if (speed > PublicData.averageSpeedDuringRun && energyBar.value==0)
             {
                 speed = PublicData.averageSpeedDuringRun - (speed - PublicData.averageSpeedDuringRun); //makes it so over slows you down
@@ -350,6 +392,13 @@ public class FourHundredManager : MonoBehaviour
             {
                 energyBar.value += energyGain;
             }
+            float maxSpeedPercent = 0;
+            maxSpeedPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 0.07f);
+            maxSpeedPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 0.18f);
+            maxSpeedPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 0.3f);
+            maxSpeedPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 0.12f);
+
+            speed *= 0.96f + maxSpeedPercent;
             //math for arch
             moveCharacterOnLane(lapTimeProgress, currentLane, player.transform);
             for (int i = 0; i < competitorsLapTimes.Length; i++)
@@ -390,30 +439,34 @@ public class FourHundredManager : MonoBehaviour
                     competitorsList[i].GetComponentsInChildren<Animator>()[1].Play("RunningLean");
                 }
             }*/
-            if (!finished)
+           
+            runningMeter.updateTimeElapsed();
+            eventTimer += Time.deltaTime;
+            for(int i=0; i< competitorsLapTimes.Length;i++)
             {
-                runningMeter.updateTimeElapsed();
-                eventTimer += Time.deltaTime;
-                for(int i=0; i< competitorsLapTimes.Length;i++)
+                if (i+1 == currentLane)
                 {
-                    if (i+1 == currentLane)
+                    competitorsLapTimes[i] = speed / 75000f;
+                } else
+                {
+                    if (competitorsSpeedList[i] != 0)
                     {
-                        competitorsLapTimes[i] = speed / 75000f;
-                    } else
-                    {
-                        if (competitorsSpeedList[i] != 0)
+                        float curveTime = ((100 + stagger200Marks[i]) / 100f);
+                        competitorsLapTimes[i] += competitorsMaxSpeedList[i] / 75000f;
+                        if (competitorsLapTimes[i] >= curveTime*2+2)
                         {
-                            competitorsLapTimes[i] += competitorsMaxSpeedList[i] / 75000f;
+                            competitorsMaxSpeedList[i] -= 10;
                         }
                     }
                 }
-                lapTimeProgress += speed/75000; //normal mode
-                                                //lapTimeProgress += 0.005f; //fast mode
-                float curveTime = ((100 + stagger200Marks[currentLane - 1]) / 100f);
-                lapTimeProgress = Math.Min(lapTimeProgress,curveTime*2+2); //cap progress at 2
-                //runningMeter.barDecreaseSpeed = Math.Min(startingBarDecreaseSpeed + (eventTimer * 20), 400); //make the bar decrease faster as you go on
-                //runningMeter.speedPerClick = 75 + (eventTimer * 5);
             }
+            lapTimeProgress += speed/75000; //normal mode
+                                            //lapTimeProgress += 0.005f; //fast mode
+
+            //lapTimeProgress = Math.Min(lapTimeProgress,curveTime*2+2); //cap progress at 2
+            //runningMeter.barDecreaseSpeed = Math.Min(startingBarDecreaseSpeed + (eventTimer * 20), 400); //make the bar decrease faster as you go on
+            //runningMeter.speedPerClick = 75 + (eventTimer * 5);
+           
         }
 
     }

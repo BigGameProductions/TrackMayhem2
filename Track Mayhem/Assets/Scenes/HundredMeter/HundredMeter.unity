@@ -220,17 +220,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.08941544, y: 0.40634727, z: 0.09269205}
   m_Center: {x: 0.009002151, y: 0.23051608, z: -0.0022174418}
---- !u!114 &104831493 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 980534007026347060, guid: 19003acffa09f469e92a3870a26a51d1, type: 3}
-  m_PrefabInstance: {fileID: 980534007055873585}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &117632155
 GameObject:
   m_ObjectHideFlags: 0
@@ -273,7 +262,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 117632155}
   m_LocalRotation: {x: 0, y: 0.7071068, z: -0, w: -0.7071068}
-  m_LocalPosition: {x: -1767.19, y: 226.55, z: -6.74}
+  m_LocalPosition: {x: -1767.19, y: 226.55, z: -166}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -550,6 +539,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
+--- !u!114 &238775145 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7951448336147497038, guid: 19003acffa09f469e92a3870a26a51d1, type: 3}
+  m_PrefabInstance: {fileID: 980534007055873585}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!65 &244073727
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -10039,10 +10039,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   eventName: HundredMeter
-  useSeeded: 0
-  seededMark: 1450
+  useSeeded: 1
+  seededMark: 850
   seedSpreadDown: 50
-  seedSpreadUp: 50
+  seedSpreadUp: 100
   seedRoundInches: 1
   leaderboardBanners:
   - {fileID: 2097925589}
@@ -10136,8 +10136,9 @@ MonoBehaviour:
   player: {fileID: 117632155}
   leaderboardManager: {fileID: 1241750504}
   playerCamera: {fileID: 1960567860}
+  frontCamera: {fileID: 1480336852}
   foulImage: {fileID: 487618690}
-  setText: {fileID: 104831493}
+  setText: {fileID: 238775145}
   runningMeter: {fileID: 655826175}
   runningSpeedRatio: 0.004
   animationRunningSpeedRatio: 0.01
@@ -33257,6 +33258,14 @@ PrefabInstance:
     - target: {fileID: 980534007026347061, guid: 19003acffa09f469e92a3870a26a51d1, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 41
+      objectReference: {fileID: 0}
+    - target: {fileID: 8641005534442663425, guid: 19003acffa09f469e92a3870a26a51d1, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0.00012207
+      objectReference: {fileID: 0}
+    - target: {fileID: 8641005534442663425, guid: 19003acffa09f469e92a3870a26a51d1, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 27
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 19003acffa09f469e92a3870a26a51d1, type: 3}

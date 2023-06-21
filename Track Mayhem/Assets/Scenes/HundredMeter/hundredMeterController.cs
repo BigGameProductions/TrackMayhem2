@@ -14,6 +14,7 @@ public class hundredMeterController : MonoBehaviour
 
     [SerializeField] private LeaderboardManager leaderboardManager;
     [SerializeField] private Camera playerCamera;
+    [SerializeField] private Camera frontCamera;
 
     [SerializeField] private Image foulImage;
     [SerializeField] private TextMeshProUGUI setText;
@@ -83,6 +84,7 @@ public class hundredMeterController : MonoBehaviour
             go.GetComponentInChildren<Animator>().Play("BlockStart");
         }
         runTrail.gameObject.SetActive(false);
+        //player.transform.position = new Vector3(player.transform.position.x, 400, player.transform.position.z);
 
     }
 
@@ -104,7 +106,7 @@ public class hundredMeterController : MonoBehaviour
     {
         if (!leaderboardManager.cinematicCamera.gameObject.activeInHierarchy)
         {
-            if (!runButton.gameObject.activeInHierarchy)
+            if (!runButton.gameObject.activeInHierarchy && !finished)
             {
                 controlCanvas.enabled = true;
                 runButton.gameObject.SetActive(true); //show controls
@@ -126,8 +128,13 @@ public class hundredMeterController : MonoBehaviour
                 playerTime = eventTimer;
                 runningMeter.runningSpeed = 220;
                 runningMeter.barDecreaseSpeed = 80;
-                controlCanvas.enabled = false;
+                runButton.gameObject.SetActive(false);
+                jumpButton.gameObject.SetActive(false);
+                runningMeter.runMeterSlider.gameObject.SetActive(false);
+                runTrail.gameObject.SetActive(false);
                 player.GetComponentsInChildren<Transform>()[1].localPosition = new Vector3(0, 0, 0);
+                player.GetComponentsInChildren<Transform>()[1].localEulerAngles = new Vector3(0, 0, 0);
+                StartCoroutine(switchCameraAngle(1));
                 StartCoroutine(waitAfterFinish(2));
             }
             foreach (GameObject go in competitorsList)
@@ -196,7 +203,7 @@ public class hundredMeterController : MonoBehaviour
                 usedLean = true;
                 jumpButton.gameObject.SetActive(false);
                 player.GetComponentInChildren<Animator>().Play("RunningLean");
-                float distanceDiff = (float)Math.Abs(-2157.41 - player.transform.position.x);
+                float distanceDiff = (float)Math.Abs(-2155.91 - player.transform.position.x);
                 if (distanceDiff < 1)
                 {
                     jumpSparkle.startColor = Color.green;
@@ -209,7 +216,7 @@ public class hundredMeterController : MonoBehaviour
                 }
                 jumpSparkle.Play();
             }
-            if (!playerCamera.enabled)
+            if (!playerCamera.enabled && !finished)
             {
                 playerCamera.enabled = true;
                 setText.enabled = true;
@@ -219,6 +226,13 @@ public class hundredMeterController : MonoBehaviour
                 StartCoroutine(showSet(3));
             }
         }
+    }
+
+    IEnumerator switchCameraAngle(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        frontCamera.enabled = true;
+        playerCamera.enabled = false;
     }
 
     IEnumerator showSet(float delay)
@@ -299,12 +313,15 @@ public class hundredMeterController : MonoBehaviour
                 speed = PublicData.averageSpeedDuringRun - (speed - PublicData.averageSpeedDuringRun); //makes it so over slows you down
             }
             if (godMode) speed = PublicData.averageSpeedDuringRun;
-            speed -= 12.7f;
-            speed = Math.Max(speed, 0);
+            float maxSpeed = 0;
+            maxSpeed += 162.3f;
+            maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 40);
+            maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 27);
+            maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 20);
+            maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 18);
+            speed = (speed / PublicData.averageSpeedDuringRun) * maxSpeed;
             player.transform.Translate(new Vector3(0, 0, speed * runningSpeedRatio)); //making character move according to run meter
             player.GetComponentInChildren<Animator>().speed = speed * animationRunningSpeedRatio; //making the animation match the sunning speed
-            //player.GetComponentsInChildren<Transform>()[1].localPosition = new Vector3(player.GetComponentsInChildren<Transform>()[1].localPosition.x, 0, player.GetComponentsInChildren<Transform>()[1].localPosition.z);
-            //player.GetComponentsInChildren<Transform>()[1].localEulerAngles = new Vector3(0, 0, 0);
             for (int i=0; i<competitorsList.Length; i++)
             {
                 if (competitorsMarkedTimeList[i])
@@ -336,7 +353,7 @@ public class hundredMeterController : MonoBehaviour
                 }
             }
             float avSpeed = runningMeter.getAverageSpeed();
-            if (avSpeed > 8000)
+            if (avSpeed > 8000 && !finished)
             {
                 runTrail.gameObject.SetActive(true);
                 runTrail.startSpeed = (avSpeed - 8000)/20;
@@ -367,6 +384,7 @@ public class hundredMeterController : MonoBehaviour
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hundredMeter = playerTime;
             leaderboardManager.addMarkLabelToPlayer(1);
             leaderboardManager.showRecordBanner(2);
+            player.GetComponentInChildren<Animator>().Play("Exited");
         }
         else if (playerTime < PublicData.gameData.personalBests.hundredMeter || PublicData.gameData.personalBests.hundredMeter == 0) //if pr or first time doing it
         {
@@ -374,6 +392,7 @@ public class hundredMeterController : MonoBehaviour
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hundredMeter = playerTime; //sets cb too
             leaderboardManager.addMarkLabelToPlayer(3);
             leaderboardManager.showRecordBanner(1);
+            player.GetComponentInChildren<Animator>().Play("Exited");
 
         }
         else if (playerTime < characterPB.hundredMeter || characterPB.hundredMeter == 0)
@@ -381,6 +400,10 @@ public class hundredMeterController : MonoBehaviour
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hundredMeter = playerTime;
             leaderboardManager.addMarkLabelToPlayer(2);
             leaderboardManager.showRecordBanner(0);
+            player.GetComponentInChildren<Animator>().Play("Exited");
+        } else
+        {
+            player.GetComponentInChildren<Animator>().Play("Wave");
         }
         leaderboardManager.showCurrentPlayerMarks(currentPlayerBanner, 3); //updates and shows the player leaderboard
         leaderboardManager.addPlayerTime(playerTime); //adds player to the banners

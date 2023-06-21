@@ -168,7 +168,13 @@ public static class PublicData
         return finalResult;
     }
 
-   
+    public static float curveValue(float value, float maxValue)
+    {
+        float aVal = (float)(maxValue / Math.Sqrt(10));
+        return (float)(aVal * Math.Sqrt(value));
+    }
+
+
 
 
 }

@@ -1,26 +1,23 @@
 fileFormatVersion: 2
-guid: c6f9715528d834080b2594bbab5ee737
+guid: 9f3abd9fffa0e4fd1bb129b4a1339e52
 ModelImporter:
   serializedVersion: 21202
   internalIDToNameTable:
   - first:
-      74: -6842666708266138392
-    second: Armature|Armature.001|mixamo.com|Layer0
+      74: -4791504522942941401
+    second: Armature|Armature|mixamo.com|Layer0
   - first:
-      74: 405751779608671491
-    second: Armature|BlockStart.001
+      74: 6165553400957861818
+    second: Armature|Armature|mixamo.com|Layer0.001
   - first:
-      74: 3248394180752311366
-    second: Armature|BlockStartNEw
+      74: 3591740854655688942
+    second: Armature|Armature|mixamo.com|Layer0.002
   - first:
-      74: 9030770580604088230
-    second: Armature|BlockStartNewStartUp
+      74: 85483252243113165
+    second: Armature|Armature|mixamo.com|Layer0.003
   - first:
-      74: 5071559519642530186
-    second: Armature|BlockStartUpNew
-  - first:
-      74: 7471017877179705623
-    second: Ch36|BlockStart.001
+      74: -3874622737766231957
+    second: Armature|Armature|mixamo.com|Layer0.004
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -51,11 +48,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Armature|Armature.001|mixamo.com|Layer0
-      takeName: Armature|Armature.001|mixamo.com|Layer0
+      name: Armature|Armature|mixamo.com|Layer0
+      takeName: Armature|Armature|mixamo.com|Layer0
       internalID: 0
       firstFrame: 0
-      lastFrame: 20
+      lastFrame: 82
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -80,11 +77,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|BlockStart.001
-      takeName: Armature|BlockStart.001
+      name: Armature|Armature|mixamo.com|Layer0.001
+      takeName: Armature|Armature|mixamo.com|Layer0.001
       internalID: 0
       firstFrame: 0
-      lastFrame: 1
+      lastFrame: 575
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -109,11 +106,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|BlockStartNEw
-      takeName: Armature|BlockStartNEw
+      name: Armature|Armature|mixamo.com|Layer0.002
+      takeName: Armature|Armature|mixamo.com|Layer0.002
       internalID: 0
       firstFrame: 0
-      lastFrame: 1
+      lastFrame: 35
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -138,40 +135,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|BlockStartNewStartUp
-      takeName: Armature|BlockStartNewStartUp
+      name: Armature|Armature|mixamo.com|Layer0.003
+      takeName: Armature|Armature|mixamo.com|Layer0.003
       internalID: 0
       firstFrame: 0
-      lastFrame: 69
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      hasAdditiveReferencePose: 0
-      loopTime: 0
-      loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 1
-      loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask: []
-      maskType: 3
-      maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
-    - serializedVersion: 16
-      name: Armature|BlockStartUpNew
-      takeName: Armature|BlockStartUpNew
-      internalID: 0
-      firstFrame: 0
-      lastFrame: 1
+      lastFrame: 19
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -196,18 +164,18 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Ch36|BlockStart.001
-      takeName: Ch36|BlockStart.001
+      name: Armature|Armature|mixamo.com|Layer0.004
+      takeName: Armature|Armature|mixamo.com|Layer0.004
       internalID: 0
       firstFrame: 0
-      lastFrame: 1
+      lastFrame: 23
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -216,7 +184,7 @@ ModelImporter:
       keepOriginalPositionY: 1
       keepOriginalPositionXZ: 0
       heightFromFeet: 0
-      mirror: 0
+      mirror: 1
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events: []
