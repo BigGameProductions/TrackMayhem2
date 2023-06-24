@@ -99,6 +99,7 @@ public class HighJumpManager : MonoBehaviour
     private bool fouled = false;
 
     private bool secondInAir = false;
+    private bool canPike = false;
 
     public bool godMode;
 
@@ -225,6 +226,8 @@ public class HighJumpManager : MonoBehaviour
                 //player.transform.eulerAngles = new Vector3(0, 0, 0);
                 player.GetComponent<Animator>().enabled = false;
                 player.GetComponentsInChildren<Animator>()[1].applyRootMotion = true;
+                canPike = false;
+                jumpPressed = false;
                 StartCoroutine(waitInAir());
 
             }
@@ -535,9 +538,12 @@ public class HighJumpManager : MonoBehaviour
 
     IEnumerator waitInAir()
     {
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(0.5f);
+        canPike = true;
+        yield return new WaitForSeconds(0.5f);
         secondInAir = true;
     }
+
 
     IEnumerator foulRun(float delay)
     {
@@ -724,7 +730,7 @@ public class HighJumpManager : MonoBehaviour
         {
             player.GetComponentsInChildren<Animator>()[1].Play("Upset"); //Animation for after the jump
         }
-        else if (currentBarHeight > Int32.Parse(PublicData.gameData.leaderboardList[7][1][0]) / 100.0f) //game record
+        else if (currentBarHeight > Int32.Parse(PublicData.gameData.leaderboardList[7][1][0]) / 100.0f) //game record //TODO fix game records
         {
             PublicData.gameData.personalBests.highJump = currentBarHeight;
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.highJump = currentBarHeight;
@@ -827,7 +833,7 @@ public class HighJumpManager : MonoBehaviour
         maxPlayerHeight = 0;
         fouled = false;
         runButton.SetActive(true);
-        jumpButton.SetActive(false);
+        jumpButton.SetActive(true);
         angleMeter.gameObject.SetActive(false);
         angleAnimation.Play("AngleMeterAnimation", 0, 0);
         leaderboardManager.showRecordBanner(-1);

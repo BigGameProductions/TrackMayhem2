@@ -5733,8 +5733,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 409732885}
-  m_LocalRotation: {x: 0, y: 0.7071068, z: -0, w: -0.7071068}
-  m_LocalPosition: {x: -1750.07, y: 226.73, z: -251.25}
+  m_LocalRotation: {x: 0, y: 0.57357657, z: -0, w: -0.81915194}
+  m_LocalPosition: {x: -1748.9, y: 226.73, z: -252.25}
   m_LocalScale: {x: 4.000001, y: 4, z: 4.000001}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5746,7 +5746,7 @@ Transform:
   - {fileID: 243745845}
   m_Father: {fileID: 0}
   m_RootOrder: 9
-  m_LocalEulerAnglesHint: {x: 0, y: 270, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 290, z: 0}
 --- !u!54 &409732887
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -7542,7 +7542,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 792800629}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1779.07, y: 227.88, z: -114.99}
+  m_LocalPosition: {x: -1755.8, y: 227.88, z: -249.38}
   m_LocalScale: {x: 0.8, y: 0.098335, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -7941,6 +7941,7 @@ MonoBehaviour:
   leaderboardManager: {fileID: 1948724041}
   runMeter: {fileID: 976403088}
   itemStorage: {fileID: 855391742}
+  godMode: 1
 --- !u!1001 &1129074360
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8363,7 +8364,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1319040970}
   m_LocalRotation: {x: 0.5515723, y: -0, z: -0, w: 0.83412707}
-  m_LocalPosition: {x: 0, y: 0, z: -278.6}
+  m_LocalPosition: {x: 0, y: 0, z: -273.6}
   m_LocalScale: {x: 2.5, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -8373,7 +8374,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 66.95, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0.4, y: 173}
+  m_AnchoredPosition: {x: 1.1, y: 174.79999}
   m_SizeDelta: {x: 16, y: 9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!65 &1375609124

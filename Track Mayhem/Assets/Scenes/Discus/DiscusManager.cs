@@ -50,6 +50,8 @@ public class DiscusManager : MonoBehaviour
 
     private bool measure = false; //if the shot has been measured
 
+    public bool godMode;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -58,7 +60,7 @@ public class DiscusManager : MonoBehaviour
         shotput.transform.localPosition = new Vector3(-0.00200000009f, 0.140000001f, 0.0329999998f); //alligns shot to player hand
         shotput.transform.localEulerAngles = new Vector3(-94.45f, 76.457f,-75.442f); //alligns shot to player hand
         player.GetComponentInChildren<Animator>().Play("DiscusThrow");
-        player.GetComponentsInChildren<Transform>()[1].eulerAngles = new Vector3(0, 90, 0);
+        player.GetComponentsInChildren<Transform>()[1].eulerAngles = new Vector3(0, 110, 0);
         ringAnimation.speed = 0;
         controlsCanvas.enabled = false;
         ringAnimation.gameObject.SetActive(false);
@@ -110,8 +112,10 @@ public class DiscusManager : MonoBehaviour
         if (shotput.transform.position.y < 227.5 && !measure && !isRunning)
         {
             measure = true;
-            float totalDistance = -1779.07f - shotput.transform.position.x;
-            totalInches = 2 * leaderboardManager.roundToNearest(0.25f, totalDistance / PublicData.spacesPerInch);
+            float xDistance = -1755.8f - shotput.transform.position.x;
+            float zDistance = Math.Abs(-249.38f - shotput.transform.position.z);
+            float totalDistance = (float)Math.Sqrt(Math.Pow(xDistance, 2) + Math.Pow(zDistance, 2));
+            totalInches = 2 * leaderboardManager.roundToNearest(0.25f, totalDistance / (PublicData.spacesPerInch*1.13f));
             updatePlayerBanner(totalInches);
             StartCoroutine(showPersonalBanner(2));
         }
@@ -157,6 +161,16 @@ public class DiscusManager : MonoBehaviour
             didThrow = true;
             shotput.transform.parent = null;
             shotput.GetComponent<Rigidbody>().useGravity = true; //makes it able to fall
+            if (godMode)
+            {
+                piviotPercents[0] = 1;
+                piviotPercents[1] = 1;
+                piviotPercents[2] = 1;
+                secondPiviotPercents[0] = 1;
+                secondPiviotPercents[1] = 1;
+                secondPiviotPercents[2] = 1;
+
+            }
             float totalThrowPower = 0;
             totalThrowPower += piviotPercents[0]/2;
             totalThrowPower += piviotPercents[1]/2;
@@ -164,9 +178,14 @@ public class DiscusManager : MonoBehaviour
             totalThrowPower += secondPiviotPercents[0]/2;
             totalThrowPower += secondPiviotPercents[1]/2;
             totalThrowPower += secondPiviotPercents[2];
-            float power = 7 * totalThrowPower;
+            float throwPercent = 0;
+            throwPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 1.8f);
+            throwPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 0.5f);
+            throwPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 0.9f);
+            throwPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 1.4f);
+            float power = (3.93f + throwPercent) * totalThrowPower;
             power += 2;
-            shotput.GetComponent<Rigidbody>().AddForce(new Vector3(-1 * power, power * 0.5f, 0), ForceMode.Impulse); //adds the throwing force
+            shotput.GetComponent<Rigidbody>().AddForce(new Vector3(-1 * power, power * 0.5f, 5), ForceMode.Impulse); //adds the throwing force
             StartCoroutine(changeCameraAngle(1));
         }
     }
@@ -271,7 +290,7 @@ public class DiscusManager : MonoBehaviour
         player.GetComponentInChildren<Animator>().Play("DiscusThrow");
         player.GetComponentInChildren<Animator>().speed = 0;
         shotput.GetComponent<Rigidbody>().useGravity = false;
-        player.GetComponentsInChildren<Transform>()[1].eulerAngles = new Vector3(0, 90, 0);
+        player.GetComponentsInChildren<Transform>()[1].eulerAngles = new Vector3(0, 110, 0);
         ringAnimation.speed = 0;
         ringAnimation.gameObject.SetActive(false);
         jumpButton.gameObject.SetActive(false);

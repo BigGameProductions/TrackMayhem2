@@ -61,6 +61,11 @@ public class HurdlesManager : MonoBehaviour
 
     PlayerBanner[] laneOrders;
 
+    [SerializeField] LeanDetector leadD;
+
+    public bool godMode;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -115,13 +120,13 @@ public class HurdlesManager : MonoBehaviour
                 {
                     if (laneOrders[i].isPlayer)
                     {
-                        player.transform.position = competitorsList[i].transform.position - new Vector3(-2.3f, 0, 0);
+                        player.transform.position = competitorsList[i].transform.position - new Vector3(-1.9f, 0.5f, 0);
                         competitorsList[i].SetActive(false);
                     }
                 }
             }
             runningMeter.updateRunMeter();
-            if (isRunning && player.transform.position.x <= -2161.52  && !finished)
+            if (isRunning && leadD.endRace && !finished)
             {
                 finished = true;
                 Debug.Log("hit : " + hurdleHitCount);
@@ -191,6 +196,8 @@ public class HurdlesManager : MonoBehaviour
                 playerCamera.enabled = true;
                 setText.enabled = true;
                 player.GetComponentInChildren<Animator>().Play("BlockStart");
+                setText.gameObject.transform.parent.GetComponent<Animator>().Play("FadeText");
+                setText.gameObject.transform.parent.GetComponent<Animator>().speed = 0.5f;
                 StartCoroutine(showSet(3));
             }
         }
@@ -202,6 +209,8 @@ public class HurdlesManager : MonoBehaviour
         if (!foulImage.gameObject.activeInHierarchy)
         {
             setText.text = "Set";
+            setText.gameObject.transform.parent.GetComponent<Animator>().Play("FadeText");
+            setText.gameObject.transform.parent.GetComponent<Animator>().speed = 0.5f;
             foreach (GameObject go in competitorsList) //gets all competitors up in the set position
             {
                 if (go.activeInHierarchy) //stop animator warning
@@ -222,6 +231,8 @@ public class HurdlesManager : MonoBehaviour
         if (!foulImage.gameObject.activeInHierarchy)
         {
             setText.text = "GO";
+            setText.gameObject.transform.parent.GetComponent<Animator>().Play("FadeText");
+            setText.gameObject.transform.parent.GetComponent<Animator>().speed = 0.5f;
             isRunning = true;
             for (int i = 0; i < competitorsList.Length; i++)
             {
@@ -270,6 +281,14 @@ public class HurdlesManager : MonoBehaviour
             {
                 speed = PublicData.averageSpeedDuringRun - (speed - PublicData.averageSpeedDuringRun); //makes it so over slows you down
             }
+            if (godMode) speed = PublicData.averageSpeedDuringRun;
+            float maxSpeed = 0;
+            maxSpeed += 117.3f;
+            maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 44);
+            maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 30);
+            maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 15);
+            maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 32);
+            speed = (speed / PublicData.averageSpeedDuringRun) * maxSpeed;
             player.transform.Translate(new Vector3(0, 0, speed * runningSpeedRatio)); //making character move according to run meter
             player.GetComponentInChildren<Animator>().speed = speed * animationRunningSpeedRatio; //making the animation match the sunning speed
             for (int i = 0; i < competitorsList.Length; i++)
@@ -298,7 +317,7 @@ public class HurdlesManager : MonoBehaviour
                 {
                     competitorsList[i].GetComponentInChildren<Animator>().Play("RunningLean");
                 }
-                for (int j = -1770; j > -1778 - 360; j -= 35)
+                for (int j = -1770; j > -1778 - 325; j -= 36)
                 {
                     //Debug.Log(competitorsList[i].transform.position.x < j);
                     if (competitorsList[i].transform.position.x < j && competitorsList[i].transform.position.x > j-5 && competitorsList[i].GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Running"))
