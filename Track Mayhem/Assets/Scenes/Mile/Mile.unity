@@ -4496,7 +4496,15 @@ MonoBehaviour:
   controlCanvas: {fileID: 1294512090}
   energyDepletion: 0.002
   energyGain: 0.01
-  competitorsList: []
+  competitorsList:
+  - {fileID: 2001325925}
+  - {fileID: 2046583856}
+  - {fileID: 892150959}
+  - {fileID: 2111107182}
+  - {fileID: 721725413}
+  - {fileID: 2122732385}
+  - {fileID: 1201791505}
+  - {fileID: 1340292271}
   laneZValues: []
   zOffset: -16
 --- !u!65 &831690831
@@ -6460,6 +6468,31 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.07311782, y: 0.47265002, z: 0.070279345}
   m_Center: {x: 0.017151028, y: 0.26366755, z: -0.0134241395}
+--- !u!1 &1076985753 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 980534006692165650, guid: 19003acffa09f469e92a3870a26a51d1, type: 3}
+  m_PrefabInstance: {fileID: 1901461367}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1076985758
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1076985753}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: ecc1b3fba92ca4fef8a10fa782664070, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1001 &1084799691
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17783,7 +17816,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1774302335}
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -2167.04, y: 226.73, z: -308.22}
+  m_LocalPosition: {x: -2184.3, y: 226.73, z: -308.22}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -28232,7 +28265,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1983151209
 Transform:
   m_ObjectHideFlags: 0
@@ -28240,8 +28273,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1983151208}
-  m_LocalRotation: {x: 0, y: 0.7071068, z: -0, w: -0.7071068}
-  m_LocalPosition: {x: -1768.96, y: 226.87, z: 7.55}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -2184.3, y: 226.87, z: -331.7}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -28255,7 +28288,7 @@ Transform:
   - {fileID: 1340292272}
   m_Father: {fileID: 0}
   m_RootOrder: 12
-  m_LocalEulerAnglesHint: {x: 0, y: 270, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!65 &1985095870
 BoxCollider:
   m_ObjectHideFlags: 0

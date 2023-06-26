@@ -5362,6 +5362,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 127824415785865332, guid: d077e6698862e4979974e57da8147e7b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 127824415785865332, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
       value: 1
       objectReference: {fileID: 0}
@@ -5387,11 +5391,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 127824416783502255, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_text
-      value: Piviot
+      value: Pivot
       objectReference: {fileID: 0}
     - target: {fileID: 127824416783502255, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_fontSize
-      value: 40.55
+      value: 45.15
       objectReference: {fileID: 0}
     - target: {fileID: 127824416806786617, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_AnchorMax.x
@@ -7941,7 +7945,8 @@ MonoBehaviour:
   leaderboardManager: {fileID: 1948724041}
   runMeter: {fileID: 976403088}
   itemStorage: {fileID: 855391742}
-  godMode: 1
+  jumpSparkle: {fileID: 243745847}
+  godMode: 0
 --- !u!1001 &1129074360
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13302,8 +13307,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 4236.126, y: 2449.1216, z: 23.309793}
-  m_Center: {x: -2118.0613, y: 1600.0044, z: -4.9871144}
+  m_Size: {x: 7224.0156, y: 3656.253, z: 16.769573}
+  m_Center: {x: -2244.2874, y: 996.44086, z: -8.257225}
 --- !u!1 &1862687023
 GameObject:
   m_ObjectHideFlags: 0

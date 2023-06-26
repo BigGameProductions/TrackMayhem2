@@ -5564,6 +5564,7 @@ GameObject:
   - component: {fileID: 522078951}
   - component: {fileID: 522078950}
   - component: {fileID: 522078954}
+  - component: {fileID: 522078955}
   m_Layer: 0
   m_Name: Javelin
   m_TagString: Untagged
@@ -5582,9 +5583,9 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 1.6175151
-  m_Height: 1.0234464
+  m_Height: 1.0106628
   m_Direction: 0
-  m_Center: {x: -0.00049273175, y: -0.5006552, z: -0.4897833}
+  m_Center: {x: -0.0068857195, y: -0.5006552, z: -0.4897833}
 --- !u!23 &522078951
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5667,6 +5668,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 96
   m_CollisionDetection: 0
+--- !u!114 &522078955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 522078949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9725a4f78e9e405081f4e4460450433, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitGround: 0
 --- !u!1 &547859396
 GameObject:
   m_ObjectHideFlags: 0
@@ -5692,14 +5706,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 547859396}
-  m_LocalRotation: {x: 0.28877014, y: -0, z: -0, w: 0.9573985}
-  m_LocalPosition: {x: 0, y: 74, z: -88.99994}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -74, z: -88.99994}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 522078953}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 33.569, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &547859399
 Camera:
   m_ObjectHideFlags: 0
@@ -11588,6 +11602,7 @@ MonoBehaviour:
   infoButton: {fileID: 597007145}
   controlsCanvas: {fileID: 597007150}
   angleMeter: {fileID: 1668465088}
+  godMode: 1
 --- !u!1 &1624047588
 GameObject:
   m_ObjectHideFlags: 0

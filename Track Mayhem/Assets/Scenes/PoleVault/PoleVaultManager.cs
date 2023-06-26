@@ -52,7 +52,7 @@ public class PoleVaultManager : MonoBehaviour
 
     private int rightHandTransformPosition = 55;
 
-    private float openingHeight = 120;
+    private float openingHeight = 240;
     private float currentBarHeight = 0; //sets the starting height to x inches
 
     private Vector3 startingPosition = new Vector3(-2255.1f, 226.73f, -73.9f); //starting position of player

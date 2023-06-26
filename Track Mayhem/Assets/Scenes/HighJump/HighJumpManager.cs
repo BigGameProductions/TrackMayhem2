@@ -266,7 +266,7 @@ public class HighJumpManager : MonoBehaviour
                 }
                 player.GetComponentsInChildren<Animator>()[1].Play("RunTurn");
             }
-            if (player.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 0.755)
+            if (player.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 0.855)
             {
                 isRunning = false; //stops running speed
                 foulImage.gameObject.SetActive(true);

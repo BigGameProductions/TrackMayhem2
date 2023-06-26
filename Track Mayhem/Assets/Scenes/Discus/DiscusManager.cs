@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -44,6 +45,8 @@ public class DiscusManager : MonoBehaviour
 
     private GameObject[] pivotBars = new GameObject[3];
 
+    [SerializeField] private ParticleSystem jumpSparkle;
+
     private int ringAnimationStage = 0;
 
     private int jumpClicks = 0; //amount of times the player has clicked for the meter
@@ -56,7 +59,8 @@ public class DiscusManager : MonoBehaviour
     void Start()
     {
         itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform, basePlayer); //inits the runner into the current scene
-        shotput.transform.SetParent(player.GetComponentsInChildren<Transform>()[rightHandTransformPosition]); //sets the parent of the pole to 
+        shotput.transform.SetParent(player.GetComponentsInChildren<Transform>()[rightHandTransformPosition]); //sets the parent of the pole to
+        leaderboardManager.cinematicCamera.GetComponent<Animator>().SetInteger("event", 6);
         shotput.transform.localPosition = new Vector3(-0.00200000009f, 0.140000001f, 0.0329999998f); //alligns shot to player hand
         shotput.transform.localEulerAngles = new Vector3(-94.45f, 76.457f,-75.442f); //alligns shot to player hand
         player.GetComponentInChildren<Animator>().Play("DiscusThrow");
@@ -67,6 +71,11 @@ public class DiscusManager : MonoBehaviour
         jumpButton.gameObject.SetActive(false);
         shotput.GetComponent<BoxCollider>().enabled = false;
         player.GetComponentInChildren<Animator>().speed = 0;
+        EventTrigger trigger = jumpButton.gameObject.AddComponent<EventTrigger>();
+        var pointerDown = new EventTrigger.Entry();
+        pointerDown.eventID = EventTriggerType.PointerDown;
+        pointerDown.callback.AddListener((e) => jumpButtonPressed());
+        trigger.triggers.Add(pointerDown);
     }
 
 
@@ -115,7 +124,7 @@ public class DiscusManager : MonoBehaviour
             float xDistance = -1755.8f - shotput.transform.position.x;
             float zDistance = Math.Abs(-249.38f - shotput.transform.position.z);
             float totalDistance = (float)Math.Sqrt(Math.Pow(xDistance, 2) + Math.Pow(zDistance, 2));
-            totalInches = 2 * leaderboardManager.roundToNearest(0.25f, totalDistance / (PublicData.spacesPerInch*1.13f));
+            totalInches = 2 * leaderboardManager.roundToNearest(0.25f, totalDistance / (PublicData.spacesPerInch*0.865f));
             updatePlayerBanner(totalInches);
             StartCoroutine(showPersonalBanner(2));
         }
@@ -179,13 +188,13 @@ public class DiscusManager : MonoBehaviour
             totalThrowPower += secondPiviotPercents[1]/2;
             totalThrowPower += secondPiviotPercents[2];
             float throwPercent = 0;
-            throwPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 1.8f);
-            throwPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 0.5f);
-            throwPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 0.9f);
-            throwPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 1.4f);
-            float power = (3.93f + throwPercent) * totalThrowPower;
+            throwPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 1.6f);
+            throwPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 0.2f);
+            throwPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 0.7f);
+            throwPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 1.18f);
+            float power = (3.38f + throwPercent) * totalThrowPower; //was 3.93
             power += 2;
-            shotput.GetComponent<Rigidbody>().AddForce(new Vector3(-1 * power, power * 0.5f, 5), ForceMode.Impulse); //adds the throwing force
+            shotput.GetComponent<Rigidbody>().AddForce(new Vector3(-1 * power, power * 0.5f, Math.Min(10,power/4)), ForceMode.Impulse); //adds the throwing force
             StartCoroutine(changeCameraAngle(1));
         }
     }
@@ -265,7 +274,7 @@ public class DiscusManager : MonoBehaviour
             leaderboardManager.addMarkLabelToPlayer(3);
 
         }
-        else if (totalInches > PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.longJump)
+        else if (totalInches > PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.discus)
         {
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.discus = leaderboardManager.roundToNearest(0.25f, totalInches); ;
             leaderboardManager.addMarkLabelToPlayer(2);
@@ -349,6 +358,23 @@ public class DiscusManager : MonoBehaviour
             {
                 secondPiviotPercents[jumpClicks] = totalPowerPercentage;
             }
+            if (timeDiff < 0.05)
+            {
+                totalPowerPercentage = 1 - (timeDiff / 0.05f);
+                if (totalPowerPercentage > 0.75)
+                {
+                    jumpSparkle.startColor = Color.green;
+                }
+                else
+                {
+                    jumpSparkle.startColor = Color.yellow;
+                }
+            }
+            else
+            {
+                jumpSparkle.startColor = Color.red;
+            }
+            jumpSparkle.Play();
             pivotBars[jumpClicks] = tf.gameObject;
             jumpClicks++;
         }

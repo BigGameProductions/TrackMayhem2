@@ -70,6 +70,7 @@ public class HurdlesManager : MonoBehaviour
     void Start()
     {
         itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform, basePlayer); //inits the runner into the current scene
+        leaderboardManager.cinematicCamera.GetComponent<Animator>().SetInteger("event", 8);
         controlCanvas.enabled = false;
         setText.enabled = false;
         foulImage.gameObject.SetActive(false);

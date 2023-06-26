@@ -29,6 +29,8 @@ public class JavelinManager : MonoBehaviour
 
     [SerializeField] private Animator angleAnimation;
 
+    [SerializeField] private ParticleSystem jumpSparkle;
+
 
     private LeaderboardFunctions leadF = new LeaderboardFunctions();
 
@@ -52,8 +54,6 @@ public class JavelinManager : MonoBehaviour
 
     [SerializeField] private Image foulImage; //is the image that appears when you foul or don't land in the sand
 
-    [SerializeField] private ParticleSystem jumpSparkle;
-
     [SerializeField] RunningMeterBar runningMeter;
     [SerializeField] JumpingMeter jumpMeter;
     [SerializeField] Button infoButton;
@@ -62,6 +62,8 @@ public class JavelinManager : MonoBehaviour
     [SerializeField] GameObject angleMeter;
 
     private bool jumpButtonHeld = false; //if the jump button is being held
+
+    public bool godMode;
 
     // Start is called before the first frame update
     void Start()
@@ -96,47 +98,103 @@ public class JavelinManager : MonoBehaviour
                 runningMeter.updateRunMeter();
             } else
             {
-                float averageSpeed = runningMeter.getAverageSpeed(); //gets average running speed
-                float totalThrowPower = 0;
-                float runPowerPercent = 0;
-                if (averageSpeed <= 8500) //sets percentage based on distance from 0 to 8500. 8500 is considered the perfect run
+                if (!isFoul)
                 {
-                    runPowerPercent = averageSpeed / 8500;
+                    float averageSpeed = runningMeter.getAverageSpeed(); //gets average running speed
+                    float totalThrowPower = 0;
+                    float runPowerPercent = 0;
+                    if (averageSpeed <= 8500) //sets percentage based on distance from 0 to 8500. 8500 is considered the perfect run
+                    {
+                        runPowerPercent = averageSpeed / 8500;
+                    }
+                    else //sets from 0 to 4500 for the top part
+                    {
+                        runPowerPercent = 1 - ((averageSpeed - 8500) / 4500);
+                    }
+                    float arrowPos = angleAnimation.GetCurrentAnimatorStateInfo(0).normalizedTime;
+                    float diff = Math.Abs(0.46f - arrowPos);
+                    if (diff < 0.1)
+                    {
+                        anglePower = 1 - (diff / 0.1f);
+                    }
+                    if (anglePower > 0.8f)
+                    {
+                        jumpSparkle.startColor = Color.green;
+                    }
+                    else if (anglePower > 0.5f)
+                    {
+                        jumpSparkle.startColor = Color.yellow;
+                    }
+                    else
+                    {
+                        jumpSparkle.startColor = Color.red;
+                    }
+                    jumpSparkle.Play();
+                    totalThrowPower += runPowerPercent + anglePower;
+                    if (godMode) totalThrowPower = 2;
+                    didThrow = true;
+                    javelin.transform.parent = null;
+                    Rigidbody rb = javelin.GetComponent<Rigidbody>();
+                    rb.useGravity = true;
+                    float totalPowerPercent = 4.5f;
+                    totalPowerPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 5f);
+                    totalPowerPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 3.5f);
+                    totalPowerPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 4f);
+                    totalPowerPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 4.5f);
+                    rb.AddForce(new Vector3(-20 * totalThrowPower, totalPowerPercent * totalThrowPower, 0), ForceMode.Impulse);
+                    javelin.transform.eulerAngles = new Vector3(-37.336f, 32.927f, -45.454f);
+                    rb.AddRelativeTorque(new Vector3(0, 0, Math.Min(-140 + (totalPowerPercent*totalThrowPower* 4.228f), -30))); //was -40
+                    controlsCanvas.enabled = false;
+                    angleMeter.SetActive(false);
+                    StartCoroutine(showJavelinCamera(1));
                 }
-                else //sets from 0 to 4500 for the top part
-                {
-                    runPowerPercent = 1 - ((averageSpeed - 8500) / 4500);
-                }
-                totalThrowPower += runPowerPercent + anglePower;
-                didThrow = true;
-                javelin.transform.parent = null;
-                Rigidbody rb = javelin.GetComponent<Rigidbody>();
-                rb.useGravity = true;
-                rb.AddForce(new Vector3(-20*totalThrowPower, 15*totalThrowPower, 0), ForceMode.Impulse);
-                javelin.transform.eulerAngles = new Vector3(-37.336f, 32.927f, -45.454f);
-                rb.AddRelativeTorque(new Vector3(0, 0, -40));
-                controlsCanvas.enabled = false;
-                angleMeter.SetActive(false);
-                StartCoroutine(showJavelinCamera(1));
+                
+            }
+        }
+        if (player.transform.position.x < -1776.47f && !isFoul)
+        {
+            if (didThrow)
+            {
+                isFoul = true;
+            } else
+            {
+                player.GetComponentInChildren<Animator>().speed = 0;
+                isFoul = true;
+                foulImage.gameObject.SetActive(true);
+                foulImage.GetComponent<Animator>().Play("FoulSlide");
+                updatePlayerBanner(-1000); //update the banner to foul
+                StartCoroutine(showPersonalBanner(2));
+
             }
         }
         if (didThrow && !measure)
         {
             javelinCamera.transform.eulerAngles = new Vector3(0, 0, 0);
 
-            javelinCamera.transform.localPosition = new Vector3(-0.237f, 170.3f, -36);
+            javelinCamera.transform.localPosition = new Vector3(-0.237f, 200.3f, -36); //was 170
+            if (javelinCamera.transform.position.y < 231.4)
+            {
+                javelinCamera.transform.position = new Vector3(javelinCamera.transform.position.x,231.4f ,javelinCamera.transform.position.z);
+            }
             if (javelin.transform.eulerAngles.z > 46)
             {
                 //javelin.GetComponentInChildren<Rigidbody>().angularVelocity = new Vector3(0, 0, 0);
             }
         }
-        if (didThrow && javelin.transform.position.y < 230 && !measure)
+        if (didThrow && javelin.GetComponent<JavelinCollision>().hitGround && !measure)
         {
             measure = true;
-            javelin.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePosition;
-            float distance = (-1779.68f - javelin.transform.position.x) / PublicData.spacesPerInch;
-            totalInches = leaderboardManager.roundToNearest(0.25f, distance)*2;
-            updatePlayerBanner(totalInches);
+            if (isFoul)
+            {
+                updatePlayerBanner(-1000); //update the banner to foul
+            }
+            else
+            {
+                javelin.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePosition;
+                float distance = (-1779.68f - javelin.transform.position.x) / (PublicData.spacesPerInch*0.6f);
+                totalInches = leaderboardManager.roundToNearest(0.25f, distance) * 2;
+                updatePlayerBanner(totalInches);
+            }
             StartCoroutine(showPersonalBanner(2));
         }
         if (Input.GetKey(KeyCode.P) || jumpButtonHeld)
@@ -181,13 +239,17 @@ public class JavelinManager : MonoBehaviour
         if (runningCamera.enabled && !didThrow)
         {
             float speed = runningMeter.runningSpeed;
-            if (speed > PublicData.averageSpeedDuringRun)
+            if (!isFoul)
             {
-                speed = PublicData.averageSpeedDuringRun - (speed - PublicData.averageSpeedDuringRun); //makes it so over slows you down
+                if (speed > PublicData.averageSpeedDuringRun)
+                {
+                    speed = PublicData.averageSpeedDuringRun - (speed - PublicData.averageSpeedDuringRun); //makes it so over slows you down
+                }
+                player.GetComponentInChildren<Animator>().speed = speed * animationRunningSpeedRatio; //making the animation match the sunning speed
+                runningMeter.updateTimeElapsed();
             }
             player.transform.Translate(new Vector3(0, 0, speed * runningSpeedRatio)); //making character move according to run meter
-            player.GetComponentInChildren<Animator>().speed = speed * animationRunningSpeedRatio; //making the animation match the sunning speed
-            runningMeter.updateTimeElapsed();
+            
         }
     }
 
@@ -197,6 +259,20 @@ public class JavelinManager : MonoBehaviour
         {
             player.GetComponentInChildren<Animator>().Play("JavelinThrow");
             isRunning = false;
+            float avSpeed = runningMeter.getAverageSpeed();
+            if (avSpeed > 7750 && avSpeed < 8000)
+            {
+                jumpSparkle.startColor = Color.green;
+            }
+            else if (avSpeed > 7300 && avSpeed < 10000)
+            {
+                jumpSparkle.startColor = Color.yellow;
+            }
+            else
+            {
+                jumpSparkle.startColor = Color.red;
+            }
+            jumpSparkle.Play();
         }
     }
 
@@ -326,9 +402,13 @@ public class JavelinManager : MonoBehaviour
         isRunning = true;
         startedAngle = false;
         angleAnimation.speed = 0;
-        angleAnimation.Play("AngleMeterAnimation");
+        angleAnimation.Play("AngleMeterAnimation", 0, 0);
+        angleMeter.SetActive(false);
         anglePower = 0;
         javelin.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+        foulImage.gameObject.SetActive(false);
+        isFoul = false;
+        javelin.GetComponent<JavelinCollision>().hitGround = false;
         //jumpClicks = 0;
         //piviotPercents = new float[3];
     }

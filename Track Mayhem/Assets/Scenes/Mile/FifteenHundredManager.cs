@@ -44,6 +44,8 @@ public class FifteenHundredManager : MonoBehaviour
     private float[] competitorsStartSpeedList = new float[8]; //start speed of all the competitors
     private float[] competitorsMaxSpeedList = new float[8]; //max speed of all the competitors
 
+    private float[] competitorsLapTimeProgess = new float[8]; //lapTimeProgress for all runners
+
 
     bool isRunning = false; //if gun has gone off
     bool runPressed = false; //if the run button is pressed
@@ -53,17 +55,23 @@ public class FifteenHundredManager : MonoBehaviour
     bool usedLean = false; //if the player has used their lean
     bool didLap = false; //if the player has done a lap
 
+    bool setRun = false; //if the player is doing the set run
+
     private int lapNumber = 0;
 
     float eventTimer = 0; //keeps track of the time of the event
 
     float startingBarDecreaseSpeed = 300; //gets the starting decrease speed
 
-    private float lapTimeProgress = 0.98f; //time of the current lap
+    private float lapTimeProgress = 1f; //time of the current lap
 
     [SerializeField] private float zOffset;
 
     PlayerBanner currentPlayerBanner;
+
+    PlayerBanner[] laneOrders;
+
+    private int currentStartLane;
 
     // Start is called before the first frame update
     void Start()
@@ -80,7 +88,8 @@ public class FifteenHundredManager : MonoBehaviour
         runningMeter.runningBar.transform.parent.gameObject.SetActive(false);
         foreach (GameObject go in competitorsList) //gets all competitors in the blocks
         {
-            go.GetComponentsInChildren<Animator>()[1].Play("BlockStart");
+            go.GetComponentsInChildren<Animator>()[0].Play("Running");
+            go.GetComponentsInChildren<Animator>()[0].speed = 0;
         }
         energyBar.gameObject.SetActive(false);
         player.GetComponent<Animator>().Play("FourHundredRun", 0, 0.18f);
@@ -137,15 +146,16 @@ public class FifteenHundredManager : MonoBehaviour
                 runButton.gameObject.SetActive(true); //show controls
                 energyBar.gameObject.SetActive(true);
                 runningMeter.runningBar.transform.parent.gameObject.SetActive(true); //show controls
-                /*PlayerBanner[] laneOrders = leaderboardManager.getPlayersInLaneOrder();
+                laneOrders = leaderboardManager.getPlayersInLaneOrder();
                 for (int i = 0; i < laneOrders.Length; i++)
                 {
                     if (laneOrders[i].isPlayer)
                     {
                         player.transform.position = competitorsList[i].transform.position - new Vector3(-2.3f, 0, 0);
                         competitorsList[i].SetActive(false);
+                        currentStartLane = i + 1;
                     }
-                }*/
+                }
             }
             runningMeter.updateRunMeter();            
             if (player.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime < 0.8)
@@ -202,6 +212,8 @@ public class FifteenHundredManager : MonoBehaviour
                 setText.enabled = true;
                 player.GetComponentsInChildren<Animator>()[1].Play("Running");
                 player.GetComponentsInChildren<Animator>()[1].speed=0;
+                setText.gameObject.transform.parent.GetComponent<Animator>().Play("FadeText");
+                setText.gameObject.transform.parent.GetComponent<Animator>().speed = 0.5f;
                 StartCoroutine(showSet(3));
             }
         }
@@ -213,6 +225,15 @@ public class FifteenHundredManager : MonoBehaviour
         if (!foulImage.gameObject.activeInHierarchy)
         {
             setText.text = "Set";
+            setText.gameObject.transform.parent.GetComponent<Animator>().Play("FadeText");
+            setText.gameObject.transform.parent.GetComponent<Animator>().speed = 0.5f;
+            setRun = true;
+            StartCoroutine(setRunning(0.5f));
+            player.GetComponentsInChildren<Animator>()[1].speed = 1;
+            foreach (GameObject go in competitorsList) //gets all competitors in the blocks
+            {
+                go.GetComponentsInChildren<Animator>()[0].speed = 1;
+            }
             /*foreach (GameObject go in competitorsList) //gets all competitors up in the set position
             {
                 if (go.activeInHierarchy) //stop animator warning
@@ -233,6 +254,12 @@ public class FifteenHundredManager : MonoBehaviour
         if (!foulImage.gameObject.activeInHierarchy)
         {
             setText.text = "GO";
+            setText.gameObject.transform.parent.GetComponent<Animator>().Play("FadeText");
+            setText.gameObject.transform.parent.GetComponent<Animator>().speed = 0.5f;
+            for (int i = 0; i < competitorsLapTimeProgess.Length; i++)
+            {
+                competitorsLapTimeProgess[i] = 1;
+            }
             isRunning = true;
             for (int i = 0; i < competitorsList.Length; i++)
             {
@@ -250,13 +277,15 @@ public class FifteenHundredManager : MonoBehaviour
         yield return new WaitForSeconds(delay);
         if (competitorsList[index].activeInHierarchy) //stop animator warning
         {
-            competitorsList[index].GetComponentsInChildren<Animator>()[1].Play("Running");
-            float time = leaderboardManager.getPlayersInLaneOrder()[index].bestMark;
+            competitorsList[index].GetComponentsInChildren<Animator>()[0].Play("Running");
+            competitorsList[index].GetComponentsInChildren<Animator>()[0].speed = 1;
+            /*float time = leaderboardManager.getPlayersInLaneOrder()[index].bestMark;
             //float time = 13.87f;
             time -= delay;
             competitorsMaxSpeedList[index] = (275.05f / ((0.75f * time) / 0.02f)) / runningSpeedRatio;//spaces per second was 0.55
             competitorsAccelSpeedList[index] = time / 6; //was 0.4
-            competitorsStartSpeedList[index] = 90;
+            competitorsStartSpeedList[index] = 90;*/
+            competitorsSpeedList[index] = UnityEngine.Random.Range(0.005f, 0.01f);
         }
 
     }
@@ -273,15 +302,69 @@ public class FifteenHundredManager : MonoBehaviour
 
     }
 
+    IEnumerator setRunning(float length)
+    {
+        yield return new WaitForSeconds(length);
+        setRun = false;
+        player.GetComponentsInChildren<Animator>()[1].speed = 0;
+        foreach (GameObject go in competitorsList) //gets all competitors in the blocks
+        {
+            go.GetComponentsInChildren<Animator>()[0].speed = 0;
+        }
+    }
+
+    private void updateRunnerPosition(GameObject runner, float lapTime)
+    {
+        float speed = 1;
+        if (lapTime < 1)
+        {
+            float circleRad = (308.8f - 16.39f) / 2.0f;//start and end pos
+            Vector3 ogPos = new Vector3(-2162.03f, 226.73f, circleRad * -1); //start is -16.39
+            Vector3 unitCirclePos = new Vector3((float)Math.Cos(Math.PI * lapTime), runner.transform.position.y, (float)Math.Sin(Math.PI * lapTime));
+            //player.transform.position = ogPos;
+            runner.transform.position = new Vector3(circleRad * unitCirclePos.z * -1, 0, (circleRad * unitCirclePos.x) + zOffset) + ogPos;
+            runner.transform.eulerAngles = new Vector3(0, 270 - (180 * lapTime), 0);
+        }
+        else if (lapTime < 2)
+        {
+            //-1832 for hundred meter end
+            //-2162.03 for start
+            float diff = 2162.03f - 1832f;
+
+            runner.transform.position = new Vector3(-2162.03f + (diff * (lapTime - 1)), runner.transform.position.y, (float)(runner.transform.position.z < -308.22 && speed > 0 ? runner.transform.position.z + 0.3 : runner.transform.position.z));
+        }
+        else if (lapTime < 3)
+        {
+            float circleRad = (308.22f - 16.39f) / 2.0f;//start and end pos
+            Vector3 ogPos = new Vector3(-1832, 226.73f, circleRad * -1); //start is -16.39
+            Vector3 unitCirclePos = new Vector3((float)Math.Cos(Math.PI * lapTime), runner.transform.position.y, (float)Math.Sin(Math.PI * lapTime));
+            //player.transform.position = ogPos;
+            runner.transform.position = new Vector3(circleRad * unitCirclePos.z, 0, (circleRad * -1 * unitCirclePos.x) + zOffset) + ogPos;
+            runner.transform.eulerAngles = new Vector3(0, 90 - (180 * (lapTime - 2)), 0);
+        }
+        else if (lapTime < 4)
+        {
+            float diff = 2162.03f - 1832f;
+            runner.transform.position = new Vector3(-1832 - (diff * (lapTime - 3)), runner.transform.position.y, runner.transform.position.z);
+        }
+    }
+
     private void FixedUpdate()
     {
+        if (setRun)
+        {
+            player.transform.Translate(new Vector3(0, 0, 0.5f));
+            foreach (GameObject go in competitorsList) //gets all competitors in the blocks
+            {
+                go.transform.Translate(new Vector3(0, 0, 0.5f));
+            }
+        }
         if ((playerCamera.enabled && isRunning) || finished)
         {
             float speed = runningMeter.runningSpeed;
             if (speed > PublicData.averageSpeedDuringRun - 25 && energyBar.value == 0)
             {
                 speed = PublicData.averageSpeedDuringRun -25 - (speed - (PublicData.averageSpeedDuringRun-25)); //makes it so over slows you down
-                Debug.Log(speed);
             }
             if (speed > 150 && energyBar.value != 0)
             {
@@ -289,35 +372,13 @@ public class FifteenHundredManager : MonoBehaviour
                 if (energyBar.value < 0.11f) energyBar.value = 0;
             }
             //player.transform.Translate(new Vector3(0, 0, speed * runningSpeedRatio)); //making character move according to run meter
-            if (lapTimeProgress < 1)
+            updateRunnerPosition(player, lapTimeProgress);
+            for (int i=0; i< competitorsLapTimeProgess.Length; i++)
             {
-                float circleRad = (308.8f - 16.39f) / 2.0f;//start and end pos
-                Vector3 ogPos = new Vector3(-2162.03f, 226.73f, circleRad * -1); //start is -16.39
-                Vector3 unitCirclePos = new Vector3((float)Math.Cos(Math.PI * lapTimeProgress), player.transform.position.y, (float)Math.Sin(Math.PI * lapTimeProgress));
-                //player.transform.position = ogPos;
-                player.transform.position = new Vector3(circleRad * unitCirclePos.z * -1, 0, (circleRad * unitCirclePos.x) + zOffset) + ogPos;
-                player.transform.eulerAngles = new Vector3(0, 270 - (180 * lapTimeProgress), 0);
-            }
-            else if (lapTimeProgress < 2)
-            {
-                //-1832 for hundred meter end
-                //-2162.03 for start
-                float diff = 2162.03f - 1832f;
-                player.transform.position = new Vector3(-2162.03f + (diff * (lapTimeProgress - 1)), player.transform.position.y, player.transform.position.z);
-            }
-            else if (lapTimeProgress < 3)
-            {
-                float circleRad = (308.22f - 16.39f) / 2.0f;//start and end pos
-                Vector3 ogPos = new Vector3(-1832, 226.73f, circleRad * -1); //start is -16.39
-                Vector3 unitCirclePos = new Vector3((float)Math.Cos(Math.PI * lapTimeProgress), player.transform.position.y, (float)Math.Sin(Math.PI * lapTimeProgress));
-                //player.transform.position = ogPos;
-                player.transform.position = new Vector3(circleRad * unitCirclePos.z, 0, (circleRad * -1 * unitCirclePos.x) + zOffset) + ogPos;
-                player.transform.eulerAngles = new Vector3(0, 90 - (180 * (lapTimeProgress - 2)), 0);
-            }
-            else if (lapTimeProgress < 4)
-            {
-                float diff = 2162.03f - 1832f;
-                player.transform.position = new Vector3(-1832 - (diff * (lapTimeProgress - 3)), player.transform.position.y, player.transform.position.z);
+                if (i+1 != currentStartLane)
+                {
+                    updateRunnerPosition(competitorsList[i], competitorsLapTimeProgess[i]);
+                }
             }
             if (birdEyeView.enabled)
             {
@@ -328,7 +389,7 @@ public class FifteenHundredManager : MonoBehaviour
             {
                 //float time = 13.87f;
                 float time = leaderboardManager.getPlayersInLaneOrder()[i].bestMark;
-                if (competitorsMaxSpeedList[i] != competitorsSpeedList[i] && competitorsList[i].transform.position.x > -2122.37) //if not max speed
+                /*if (competitorsMaxSpeedList[i] != competitorsSpeedList[i] && competitorsList[i].transform.position.x > -2122.37) //if not max speed
                 {
                     if (eventTimer >= competitorsAccelSpeedList[i]) //if past max speed on time
                     {
@@ -345,11 +406,11 @@ public class FifteenHundredManager : MonoBehaviour
                     competitorsSpeedList[i] = competitorsMaxSpeedList[i] + 0;
                 }
                 competitorsList[i].transform.Translate(new Vector3(0, 0, competitorsSpeedList[i] * runningSpeedRatio)); //making character move according to run meter
-                competitorsList[i].GetComponentsInChildren<Animator>()[1].speed = competitorsSpeedList[i] * animationRunningSpeedRatio; //making the animation match the sunning speed
-                if (competitorsList[i].transform.position.x > -2161.52 && competitorsList[i].transform.position.x < -2157 && competitorsList[i].GetComponentsInChildren<Animator>()[1].GetCurrentAnimatorStateInfo(0).IsName("Running"))
+                competitorsList[i].GetComponentsInChildren<Animator>()[0].speed = competitorsSpeedList[i] * animationRunningSpeedRatio; //making the animation match the sunning speed
+                /*if (competitorsList[i].transform.position.x > -2161.52 && competitorsList[i].transform.position.x < -2157 && competitorsList[i].GetComponentsInChildren<Animator>()[1].GetCurrentAnimatorStateInfo(0).IsName("Running"))
                 {
-                    competitorsList[i].GetComponentsInChildren<Animator>()[1].Play("RunningLean");
-                }
+                    competitorsList[i].GetComponentsInChildren<Animator>()[0].Play("RunningLean");
+                }*/
             }
             if (!finished)
             {
@@ -358,6 +419,15 @@ public class FifteenHundredManager : MonoBehaviour
                 float speedAdjuster = 25000;
                 energyDepletion = speedAdjuster / 12500000; //makes energy match the speed
                 lapTimeProgress += speed / speedAdjuster; //normal mode
+                for (int i=0; i<competitorsLapTimeProgess.Length;i++)
+                {
+                    competitorsLapTimeProgess[i] += competitorsSpeedList[i];
+                    if (competitorsLapTimeProgess[i] >= 4)
+                    {
+                        //lap counter TODO
+                        competitorsLapTimeProgess[i] = 0;
+                    }
+                }
                 //lapTimeProgress += 0.005f; //fast mode
                 lapTimeProgress = Math.Min(lapTimeProgress, 4); //cap progress at 4
                 if (lapTimeProgress == 4)
