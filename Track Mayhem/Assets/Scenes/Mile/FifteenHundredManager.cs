@@ -32,6 +32,8 @@ public class FifteenHundredManager : MonoBehaviour
     [SerializeField] private Button infoButton;
     [SerializeField] private Canvas controlCanvas;
 
+    [SerializeField] TextMeshProUGUI lapCounter;
+
     [SerializeField] private float energyDepletion;
     [SerializeField] private float energyGain;
 
@@ -72,6 +74,8 @@ public class FifteenHundredManager : MonoBehaviour
     PlayerBanner[] laneOrders;
 
     private int currentStartLane;
+
+    public bool godMode;
 
     // Start is called before the first frame update
     void Start()
@@ -253,14 +257,15 @@ public class FifteenHundredManager : MonoBehaviour
         yield return new WaitForSeconds(delay);
         if (!foulImage.gameObject.activeInHierarchy)
         {
+            isRunning = true;
             setText.text = "GO";
             setText.gameObject.transform.parent.GetComponent<Animator>().Play("FadeText");
             setText.gameObject.transform.parent.GetComponent<Animator>().speed = 0.5f;
+            lapCounter.gameObject.SetActive(true);
             for (int i = 0; i < competitorsLapTimeProgess.Length; i++)
             {
                 competitorsLapTimeProgess[i] = 1;
             }
-            isRunning = true;
             for (int i = 0; i < competitorsList.Length; i++)
             {
                 StartCoroutine(oppenentBlockStart(UnityEngine.Random.Range(0.1f, 0.5f), i));
@@ -362,6 +367,15 @@ public class FifteenHundredManager : MonoBehaviour
         if ((playerCamera.enabled && isRunning) || finished)
         {
             float speed = runningMeter.runningSpeed;
+            if (godMode) {
+                if (energyBar.value > 0)
+                {
+                    speed = PublicData.averageSpeedDuringRun;
+                } else
+                {
+                    speed = 150;
+                }
+            }
             if (speed > PublicData.averageSpeedDuringRun - 25 && energyBar.value == 0)
             {
                 speed = PublicData.averageSpeedDuringRun -25 - (speed - (PublicData.averageSpeedDuringRun-25)); //makes it so over slows you down
@@ -369,7 +383,7 @@ public class FifteenHundredManager : MonoBehaviour
             if (speed > 150 && energyBar.value != 0)
             {
                 energyBar.value -= energyDepletion*((speed-150)/150);
-                if (energyBar.value < 0.11f) energyBar.value = 0;
+                if (energyBar.value < 0.05f) energyBar.value = 0;
             }
             //player.transform.Translate(new Vector3(0, 0, speed * runningSpeedRatio)); //making character move according to run meter
             updateRunnerPosition(player, lapTimeProgress);
@@ -416,7 +430,11 @@ public class FifteenHundredManager : MonoBehaviour
             {
                 runningMeter.updateTimeElapsed();
                 eventTimer += Time.deltaTime;
-                float speedAdjuster = 25000;
+                float speedAdjuster = 33000;
+                speedAdjuster -= PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 1500);
+                speedAdjuster -= PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 2500);
+                speedAdjuster -= PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 3500);
+                speedAdjuster -= PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 5500);
                 energyDepletion = speedAdjuster / 12500000; //makes energy match the speed
                 lapTimeProgress += speed / speedAdjuster; //normal mode
                 for (int i=0; i<competitorsLapTimeProgess.Length;i++)
@@ -433,6 +451,7 @@ public class FifteenHundredManager : MonoBehaviour
                 if (lapTimeProgress == 4)
                 {
                     lapNumber++;
+                    lapCounter.text = "Lap " + lapNumber + "/4";
                     if (lapNumber == 4 && !finished)
                     {
                         finished = true;

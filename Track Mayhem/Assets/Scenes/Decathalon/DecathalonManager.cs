@@ -21,7 +21,7 @@ public class DecathalonManager : MonoBehaviour
         "Discus",
         "PoleVault",
         "Javelin",
-        "Mile"
+        "HundredMeter"
     };
 
     // Start is called before the first frame update

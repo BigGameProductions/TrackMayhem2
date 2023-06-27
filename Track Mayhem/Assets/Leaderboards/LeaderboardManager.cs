@@ -156,6 +156,11 @@ public class LeaderboardManager : MonoBehaviour
 
     }
 
+    public PlayerBanner[] getEventBanners()
+    {
+        return currentEventBanners;
+    }
+
     public void passToHeight(float height, float openingHeight)
     {
         currentBarHeight = openingHeight;
@@ -231,17 +236,19 @@ public class LeaderboardManager : MonoBehaviour
                 }
                 else
                 {
-                    if (openingHeight == currentBarHeight)
+                    if (!currentEventBanners[i].isPlayer)
                     {
-                        currentEventBanners[i].bestMark = -100000; //no height
+                        if (openingHeight == currentBarHeight)
+                        {
+                            currentEventBanners[i].bestMark = -100000; //no height
 
+                        }
+                        else
+                        {
+                            currentEventBanners[i].bestMark = currentBarHeight - (eventName == "HighJump" ? 2 : 6);
+
+                        }
                     }
-                    else
-                    {
-                        currentEventBanners[i].bestMark = currentBarHeight - (eventName == "HighJump" ? 2 : 6);
-
-                    }
-
                     finalBarHeightsBanners.Add(currentEventBanners[i]);
                 }
             }
@@ -473,20 +480,26 @@ public class LeaderboardManager : MonoBehaviour
                     newBannerList.Add(currentEventBanners[i]); //adds only the passing players to the leaderboard
                 } else
                 {
-                    if (openingHeight == currentBarHeight-6)
+                    if (!currentEventBanners[i].isPlayer)
                     {
-                        currentEventBanners[i].bestMark = -100000; //no height
+                        if (openingHeight == currentBarHeight - 6)
+                        {
+                            currentEventBanners[i].bestMark = -100000; //no height
+                        }
+                        else
+                        {
+                            currentEventBanners[i].bestMark = currentBarHeight - 12;
+                        }
+                        finalBarHeightsBanners.Add(currentEventBanners[i]);
                     }
-                    else
-                    {
-                        currentEventBanners[i].bestMark = currentBarHeight - 12;
-                    }
-                    finalBarHeightsBanners.Add(currentEventBanners[i]);
+
+                   
                 }
             }
             currentEventBanners = newBannerList.ToArray(); //converts the list back to the array for use
             if (personalBannersMarks.mark1 == -10 || personalBannersMarks.mark2 == -10 || personalBannersMarks.mark3 == -10) //if the player has cleared it
             {
+                getPlayerBanner().bestMark = currentBarHeight - 6;
                 clearPlayerMarks(); //clears all marks for the next height
             }
         }

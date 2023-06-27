@@ -52,8 +52,10 @@ public class PoleVaultManager : MonoBehaviour
 
     private int rightHandTransformPosition = 55;
 
-    private float openingHeight = 240;
+    private float openingHeight = 120;
     private float currentBarHeight = 0; //sets the starting height to x inches
+
+    private bool hasHeight = false;
 
     private Vector3 startingPosition = new Vector3(-2255.1f, 226.73f, -73.9f); //starting position of player
     private Vector3 startingCameraPosition = new Vector3(0.150004253f, 2.09000158f, -1.94002295f); //position of player camera
@@ -73,8 +75,11 @@ public class PoleVaultManager : MonoBehaviour
 
     private int currentJumpNumber = 0;
 
+    private float currentIncrement = 6;
+
     [SerializeField] EventSystem ev;
 
+    private string heightSelectMode = "begin";
 
     bool inCinematic = true; //changes to false once cinematic is over
     bool isRunning = true; //shows if the player is in running form
@@ -83,11 +88,14 @@ public class PoleVaultManager : MonoBehaviour
     [SerializeField] private Canvas controlsCanvas;
 
     [SerializeField] private Button infoButton;
+    [SerializeField] private Button passHeightButton;
 
     [SerializeField] private Canvas heightPickCanvas;
     [SerializeField] private TextMeshProUGUI heightText;
 
     [SerializeField] private Camera heightSelectCamera;
+
+    [SerializeField] private TMP_InputField incrementText;
 
     // Start is called before the first frame update
     void Start()
@@ -142,6 +150,7 @@ public class PoleVaultManager : MonoBehaviour
         {
             if (!leaderboardManager.cinematicCamera.GetComponent<Animator>().enabled)
             {
+                leaderboardManager.getPlayerBanner().bestMark = -100000;
                 inCinematic = false;
                 leaderboardManager.cinematicCamera.gameObject.SetActive(false);
                 playerCamera.enabled = true;
@@ -199,12 +208,12 @@ public class PoleVaultManager : MonoBehaviour
             passedBar = !(startingBarHeight.y - bar.transform.position.y > 1.5 || barStraight(bar, 1) || maxPlayerHeight+2.5 < bar.transform.position.y);
             if (!passedBar)
             {
-                Debug.Log(startingBarHeight.y + "" + bar.transform.position.y);
                 updatePlayerBanner(-10000); //code for a miss
             }
             else
             {
-                updatePlayerBanner(-10); //code for a make        
+                updatePlayerBanner(-10); //code for a make
+                hasHeight = true;
             }
             afterJump();
         }
@@ -248,6 +257,7 @@ public class PoleVaultManager : MonoBehaviour
             {
                 runPressed = false;
                 infoButton.gameObject.SetActive(false);
+                passHeightButton.gameObject.SetActive(false);
                 runMeter.increaseHeight();
                 if (leaderboardManager.leaderBoardVisble()) //hides the leaderboard if the player clicks
                 {
@@ -348,6 +358,27 @@ public class PoleVaultManager : MonoBehaviour
             currentPlayerBanner.mark3 = mark;
         }
 
+    }
+
+    public void passHeight()
+    {
+        heightPickCanvas.enabled = true;
+        heightSelectCamera.enabled = true;
+        controlsCanvas.enabled = false;
+        heightText.text = "Open at: " + (int)(currentBarHeight / 12) + "'" + currentBarHeight % 12 + "''";
+        incrementText.text = "6";
+        currentIncrement = 6;
+        incrementText.gameObject.SetActive(heightSelectMode == "final");
+    }
+
+    public void changeIncrement()
+    {
+        try
+        {
+            currentIncrement = float.Parse(incrementText.text);
+
+        }
+        catch (Exception e) { }
     }
 
     IEnumerator startPlant(float delay) //starts the planting process
@@ -524,22 +555,35 @@ public class PoleVaultManager : MonoBehaviour
             updateBarRaiseHeight();
             leaderboardManager.passToHeight(currentBarHeight, openingHeight);
         }
-        openingHeight = currentBarHeight;
+        if (!hasHeight)
+        {
+            openingHeight = currentBarHeight;
+        }
         ev.SetSelectedGameObject(null);
     }
 
     public void changeBarHeight(int direction)
     {
-        currentBarHeight += direction * 6;
-        if (currentBarHeight < openingHeight)
+        float originalDir = currentBarHeight;
+        currentBarHeight += direction * currentIncrement;
+        if (currentBarHeight < openingHeight || currentBarHeight < leaderboardManager.getPlayerBanner().bestMark)
         {
-            currentBarHeight = openingHeight;
+            currentBarHeight = originalDir;
         }
-        if (currentBarHeight > PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.polevault)
+        if (currentBarHeight > (heightSelectMode == "final" ? PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.polevault+60: PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.polevault))
         {
-            currentBarHeight -= 6;
+            currentBarHeight = originalDir;
         }
-        heightText.text = "Open at: " + (int)(currentBarHeight / 12) + "'" + currentBarHeight % 12 + "''";
+        string firstWord = "Open at";
+        if (heightSelectMode == "pass")
+        {
+            firstWord = "Pass to";
+        }
+        if (heightSelectMode == "final")
+        {
+            firstWord = "Jump at";
+        }
+        heightText.text = firstWord + ": " + (int)(currentBarHeight / 12) + "'" + Math.Round(currentBarHeight % 12,2) + "''";
         updateBarRaiseHeight();
     }
         
@@ -586,8 +630,17 @@ public class PoleVaultManager : MonoBehaviour
         runButton.SetActive(true);
         jumpButton.SetActive(true);
         leaderboardManager.showRecordBanner(-1);
+        passHeightButton.gameObject.SetActive(true);
+        if (leaderboardManager.getEventBanners().Length == 1)
+        {
+            passHeightButton.GetComponentInChildren<TextMeshProUGUI>().text = "Select Height";
+            heightSelectMode = "final";
+            passHeight();
+        } else
+        {
+            leaderboardManager.showUpdatedLeaderboard();
+        }
         //isFoul = false; //makes the jump not a foul
-        leaderboardManager.showUpdatedLeaderboard();
 
     }
     private void FixedUpdate() //fixed for speed and running

@@ -72,6 +72,8 @@ public class FourHundredManager : MonoBehaviour
 
     PlayerBanner currentPlayerBanner;
 
+    private float playerTime;
+
     public bool godMode;
 
     [SerializeField] private GameObject fourHundredBlocks;
@@ -92,14 +94,8 @@ public class FourHundredManager : MonoBehaviour
         runningMeter.runningBar.transform.parent.gameObject.SetActive(false);
         for (int i=0; i<competitorsList.Length; i++)
         {
-            if (i+1 != currentLane)
-            {
-                competitorsList[i].GetComponentsInChildren<Animator>()[0].Play("BlockStart");
-                setStartingPosition(i+1, false, competitorsList[i].transform);
-            } else
-            {
-                competitorsList[i].SetActive(false);
-            }
+            competitorsList[i].GetComponentsInChildren<Animator>()[0].Play("BlockStart");
+            setStartingPosition(i + 1, false, competitorsList[i].transform);
 
         }
         energyBar.gameObject.SetActive(false);
@@ -163,6 +159,7 @@ public class FourHundredManager : MonoBehaviour
                 {
                     if (laneOrders[i].isPlayer)
                     {
+                        currentLane = i + 1;
                         setStartingPosition(currentLane, true, player.transform);
                         //player.transform.position = competitorsList[i].transform.position - new Vector3(-2.3f, 0, 0);
                         currentLane = i + 1;
@@ -175,7 +172,7 @@ public class FourHundredManager : MonoBehaviour
             if (isRunning && lapTimeProgress>=(curveTime*2+2) && !finished)
             {
                 finished = true;
-                eventTimer *= 2;
+                playerTime = eventTimer * 2;
                 runningMeter.runMeterSlider.gameObject.SetActive(false);
                 runButton.gameObject.SetActive(false);
                 StartCoroutine(waitAfterFinish(2));
@@ -191,6 +188,12 @@ public class FourHundredManager : MonoBehaviour
                         competitorsMarkedTimeList[Int32.Parse(go.name[4].ToString()) - 1] = true;
                         PlayerBanner pb = laneOrders[Int32.Parse(go.name[4].ToString()) - 1];
                         leaderboardManager.changeBannerBest(pb.flagNumber, pb.player, eventTimer*2);
+                        //temp
+                        /*if (i == 4)
+                        {
+                            Debug.Log("Lane 5: " + eventTimer * 2);
+                        }*/
+                        //temp
                     }
                 }
                 
@@ -301,8 +304,11 @@ public class FourHundredManager : MonoBehaviour
             competitorsMaxSpeedList[index] = (275.05f / ((0.75f * time) / 0.02f)) / runningSpeedRatio;//spaces per second was 0.55
             competitorsAccelSpeedList[index] = time / 6; //was 0.4
             competitorsStartSpeedList[index] = 90;*/
+            float bestMark = leaderboardManager.getPlayersInLaneOrder()[index].bestMark;
             competitorsSpeedList[index] = 1;
-            competitorsMaxSpeedList[index] = UnityEngine.Random.Range(150, 200);
+            float secDiffPercent = bestMark / 60;
+            competitorsMaxSpeedList[index] = 201.25f / secDiffPercent;
+
         }
 
     }
@@ -358,10 +364,9 @@ public class FourHundredManager : MonoBehaviour
         {
             float diff = 2162.03f - 1832f;
             tf.position = new Vector3(-1832 - (diff * (lapTime - (curveTime * 2 + 1))), tf.position.y, tf.position.z);
-        } else if (lapTime >= curveTime*2+2)
+        } else if (lapTime == curveTime*2+2)
         {
-            float diff = 2162.03f - 1832f;
-            tf.position = new Vector3(-1832- (diff * (lapTime - (curveTime * 2 + 1))), tf.position.y, tf.position.z);
+           
         }
     }
 
@@ -400,7 +405,11 @@ public class FourHundredManager : MonoBehaviour
 
             speed *= 0.96f + maxSpeedPercent;
             //math for arch
-            moveCharacterOnLane(lapTimeProgress, currentLane, player.transform);
+            float curveTimed = ((100 + stagger200Marks[currentLane-1]) / 100f);
+            if (lapTimeProgress < curveTimed*2+2)
+            {
+                moveCharacterOnLane(lapTimeProgress, currentLane, player.transform);
+            }
             for (int i = 0; i < competitorsLapTimes.Length; i++)
             {
                 if (i + 1 != currentLane)
@@ -452,15 +461,27 @@ public class FourHundredManager : MonoBehaviour
                     if (competitorsSpeedList[i] != 0)
                     {
                         float curveTime = ((100 + stagger200Marks[i]) / 100f);
-                        competitorsLapTimes[i] += competitorsMaxSpeedList[i] / 75000f;
-                        if (competitorsLapTimes[i] >= curveTime*2+2)
+                        if (competitorsLapTimes[i] < curveTime * 2 + 2)
                         {
+                            competitorsLapTimes[i] += competitorsMaxSpeedList[i] / 75000f;
+                        }
+                        else if (competitorsMaxSpeedList[i] > 0) {
                             competitorsMaxSpeedList[i] -= 10;
+                            competitorsList[i].transform.Translate(0, 0, competitorsMaxSpeedList[i]/300);
                         }
                     }
                 }
             }
-            lapTimeProgress += speed/75000; //normal mode
+            float curveTimee = ((100 + stagger200Marks[currentLane-1]) / 100f);
+            if (lapTimeProgress < curveTimee * 2 + 2)
+            {
+                lapTimeProgress += speed / 75000; //normal mode
+            }
+            else if (competitorsMaxSpeedList[currentLane-1] > 0)
+            {
+                competitorsMaxSpeedList[currentLane-1] -= 10;
+                player.transform.Translate(0, 0, competitorsMaxSpeedList[currentLane-1] / 300);
+            }
                                             //lapTimeProgress += 0.005f; //fast mode
 
             //lapTimeProgress = Math.Min(lapTimeProgress,curveTime*2+2); //cap progress at 2
@@ -475,31 +496,31 @@ public class FourHundredManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         currentPlayerBanner = leaderboardManager.getPlayerBanner();
-        currentPlayerBanner.mark2 = eventTimer;
+        currentPlayerBanner.mark2 = playerTime;
         PersonalBests characterPB = PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests;
-        if (eventTimer < Int32.Parse(PublicData.gameData.leaderboardList[5][1][0]) / 100.0f) //game record
+        if (playerTime < Int32.Parse(PublicData.gameData.leaderboardList[5][1][0]) / 100.0f) //game record
         {
-            PublicData.gameData.personalBests.fourHundred = eventTimer;
-            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.fourHundred = eventTimer;
+            PublicData.gameData.personalBests.fourHundred = playerTime;
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.fourHundred = playerTime;
             leaderboardManager.addMarkLabelToPlayer(1);
             leaderboardManager.showRecordBanner(2);
         }
-        else if (eventTimer < PublicData.gameData.personalBests.fourHundred || PublicData.gameData.personalBests.fourHundred == 0) //if pr or first time doing it
+        else if (playerTime < PublicData.gameData.personalBests.fourHundred || PublicData.gameData.personalBests.fourHundred == 0) //if pr or first time doing it
         {
-            PublicData.gameData.personalBests.fourHundred = eventTimer; //sets pr
-            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.fourHundred = eventTimer; //sets cb too
+            PublicData.gameData.personalBests.fourHundred = playerTime; //sets pr
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.fourHundred = playerTime; //sets cb too
             leaderboardManager.addMarkLabelToPlayer(3);
             leaderboardManager.showRecordBanner(1);
 
         }
-        else if (eventTimer < characterPB.fourHundred || characterPB.fourHundred == 0)
+        else if (playerTime < characterPB.fourHundred || characterPB.fourHundred == 0)
         {
-            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.fourHundred = eventTimer;
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.fourHundred = playerTime;
             leaderboardManager.addMarkLabelToPlayer(2);
             leaderboardManager.showRecordBanner(0);
         }
         leaderboardManager.showCurrentPlayerMarks(currentPlayerBanner, 3); //updates and shows the player leaderboard
-        leaderboardManager.addPlayerTime(eventTimer); //adds player to the banners
+        leaderboardManager.addPlayerTime(playerTime); //adds player to the banners
         StartCoroutine(showEndScreen(3));
 
     }

@@ -17193,10 +17193,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   eventName: FourHundred
-  useSeeded: 0
-  seededMark: 6500
-  seedSpreadDown: 200
-  seedSpreadUp: 200
+  useSeeded: 1
+  seededMark: 3900
+  seedSpreadDown: 100
+  seedSpreadUp: 100
   seedRoundInches: 1
   leaderboardBanners:
   - {fileID: 1954640507}
