@@ -47,6 +47,9 @@ public class HurdlesManager : MonoBehaviour
     bool finished = false; //if the player has crossed the finish line
     bool usedLean = false; //if the player has used their lean
 
+    bool doneHurdle = false; //if hurdle animation is finished
+    bool hitCurrentHurdle = false; //if the current hurdle is hit
+
     float eventTimer = 0; //keeps track of the time of the event
 
     float startingBarDecreaseSpeed = 300; //gets the starting decrease speed
@@ -62,6 +65,8 @@ public class HurdlesManager : MonoBehaviour
     PlayerBanner[] laneOrders;
 
     [SerializeField] LeanDetector leadD;
+
+    [SerializeField] ParticleSystem jumpSparkle;
 
     public bool godMode;
 
@@ -99,13 +104,33 @@ public class HurdlesManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (player.GetComponentsInChildren<Animator>()[0].GetCurrentAnimatorStateInfo(0).IsName("Hurdle") && !doneHurdle)
+        {
+            doneHurdle = true;
+        }
+        if (player.GetComponentsInChildren<Animator>()[0].GetCurrentAnimatorStateInfo(0).IsName("Running") && doneHurdle)
+        {
+            if (!hitCurrentHurdle)
+            {
+                jumpSparkle.startColor = Color.green;
+                jumpSparkle.Play();
+            }
+            doneHurdle = false;
+            hitCurrentHurdle = false;
+        }
         if (hcd.hitCount != hurdleHitCount)
         {
             runningMeter.runningSpeed -= 100;
             if (!player.GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Hurdle"))
             {
+                jumpSparkle.startColor = Color.red;
                 runningMeter.runningSpeed = 0;
+            } else
+            {
+                jumpSparkle.startColor = Color.yellow;
             }
+            jumpSparkle.Play();
+            hitCurrentHurdle = true;
             hurdleHitCount = hcd.hitCount;
         }
         if (!leaderboardManager.cinematicCamera.gameObject.activeInHierarchy)
@@ -170,6 +195,22 @@ public class HurdlesManager : MonoBehaviour
                 {
                     started = true;
                     player.GetComponentInChildren<Animator>().Play("Running");
+                    if (setText.text == "GO")
+                    {
+                        if (eventTimer < 0.25)
+                        {
+                            jumpSparkle.startColor = Color.green;
+                        }
+                        else if (eventTimer < 0.4)
+                        {
+                            jumpSparkle.startColor = Color.yellow;
+                        }
+                        else
+                        {
+                            jumpSparkle.startColor = Color.red;
+                        }
+                        jumpSparkle.Play();
+                    }
                 }
                 runPressed = false;
                 runningMeter.increaseHeight();
@@ -186,6 +227,20 @@ public class HurdlesManager : MonoBehaviour
                     usedLean = true;
                     jumpButton.gameObject.SetActive(false);
                     player.GetComponentInChildren<Animator>().Play("RunningLean");
+                    float distanceDiff = (float)Math.Abs(-2155.91 - player.transform.position.x);
+                    if (distanceDiff < 1)
+                    {
+                        jumpSparkle.startColor = Color.green;
+                    }
+                    else if (distanceDiff < 2)
+                    {
+                        jumpSparkle.startColor = Color.yellow;
+                    }
+                    else
+                    {
+                        jumpSparkle.startColor = Color.red;
+                    }
+                    jumpSparkle.Play();
                 } else
                 {
                     player.GetComponentInChildren<Animator>().Play("Hurdle");

@@ -53,6 +53,8 @@ public class HighJumpManager : MonoBehaviour
 
     private float openingHeight = 36;
     private float currentBarHeight = 0; //sets the starting height to x inches
+    private float currentIncrement = 2;
+    private float passedHeight;
 
     private Vector3 startingPosition = new Vector3(-2255.1f, 226.73f, -73.9f); //starting position of player
     private Vector3 startingCameraPosition = new Vector3(0.150004253f, 2.09000158f, -1.94002295f); //position of player camera
@@ -80,6 +82,10 @@ public class HighJumpManager : MonoBehaviour
     bool hasPiked = false; //if the player has piked
     bool over = false; //if the player is over the bar
 
+    private string heightSelectMode = "begin";
+
+    bool hasHeight = false;
+
     private float anglePower = 0; //power from the angle meter
 
     [SerializeField] private Canvas controlsCanvas;
@@ -89,6 +95,8 @@ public class HighJumpManager : MonoBehaviour
     [SerializeField] private Camera heightSelectCamera;
     [SerializeField] private Canvas heightPickCanvas;
     [SerializeField] private TextMeshProUGUI heightText;
+    [SerializeField] private TMP_InputField incrementText;
+    [SerializeField] private Button passHeightButton;
 
     [SerializeField] private HighJumpJumpDetect hjDetect;
 
@@ -118,6 +126,7 @@ public class HighJumpManager : MonoBehaviour
         angleAnimation.speed = 0;
         angleMeter.SetActive(false);
         jumpMeter.jumpBar.gameObject.transform.parent.gameObject.SetActive(false); //hides the jump meter
+        heightPickCanvas.enabled = false;
         player.GetComponentsInChildren<Animator>()[1].Play("Running");
         player.GetComponent<Animator>().speed = 0;
         player.GetComponent<Animator>().Play("HighJumpRun");
@@ -316,7 +325,10 @@ public class HighJumpManager : MonoBehaviour
                         currentBarHeight = PublicData.getCharactersInfo(PublicData.currentRunnerUsing).eventPrefs.highJumpOpenHeight - 2; //TODO increment
                         changeBarHeight(1);
                     }
-                    heightText.text = "Open at: " + (int)(currentBarHeight / 12) + "'" + currentBarHeight % 12 + "''";
+                    heightText.text = "Open at: " + (int)(currentBarHeight / 12) + "'" + Math.Round(currentBarHeight % 12,2) + "''";
+                    incrementText.gameObject.SetActive(heightSelectMode == "final");
+                    passedHeight = openingHeight;
+                    
                 }
             }
         }
@@ -420,6 +432,7 @@ public class HighJumpManager : MonoBehaviour
             if ((Input.GetKeyDown(KeyCode.Space) || runPressed) && runMeter.runMeterSlider.gameObject.activeInHierarchy) //updating speed on click
             {
                 runPressed = false;
+                passHeightButton.gameObject.SetActive(false);
                 infoButton.gameObject.SetActive(false);
                 runMeter.increaseHeight();
                 player.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
@@ -490,34 +503,86 @@ public class HighJumpManager : MonoBehaviour
         }
     }
 
-    public void selectOpeningHeight()
+    public void passHeight()
     {
+        heightPickCanvas.enabled = true;
+        heightSelectCamera.enabled = true;
+        controlsCanvas.enabled = false;
+        string firstWord = heightSelectMode == "final" ? "Jump at" : "Pass to";
+        heightText.text = firstWord + ": " + (int)(currentBarHeight / 12) + "'" + Math.Round(currentBarHeight % 12, 2) + "''";
+        incrementText.text = "2";
+        currentIncrement = 2;
+        incrementText.gameObject.SetActive(heightSelectMode == "final");
+        if (leaderboardManager.leaderBoardVisble()) //hides the leaderboard if the player clicks
+        {
+            leaderboardManager.hidePersonalBanner();
+        }
+        if (heightSelectMode != "final")
+        {
+            passedHeight = currentBarHeight;
+        }
+    }
+
+    public void selectOpeningHeight()
+    { 
         heightPickCanvas.enabled = false;
         heightSelectCamera.enabled = false;
         controlsCanvas.enabled = true;
         if (currentBarHeight != openingHeight)
         {
             updateBarRaiseHeight();
-            leaderboardManager.passToHeight(currentBarHeight, openingHeight);
+            leaderboardManager.passToHeight(currentBarHeight, passedHeight);
         }
-        openingHeight = currentBarHeight;
-        PublicData.getCharactersInfo(PublicData.currentRunnerUsing).eventPrefs.highJumpOpenHeight = currentBarHeight;
+        if (!hasHeight)
+        {
+            openingHeight = currentBarHeight;
+        }
+        if (heightSelectMode == "begin")
+        {
+            heightSelectMode = "pass";
+        }
+        passedHeight = currentBarHeight;
+        if (heightSelectMode == "begin")
+        {
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).eventPrefs.highJumpOpenHeight = currentBarHeight;
+        }
         ev.SetSelectedGameObject(null);
     }
 
     public void changeBarHeight(int direction)
     {
-        currentBarHeight += direction * 2;
-        if (currentBarHeight < openingHeight)
+        float originalDir = currentBarHeight;
+        currentBarHeight += direction * currentIncrement;
+        if (currentBarHeight < passedHeight)
         {
-            currentBarHeight = openingHeight;
+            currentBarHeight = originalDir;
         }
-        if (currentBarHeight > PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.highJump)
+        if (currentBarHeight > (heightSelectMode == "final" ? PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.polevault + 60 : PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.polevault))
         {
-            currentBarHeight -= 2;
+            currentBarHeight = originalDir;
         }
-        heightText.text = "Open at: " + (int)(currentBarHeight / 12) + "'" + currentBarHeight % 12 + "''";
+        string firstWord = "Open at";
+        if (heightSelectMode == "pass")
+        {
+            firstWord = "Pass to";
+        }
+        if (heightSelectMode == "final")
+        {
+            firstWord = "Jump at";
+        }
+        heightText.text = firstWord + ": " + (int)(currentBarHeight / 12) + "'" + Math.Round(currentBarHeight % 12, 2) + "''";
         updateBarRaiseHeight();
+    }
+
+    public void changeIncrement()
+    {
+        try
+        {
+            currentIncrement = float.Parse(incrementText.text);
+            leaderboardManager.increment = float.Parse(incrementText.text);
+
+        }
+        catch (Exception e) { }
     }
 
     public void onJumpButtonDown()
@@ -834,11 +899,18 @@ public class HighJumpManager : MonoBehaviour
         fouled = false;
         runButton.SetActive(true);
         jumpButton.SetActive(true);
+        passHeightButton.gameObject.SetActive(true);
         angleMeter.gameObject.SetActive(false);
         angleAnimation.Play("AngleMeterAnimation", 0, 0);
         leaderboardManager.showRecordBanner(-1);
         //isFoul = false; //makes the jump not a foul
-        leaderboardManager.showUpdatedLeaderboard();
+        if (leaderboardManager.getEventBanners().Length == 1)
+        {
+            passHeightButton.GetComponentInChildren<TextMeshProUGUI>().text = "Select Height";
+            heightSelectMode = "final";
+            passHeight();
+        }
+        leaderboardManager.showUpdatedLeaderboard(leaderboardManager.getEventBanners().Length != 1);
 
     }
     private void FixedUpdate() //fixed for speed and running

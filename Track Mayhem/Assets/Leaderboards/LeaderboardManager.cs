@@ -28,6 +28,7 @@ public class LeaderboardManager : MonoBehaviour
     private List<PlayerBanner> finalBarHeightsBanners = new List<PlayerBanner>();
 
     private float currentBarHeight = -10;
+    public float increment = 6;
     private float openingHeight = 0;
 
     [SerializeField] private ItemStorage itemStorage;
@@ -172,47 +173,59 @@ public class LeaderboardManager : MonoBehaviour
             List<PlayerBanner> newBannerList = new List<PlayerBanner>();
             for (int i = 0; i < currentEventBanners.Length; i++)
             {
-                if (currentEventBanners[i].mark3 != -10000)
+                if (!currentEventBanners[i].isPlayer)
                 {
-                    newBannerList.Add(currentEventBanners[i]); //adds only the passing players to the leaderboard
-                }
-                else
-                {
-                    Debug.Log("failed");
-                    if (openingHeight == currentBarHeight)
+                    if (currentEventBanners[i].mark3 != -10000)
                     {
-                        currentEventBanners[i].bestMark = -100000; //no height
+                        newBannerList.Add(currentEventBanners[i]); //adds only the passing players to the leaderboard
                     }
                     else
                     {
-                        currentEventBanners[i].bestMark = currentBarHeight - (eventName == "HighJump" ? 2 : 6);
+                        Debug.Log("failed");
+                        if (openingHeight == currentBarHeight)
+                        {
+                            currentEventBanners[i].bestMark = -100000; //no height
+                        }
+                        else
+                        {
+                            currentEventBanners[i].bestMark = currentBarHeight - (eventName == "HighJump" ? 2 : 6);
+                        }
+                        finalBarHeightsBanners.Add(currentEventBanners[i]);
                     }
-                    finalBarHeightsBanners.Add(currentEventBanners[i]);
+                } else
+                {
+                    newBannerList.Add(currentEventBanners[i]);
                 }
+                
             }
             currentEventBanners = newBannerList.ToArray(); //converts the list back to the array for use
             currentBarHeight += eventName == "HighJump" ? 2 : 6;
             foreach (PlayerBanner pb in currentEventBanners)
             {
-                if (pb.mark1 == -10)
+                if (!pb.isPlayer)
                 {
-                    pb.lastMakeAttempt = 1;
+                    if (pb.mark1 == -10)
+                    {
+                        pb.lastMakeAttempt = 1;
+                    }
+                    else if (pb.mark2 == -10)
+                    {
+                        pb.lastMakeAttempt = 2;
+                        pb.totalFails += 1;
+                    }
+                    else if (pb.mark3 == -10)
+                    {
+                        pb.lastMakeAttempt = 3;
+                        pb.totalFails += 2;
+                    }
+                    pb.mark1 = -100;
+                    pb.mark2 = -100;
+                    pb.mark2 = -100;
                 }
-                else if (pb.mark2 == -10)
-                {
-                    pb.lastMakeAttempt = 2;
-                    pb.totalFails += 1;
-                }
-                else if (pb.mark3 == -10)
-                {
-                    pb.lastMakeAttempt = 3;
-                    pb.totalFails += 2;
-                }
-                pb.mark1 = -100;
-                pb.mark2 = -100;
-                pb.mark2 = -100;
+                
             }
         }
+        currentBarHeight = height;
        
         
     }
@@ -316,9 +329,13 @@ public class LeaderboardManager : MonoBehaviour
     }
 
 
-    public void showUpdatedLeaderboard() //shows the updated numbers for all oppenents
+    public void showUpdatedLeaderboard(bool showGraphic=true) //shows the updated numbers for all oppenents
     {
         updateCinematicStage(4); //show the updated leaderboard
+        if (!showGraphic)
+        {
+            updateCinematicStage(0);
+        }
         StartCoroutine(timeOfLeaderboard(3)); //hides the leaderboard after x seconds
     }
 
@@ -497,9 +514,11 @@ public class LeaderboardManager : MonoBehaviour
                 }
             }
             currentEventBanners = newBannerList.ToArray(); //converts the list back to the array for use
+            Debug.Log(personalBannersMarks.mark1);
             if (personalBannersMarks.mark1 == -10 || personalBannersMarks.mark2 == -10 || personalBannersMarks.mark3 == -10) //if the player has cleared it
             {
-                getPlayerBanner().bestMark = currentBarHeight - 6;
+                Debug.Log(currentBarHeight + "cleard");
+                getPlayerBanner().bestMark = currentBarHeight - (eventName == "HighJump" ? 2 : 6);
                 clearPlayerMarks(); //clears all marks for the next height
             }
         }
@@ -1075,6 +1094,7 @@ public class LeaderboardManager : MonoBehaviour
                 personalBanner.GetComponentsInChildren<Transform>(true)[10].gameObject.SetActive(true);
                 personalBanner.GetComponentsInChildren<Transform>(true)[11].gameObject.SetActive(true);
                 personalBanner.GetComponentsInChildren<Transform>(true)[12].gameObject.SetActive(true);
+                Debug.Log(currentBarHeight);
                 personalBanner.GetComponentsInChildren<Transform>(true)[12].GetComponent<TextMeshProUGUI>().text = markToString(currentBarHeight);
             }
 

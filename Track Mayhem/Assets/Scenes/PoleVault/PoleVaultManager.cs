@@ -34,6 +34,8 @@ public class PoleVaultManager : MonoBehaviour
     private bool passedBar = false; //if the player has passed the current height
     private float maxPlayerHeight = 0; //max height the player jumping
 
+    private float timeDiff; //time diff from center of jump meter
+
     Vector3 tempPos = new Vector3(3.6730001f, -1.17499995f, -0.213f);
     Vector3 temprot = new Vector3(57.1805916f, 299.280121f, 330.898041f);
 
@@ -54,6 +56,7 @@ public class PoleVaultManager : MonoBehaviour
 
     private float openingHeight = 120;
     private float currentBarHeight = 0; //sets the starting height to x inches
+    private float passedHeight;
 
     private bool hasHeight = false;
 
@@ -100,6 +103,7 @@ public class PoleVaultManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        leaderboardManager.increment = 6;
         heightPickCanvas.enabled = false;
         controlsCanvas.enabled = false;
         jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Plant";
@@ -159,7 +163,9 @@ public class PoleVaultManager : MonoBehaviour
                     heightPickCanvas.enabled = true;
                     heightSelectCamera.enabled = true;
                     controlsCanvas.enabled = false;
-                    heightText.text = "Open at: " + (int)(currentBarHeight / 12) + "'" + currentBarHeight % 12 + "''";
+                    heightText.text = "Open at: " + (int)(currentBarHeight / 12) + "'" + Math.Round(currentBarHeight % 12, 2) + "''";
+                    incrementText.gameObject.SetActive(heightSelectMode == "final");
+                    passedHeight = openingHeight;
                 }
             }
         } else
@@ -226,17 +232,23 @@ public class PoleVaultManager : MonoBehaviour
                 jumpButton.SetActive(false); //hides button until curl and pike
                 jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Curl";
                 jumpPressed = false;
-                jumpMeter.MakeJump();
-                float jumpMeterSpeed = jumpMeter.jumpMeterSpeed;
-                if (jumpMeterSpeed > 66.6 && jumpMeterSpeed < 132.6)
+                //jumpMeter.MakeJump();
+                jumpMeter.jumpBar.gameObject.transform.parent.GetComponent<Animator>().speed = 0;
+                float time = jumpMeter.jumpBar.gameObject.transform.parent.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime;
+                time = time % (int)time;
+                if (time < 0.5)
+                {
+                    timeDiff = Math.Abs(time - 0.25f);
+                }
+                else
+                {
+                    timeDiff = Math.Abs(time - 0.75f);
+                }
+                if (timeDiff < 0.035)
                 {
                     jumpSparkle.startColor = Color.green;
                 }
-                else if (jumpMeterSpeed < 66.6 && jumpMeterSpeed > 33.3)
-                {
-                    jumpSparkle.startColor = Color.yellow;
-                }
-                else if (jumpMeterSpeed > 132.6 && jumpMeterSpeed < 164.6)
+                else if (timeDiff < 0.1)
                 {
                     jumpSparkle.startColor = Color.yellow;
                 }
@@ -285,7 +297,8 @@ public class PoleVaultManager : MonoBehaviour
                     isRunning = false; //shows the player is not longer running
                     runMeter.runMeterSlider.gameObject.SetActive(false); //hides running meter
                     player.GetComponentInChildren<Animator>().speed = 0; //stops the player animations
-                    jumpMeter.setToRegularSpeed(); //setting the bar speed to normal speed
+                    //jumpMeter.setToRegularSpeed(); //setting the bar speed to normal speed
+                    jumpMeter.jumpBar.gameObject.transform.parent.GetComponent<Animator>().speed = 4;
                     /*runningCamera.enabled = false;
                     jumpingCamera.enabled = true;
                     runningMeter.runningBar.transform.parent.gameObject.SetActive(false); //hide run meter
@@ -365,10 +378,19 @@ public class PoleVaultManager : MonoBehaviour
         heightPickCanvas.enabled = true;
         heightSelectCamera.enabled = true;
         controlsCanvas.enabled = false;
-        heightText.text = "Open at: " + (int)(currentBarHeight / 12) + "'" + currentBarHeight % 12 + "''";
+        string firstWord = heightSelectMode == "final" ? "Jump at" : "Pass to";
+        heightText.text = firstWord + ": " + (int)(currentBarHeight / 12) + "'" + Math.Round(currentBarHeight % 12,2) + "''";
         incrementText.text = "6";
         currentIncrement = 6;
         incrementText.gameObject.SetActive(heightSelectMode == "final");
+        if (leaderboardManager.leaderBoardVisble()) //hides the leaderboard if the player clicks
+        {
+            leaderboardManager.hidePersonalBanner();
+        }
+        if (heightSelectMode != "final")
+        {
+            passedHeight = currentBarHeight;
+        }
     }
 
     public void changeIncrement()
@@ -376,6 +398,7 @@ public class PoleVaultManager : MonoBehaviour
         try
         {
             currentIncrement = float.Parse(incrementText.text);
+            leaderboardManager.increment = float.Parse(incrementText.text);
 
         }
         catch (Exception e) { }
@@ -469,7 +492,7 @@ public class PoleVaultManager : MonoBehaviour
         runningPower *= runPowerPercentage; //max 20
         float jumpingPower = jumpPowerScale*(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel + PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel + PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel);
         //max 15
-        float jumpPercentage = 1 - (Math.Abs(100 - jumpMeter.jumpMeterSpeed) / 100);
+        float jumpPercentage = 1 - (timeDiff / 0.25f);
         float power = (runningPower + ((jumpingPower*jumpPercentage)*2))/3; //jump is 2/3 jump and 1/3 run  
         power += 1; //default power
         player.GetComponent<Rigidbody>().velocity = new Vector3(0, power, inPitSpeed); //makes player launch up
@@ -501,6 +524,8 @@ public class PoleVaultManager : MonoBehaviour
         else if (currentBarHeight > Int32.Parse(PublicData.gameData.leaderboardList[2][1][0]) / 100.0f) //game record
         {
             PublicData.gameData.personalBests.polevault = currentBarHeight;
+            player.GetComponentInChildren<Animator>().Play("Exited"); //Animation for after the jump
+            currentJumpNumber = 0;
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.polevault = currentBarHeight;
             leaderboardManager.addMarkLabelToPlayer(1);
             leaderboardManager.showRecordBanner(2);
@@ -520,6 +545,8 @@ public class PoleVaultManager : MonoBehaviour
         else if (currentBarHeight > PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.polevault)
         {
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.polevault = currentBarHeight;
+            player.GetComponentInChildren<Animator>().Play("Exited"); //Animation for after the jump
+            currentJumpNumber = 0;
             leaderboardManager.addMarkLabelToPlayer(2);
             leaderboardManager.showRecordBanner(0);
         }
@@ -533,6 +560,7 @@ public class PoleVaultManager : MonoBehaviour
         {
             //move up 6 inches
             currentBarHeight += 6;
+            passedHeight = currentBarHeight - 5.99f;
             updateBarRaiseHeight();
         }
         frontCamera.enabled = true;
@@ -553,12 +581,17 @@ public class PoleVaultManager : MonoBehaviour
         if (currentBarHeight != openingHeight)
         {
             updateBarRaiseHeight();
-            leaderboardManager.passToHeight(currentBarHeight, openingHeight);
+            leaderboardManager.passToHeight(currentBarHeight, passedHeight);
         }
         if (!hasHeight)
         {
             openingHeight = currentBarHeight;
         }
+        if (heightSelectMode == "begin")
+        {
+            heightSelectMode = "pass";
+        }
+        passedHeight = currentBarHeight;
         ev.SetSelectedGameObject(null);
     }
 
@@ -566,7 +599,7 @@ public class PoleVaultManager : MonoBehaviour
     {
         float originalDir = currentBarHeight;
         currentBarHeight += direction * currentIncrement;
-        if (currentBarHeight < openingHeight || currentBarHeight < leaderboardManager.getPlayerBanner().bestMark)
+        if (currentBarHeight < passedHeight)
         {
             currentBarHeight = originalDir;
         }
@@ -636,10 +669,9 @@ public class PoleVaultManager : MonoBehaviour
             passHeightButton.GetComponentInChildren<TextMeshProUGUI>().text = "Select Height";
             heightSelectMode = "final";
             passHeight();
-        } else
-        {
-            leaderboardManager.showUpdatedLeaderboard();
         }
+        leaderboardManager.showUpdatedLeaderboard(leaderboardManager.getEventBanners().Length != 1);
+
         //isFoul = false; //makes the jump not a foul
 
     }

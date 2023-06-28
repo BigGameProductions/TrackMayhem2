@@ -4190,10 +4190,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   eventName: FifteenHundred
-  useSeeded: 0
-  seededMark: 30000
-  seedSpreadDown: 1200
-  seedSpreadUp: 1200
+  useSeeded: 1
+  seededMark: 3000
+  seedSpreadDown: 300
+  seedSpreadUp: 300
   seedRoundInches: 1
   leaderboardBanners:
   - {fileID: 1698654101}

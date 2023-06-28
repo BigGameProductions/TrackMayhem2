@@ -74,6 +74,9 @@ public class FourHundredManager : MonoBehaviour
 
     private float playerTime;
 
+    [SerializeField] ParticleSystem dashParticles;
+    [SerializeField] ParticleSystem jumpSparkle;
+
     public bool godMode;
 
     [SerializeField] private GameObject fourHundredBlocks;
@@ -224,6 +227,22 @@ public class FourHundredManager : MonoBehaviour
                     player.GetComponentsInChildren<Animator>()[1].Play("Running");
                     player.GetComponent<Animator>().Play("FourHundredRun");
                     player.GetComponent<Animator>().speed = 0.3f;
+                    if (setText.text == "GO")
+                    {
+                        if (eventTimer < 0.25)
+                        {
+                            jumpSparkle.startColor = Color.green;
+                        }
+                        else if (eventTimer < 0.4)
+                        {
+                            jumpSparkle.startColor = Color.yellow;
+                        }
+                        else
+                        {
+                            jumpSparkle.startColor = Color.red;
+                        }
+                        jumpSparkle.Play();
+                    }
                 }
                 runPressed = false;
                 runningMeter.increaseHeight();
@@ -392,10 +411,15 @@ public class FourHundredManager : MonoBehaviour
             if (speed > 220 && energyBar.value != 0)
             {
                 energyBar.value -= energyDepletion;
-                if (energyBar.value < 0.11f) energyBar.value = 0;
-            } else if (speed < PublicData.averageSpeedDuringRun)
+                dashParticles.Play();
+                if (energyBar.value < 0.05f) energyBar.value = 0;
+            } else
             {
-                energyBar.value += energyGain;
+                dashParticles.Stop();
+                if (speed < PublicData.averageSpeedDuringRun)
+                {
+                    energyBar.value += energyGain;
+                }
             }
             float maxSpeedPercent = 0;
             maxSpeedPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 0.07f);

@@ -47,6 +47,7 @@ public class FifteenHundredManager : MonoBehaviour
     private float[] competitorsMaxSpeedList = new float[8]; //max speed of all the competitors
 
     private float[] competitorsLapTimeProgess = new float[8]; //lapTimeProgress for all runners
+    private float[] competitorsLapNumber = new float[8]; //lap number of all competitors
 
 
     bool isRunning = false; //if gun has gone off
@@ -64,6 +65,8 @@ public class FifteenHundredManager : MonoBehaviour
     float eventTimer = 0; //keeps track of the time of the event
 
     float startingBarDecreaseSpeed = 300; //gets the starting decrease speed
+
+    private float playerTime;
 
     private float lapTimeProgress = 1f; //time of the current lap
 
@@ -290,7 +293,10 @@ public class FifteenHundredManager : MonoBehaviour
             competitorsMaxSpeedList[index] = (275.05f / ((0.75f * time) / 0.02f)) / runningSpeedRatio;//spaces per second was 0.55
             competitorsAccelSpeedList[index] = time / 6; //was 0.4
             competitorsStartSpeedList[index] = 90;*/
-            competitorsSpeedList[index] = UnityEngine.Random.Range(0.005f, 0.01f);
+            //competitorsSpeedList[index] = UnityEngine.Random.Range(0.005f, 0.01f);
+            float theBestMark = leaderboardManager.getPlayersInLaneOrder()[index].bestMark;
+            float secDiffPercent = theBestMark / 180f;
+            competitorsSpeedList[index] = 0.01001f/secDiffPercent;
         }
 
     }
@@ -386,10 +392,13 @@ public class FifteenHundredManager : MonoBehaviour
                 if (energyBar.value < 0.05f) energyBar.value = 0;
             }
             //player.transform.Translate(new Vector3(0, 0, speed * runningSpeedRatio)); //making character move according to run meter
-            updateRunnerPosition(player, lapTimeProgress);
+            if (!finished)
+            {
+                updateRunnerPosition(player, lapTimeProgress);
+            }
             for (int i=0; i< competitorsLapTimeProgess.Length; i++)
             {
-                if (i+1 != currentStartLane)
+                if (i+1 != currentStartLane && competitorsLapNumber[i] < 4)
                 {
                     updateRunnerPosition(competitorsList[i], competitorsLapTimeProgess[i]);
                 }
@@ -426,10 +435,31 @@ public class FifteenHundredManager : MonoBehaviour
                     competitorsList[i].GetComponentsInChildren<Animator>()[0].Play("RunningLean");
                 }*/
             }
+            eventTimer += Time.deltaTime;
+            for (int i = 0; i < competitorsLapTimeProgess.Length; i++)
+            {
+                competitorsLapTimeProgess[i] += competitorsSpeedList[i];
+                if (competitorsLapTimeProgess[i] >= 4 && competitorsLapNumber[i] < 4)
+                {
+                    competitorsLapNumber[i]++;
+                    if (competitorsLapNumber[i] == 4)
+                    {
+                        PlayerBanner pb = laneOrders[Int32.Parse(competitorsList[i].name[4].ToString()) - 1];
+                        leaderboardManager.changeBannerBest(pb.flagNumber, pb.player, eventTimer * 6);
+                    }
+                    else
+                    {
+                        competitorsLapTimeProgess[i] = 0;
+                    }
+                } else if (competitorsLapTimeProgess[i] >= 4 && competitorsLapNumber[i] == 4)
+                {
+                    competitorsList[i].transform.Translate(0, 0, competitorsSpeedList[i] * 100);
+                    competitorsSpeedList[i] -= 0.005f;
+                }
+            }
             if (!finished)
             {
                 runningMeter.updateTimeElapsed();
-                eventTimer += Time.deltaTime;
                 float speedAdjuster = 33000;
                 speedAdjuster -= PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 1500);
                 speedAdjuster -= PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 2500);
@@ -437,15 +467,7 @@ public class FifteenHundredManager : MonoBehaviour
                 speedAdjuster -= PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 5500);
                 energyDepletion = speedAdjuster / 12500000; //makes energy match the speed
                 lapTimeProgress += speed / speedAdjuster; //normal mode
-                for (int i=0; i<competitorsLapTimeProgess.Length;i++)
-                {
-                    competitorsLapTimeProgess[i] += competitorsSpeedList[i];
-                    if (competitorsLapTimeProgess[i] >= 4)
-                    {
-                        //lap counter TODO
-                        competitorsLapTimeProgess[i] = 0;
-                    }
-                }
+                
                 //lapTimeProgress += 0.005f; //fast mode
                 lapTimeProgress = Math.Min(lapTimeProgress, 4); //cap progress at 4
                 if (lapTimeProgress == 4)
@@ -455,7 +477,7 @@ public class FifteenHundredManager : MonoBehaviour
                     if (lapNumber == 4 && !finished)
                     {
                         finished = true;
-                        eventTimer *= 6;
+                        playerTime = eventTimer * 6;
                         StartCoroutine(waitAfterFinish(2));
                     }
                     else
@@ -466,6 +488,10 @@ public class FifteenHundredManager : MonoBehaviour
                 
                 //runningMeter.barDecreaseSpeed = Math.Min(startingBarDecreaseSpeed + (eventTimer * 20), 400); //make the bar decrease faster as you go on
                 //runningMeter.speedPerClick = 75 + (eventTimer * 5);
+            } else
+            {
+                player.transform.Translate(0,0,speed/100);
+                //speed -= 2;
             }
         }
 
@@ -475,31 +501,31 @@ public class FifteenHundredManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         currentPlayerBanner = leaderboardManager.getPlayerBanner();
-        currentPlayerBanner.mark2 = eventTimer;
+        currentPlayerBanner.mark2 = playerTime;
         PersonalBests characterPB = PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests;
-        if (eventTimer < Int32.Parse(PublicData.gameData.leaderboardList[5][1][0]) / 100.0f) //game record
+        if (playerTime < Int32.Parse(PublicData.gameData.leaderboardList[9][1][0]) / 100.0f) //game record
         {
-            PublicData.gameData.personalBests.fourHundred = eventTimer;
-            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.fourHundred = eventTimer;
+            PublicData.gameData.personalBests.mile = playerTime;
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.mile = playerTime;
             leaderboardManager.addMarkLabelToPlayer(1);
             leaderboardManager.showRecordBanner(2);
         }
-        else if (eventTimer < PublicData.gameData.personalBests.fourHundred || PublicData.gameData.personalBests.fourHundred == 0) //if pr or first time doing it
+        else if (playerTime < PublicData.gameData.personalBests.mile || PublicData.gameData.personalBests.mile == 0) //if pr or first time doing it
         {
-            PublicData.gameData.personalBests.fourHundred = eventTimer; //sets pr
-            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.fourHundred = eventTimer; //sets cb too
+            PublicData.gameData.personalBests.mile = playerTime; //sets pr
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.mile = playerTime; //sets cb too
             leaderboardManager.addMarkLabelToPlayer(3);
             leaderboardManager.showRecordBanner(1);
 
         }
-        else if (eventTimer < characterPB.fourHundred || characterPB.fourHundred == 0)
+        else if (playerTime < characterPB.mile || characterPB.mile == 0)
         {
-            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.fourHundred = eventTimer;
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.mile = playerTime;
             leaderboardManager.addMarkLabelToPlayer(2);
             leaderboardManager.showRecordBanner(0);
         }
         leaderboardManager.showCurrentPlayerMarks(currentPlayerBanner, 3); //updates and shows the player leaderboard
-        leaderboardManager.addPlayerTime(eventTimer); //adds player to the banners
+        leaderboardManager.addPlayerTime(playerTime); //adds player to the banners
         StartCoroutine(showEndScreen(3));
 
     }
