@@ -36,6 +36,8 @@ public class hundredMeterController : MonoBehaviour
     [SerializeField] private ParticleSystem jumpSparkle;
     [SerializeField] private ParticleSystem runTrail;
 
+    private LeaderboardFunctions leadF = new LeaderboardFunctions();
+
     private float[] competitorsSpeedList = new float[8]; //speed of all the competitors
     private float[] competitorsAccelSpeedList = new float[8]; //acceleration of all the competitors
     private float[] competitorsStartSpeedList = new float[8]; //start speed of all the competitors
@@ -378,8 +380,11 @@ public class hundredMeterController : MonoBehaviour
         currentPlayerBanner = leaderboardManager.getPlayerBanner();
         currentPlayerBanner.mark2 = playerTime;
         PersonalBests characterPB = PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests;
-        if (playerTime < Int32.Parse(PublicData.gameData.leaderboardList[0][1][0]) / 100.0f) //game record
+        int leaderboardTime = PublicData.maxInteger - ((int)(playerTime*100));
+        if (leaderboardTime > Int32.Parse(PublicData.gameData.leaderboardList[0][1][0])) //game record
         {
+            leadF.SetLeaderBoardEntry(0, PublicData.gameData.playerName, leaderboardTime, PublicData.gameData.countryCode + "," + PublicData.currentRunnerUsing);
+            leadF.checkForOwnPlayer(0, 20); //checks to make sure it can stay in the top 20
             PublicData.gameData.personalBests.hundredMeter = playerTime;
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hundredMeter = playerTime;
             leaderboardManager.addMarkLabelToPlayer(1);
@@ -388,6 +393,8 @@ public class hundredMeterController : MonoBehaviour
         }
         else if (playerTime < PublicData.gameData.personalBests.hundredMeter || PublicData.gameData.personalBests.hundredMeter == 0) //if pr or first time doing it
         {
+            leadF.SetLeaderBoardEntry(0, PublicData.gameData.playerName, leaderboardTime, PublicData.gameData.countryCode + "," + PublicData.currentRunnerUsing);
+            leadF.checkForOwnPlayer(0, 20); //checks to make sure it can stay in the top 20
             PublicData.gameData.personalBests.hundredMeter = playerTime; //sets pr
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hundredMeter = playerTime; //sets cb too
             leaderboardManager.addMarkLabelToPlayer(3);

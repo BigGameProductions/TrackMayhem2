@@ -42,7 +42,7 @@ public class FileDataHandler
                 Debug.Log(dataToLoad);
                 loadedData = JsonUtility.FromJson<GameData>(dataToLoad);
                 //make serialization leaderboard to real leaderboard
-                //new LeaderboardFunctions().setMainLeaderboardVariables();
+                new LeaderboardFunctions().setMainLeaderboardVariables();
                 string[][][] leaderbordValues = new string[12][][];
                 for (int i = 0; i < leaderbordValues.Length; i++)
                 {

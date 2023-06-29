@@ -23,6 +23,8 @@ public class FourHundredManager : MonoBehaviour
 
     [SerializeField] private Image runningSliderFill;
 
+    private LeaderboardFunctions leadF = new LeaderboardFunctions();
+
     [SerializeField] private float runningSpeedRatio; //stores the ratio for running compared to runningSpeed
     [SerializeField] private float animationRunningSpeedRatio; //stores the ratio for animation speed compared to runningSpeed
 
@@ -522,8 +524,11 @@ public class FourHundredManager : MonoBehaviour
         currentPlayerBanner = leaderboardManager.getPlayerBanner();
         currentPlayerBanner.mark2 = playerTime;
         PersonalBests characterPB = PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests;
-        if (playerTime < Int32.Parse(PublicData.gameData.leaderboardList[5][1][0]) / 100.0f) //game record
+        int leaderboardTime = PublicData.maxInteger - ((int)(playerTime * 100));
+        if (leaderboardTime > Int32.Parse(PublicData.gameData.leaderboardList[5][1][0])) //game record
         {
+            leadF.SetLeaderBoardEntry(5, PublicData.gameData.playerName, leaderboardTime, PublicData.gameData.countryCode + "," + PublicData.currentRunnerUsing);
+            leadF.checkForOwnPlayer(5, 20); //checks to make sure it can stay in the top 20
             PublicData.gameData.personalBests.fourHundred = playerTime;
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.fourHundred = playerTime;
             leaderboardManager.addMarkLabelToPlayer(1);
@@ -531,6 +536,8 @@ public class FourHundredManager : MonoBehaviour
         }
         else if (playerTime < PublicData.gameData.personalBests.fourHundred || PublicData.gameData.personalBests.fourHundred == 0) //if pr or first time doing it
         {
+            leadF.SetLeaderBoardEntry(5, PublicData.gameData.playerName, leaderboardTime, PublicData.gameData.countryCode + "," + PublicData.currentRunnerUsing);
+            leadF.checkForOwnPlayer(5, 20); //checks to make sure it can stay in the top 20
             PublicData.gameData.personalBests.fourHundred = playerTime; //sets pr
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.fourHundred = playerTime; //sets cb too
             leaderboardManager.addMarkLabelToPlayer(3);

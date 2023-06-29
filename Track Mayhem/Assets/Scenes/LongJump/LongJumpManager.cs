@@ -400,7 +400,7 @@ public class LongJumpManager : MonoBehaviour
                 totalInches += 5;
             }*/
             //totalInches += boardDistance - 96;
-            if (totalInches > Int32.Parse(PublicData.gameData.leaderboardList[1][1][0])/100.0f) //game record
+            if (totalInches > Int32.Parse(PublicData.gameData.leaderboardList[1][1][0])/100.0f && totalInches > PublicData.gameData.personalBests.longJump) //game record
             {
                 PublicData.gameData.personalBests.longJump = totalInches;
                 PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.longJump = totalInches;

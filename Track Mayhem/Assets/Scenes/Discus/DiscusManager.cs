@@ -255,7 +255,7 @@ public class DiscusManager : MonoBehaviour
         ringAnimation.gameObject.SetActive(false);
         player.GetComponentInChildren<Animator>().speed = 1;
         player.GetComponentInChildren<Animator>().Play("Wave");
-        if (totalInches > Int32.Parse(PublicData.gameData.leaderboardList[6][1][0]) / 100.0f) //game record
+        if (totalInches > Int32.Parse(PublicData.gameData.leaderboardList[6][1][0]) / 100.0f && totalInches > PublicData.gameData.personalBests.discus) //game record
         {
             PublicData.gameData.personalBests.discus = totalInches;
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.discus = totalInches;

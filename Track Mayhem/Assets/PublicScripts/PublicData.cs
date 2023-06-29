@@ -23,6 +23,8 @@ public static class PublicData
     public static float spacesPerInch = (1875.03f - 1864.7f) / 36f; //spaces per inch for the game
     public static float averageSpeedDuringRun = 175; //the speed of the green bar during the run
 
+    public static int maxInteger = 2147483;
+
     public static int pointsToGive = 0;
 
 

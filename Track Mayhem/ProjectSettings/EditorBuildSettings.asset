@@ -59,4 +59,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Mile/FifteenHundred.unity
     guid: be72c61d7bb84409eb91f1ba164ec917
+  - enabled: 1
+    path: Assets/Scenes/MakeCharacter/MakeCharacter.unity
+    guid: 7ae2e722b25ec4e25a7a8aab569871dd
   m_configObjects: {}

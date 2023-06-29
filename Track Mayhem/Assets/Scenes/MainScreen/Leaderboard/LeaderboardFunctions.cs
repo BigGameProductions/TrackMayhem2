@@ -74,10 +74,11 @@ public class LeaderboardFunctions
 
     public void SetLeaderBoardEntry(int eventCode, string name, int mark, string extra)
     {
+        Debug.Log(name + ":" + mark);
         LeaderboardCreator.UploadNewEntry(keys[eventCode], name, mark, extra, ((msg) =>
         {
             
-        }));
+        }), (error) => { Debug.Log("The error is: " + error); });
     }
 
 
@@ -92,6 +93,7 @@ public class LeaderboardFunctions
                 {
                     if (msg[i].Rank > maxRank)
                     {
+                        Debug.Log("deletd");
                         LeaderboardCreator.DeleteEntry(keys[eventCode]);
                     }
                 }

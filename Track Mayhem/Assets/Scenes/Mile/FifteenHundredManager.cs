@@ -24,6 +24,8 @@ public class FifteenHundredManager : MonoBehaviour
 
     [SerializeField] private Image runningSliderFill;
 
+    private LeaderboardFunctions leadF = new LeaderboardFunctions();
+
     [SerializeField] private float runningSpeedRatio; //stores the ratio for running compared to runningSpeed
     [SerializeField] private float animationRunningSpeedRatio; //stores the ratio for animation speed compared to runningSpeed
 
@@ -503,8 +505,11 @@ public class FifteenHundredManager : MonoBehaviour
         currentPlayerBanner = leaderboardManager.getPlayerBanner();
         currentPlayerBanner.mark2 = playerTime;
         PersonalBests characterPB = PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests;
-        if (playerTime < Int32.Parse(PublicData.gameData.leaderboardList[9][1][0]) / 100.0f) //game record
+        int leaderboardTime = PublicData.maxInteger - ((int)(playerTime * 100));
+        if (leaderboardTime > Int32.Parse(PublicData.gameData.leaderboardList[9][1][0])) //game record
         {
+            leadF.SetLeaderBoardEntry(9, PublicData.gameData.playerName, leaderboardTime, PublicData.gameData.countryCode + "," + PublicData.currentRunnerUsing);
+            leadF.checkForOwnPlayer(9, 20); //checks to make sure it can stay in the top 20
             PublicData.gameData.personalBests.mile = playerTime;
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.mile = playerTime;
             leaderboardManager.addMarkLabelToPlayer(1);
@@ -512,6 +517,8 @@ public class FifteenHundredManager : MonoBehaviour
         }
         else if (playerTime < PublicData.gameData.personalBests.mile || PublicData.gameData.personalBests.mile == 0) //if pr or first time doing it
         {
+            leadF.SetLeaderBoardEntry(9, PublicData.gameData.playerName, leaderboardTime, PublicData.gameData.countryCode + "," + PublicData.currentRunnerUsing);
+            leadF.checkForOwnPlayer(9, 20); //checks to make sure it can stay in the top 20
             PublicData.gameData.personalBests.mile = playerTime; //sets pr
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.mile = playerTime; //sets cb too
             leaderboardManager.addMarkLabelToPlayer(3);

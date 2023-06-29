@@ -1050,7 +1050,7 @@ public class LeaderboardManager : MonoBehaviour
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[5].gameObject.SetActive(true); //record mark label
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[6].gameObject.SetActive(true); //record label mark
                 leaderboardBanners[i].GetComponentsInChildren<RectTransform>(true)[6].GetComponent<Image>().sprite = itemStorage.labelSprites[i]; //sets mark labels to each character
-                textBoxes[3].text = markToString(playerBanners[i].bestMark, useTime); //setting record marks
+                textBoxes[3].text = markToString(playerBanners[i].bestMark, useTime, i==1); //setting record marks
 
             } else if (mode == 4)
             {
@@ -1125,8 +1125,12 @@ public class LeaderboardManager : MonoBehaviour
         }
     }
 
-    private string markToString(float mark, bool asTime=false)
+    private string markToString(float mark, bool asTime=false, bool leaderboard=false)
     {
+        if (asTime && leaderboard)
+        {
+            mark = Math.Abs(mark*100 - PublicData.maxInteger) / 100;
+        }
         if (eventName == "Decathalon")
         {
             return Math.Round(mark, 0).ToString();

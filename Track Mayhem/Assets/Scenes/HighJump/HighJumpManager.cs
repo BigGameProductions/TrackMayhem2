@@ -795,8 +795,10 @@ public class HighJumpManager : MonoBehaviour
         {
             player.GetComponentsInChildren<Animator>()[1].Play("Upset"); //Animation for after the jump
         }
-        else if (currentBarHeight > Int32.Parse(PublicData.gameData.leaderboardList[7][1][0]) / 100.0f) //game record //TODO fix game records
+        else if (currentBarHeight > Int32.Parse(PublicData.gameData.leaderboardList[7][1][0]) / 100.0f) //game record 
         {
+            leadF.SetLeaderBoardEntry(7, PublicData.gameData.playerName, (int)(currentBarHeight * 100), PublicData.gameData.countryCode + "," + PublicData.currentRunnerUsing);
+            leadF.checkForOwnPlayer(7, 20); //checks to make sure it can stay in the top 20
             PublicData.gameData.personalBests.highJump = currentBarHeight;
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.highJump = currentBarHeight;
             player.GetComponentsInChildren<Animator>()[1].Play("Exited"); //Animation for after the jump

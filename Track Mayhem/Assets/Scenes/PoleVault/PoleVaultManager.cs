@@ -523,6 +523,8 @@ public class PoleVaultManager : MonoBehaviour
         }
         else if (currentBarHeight > Int32.Parse(PublicData.gameData.leaderboardList[2][1][0]) / 100.0f) //game record
         {
+            leadF.SetLeaderBoardEntry(2, PublicData.gameData.playerName, (int)(currentBarHeight * 100), PublicData.gameData.countryCode + "," + PublicData.currentRunnerUsing);
+            leadF.checkForOwnPlayer(2, 20); //checks to make sure it can stay in the top 20
             PublicData.gameData.personalBests.polevault = currentBarHeight;
             player.GetComponentInChildren<Animator>().Play("Exited"); //Animation for after the jump
             currentJumpNumber = 0;

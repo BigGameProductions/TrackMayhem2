@@ -344,9 +344,9 @@ public class JavelinManager : MonoBehaviour
         //ringAnimation.gameObject.SetActive(false);
         player.GetComponentInChildren<Animator>().speed = 1;
         player.GetComponentInChildren<Animator>().Play("Wave");
-        if (totalInches > Int32.Parse(PublicData.gameData.leaderboardList[4][1][0]) / 100.0f) //game record
+        if (totalInches > Int32.Parse(PublicData.gameData.leaderboardList[4][1][0]) / 100.0f && totalInches > PublicData.gameData.personalBests.javelin) //game record
         {
-            PublicData.gameData.personalBests.shotput = totalInches;
+            PublicData.gameData.personalBests.javelin = totalInches;
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.javelin = totalInches;
             leadF.SetLeaderBoardEntry(4, PublicData.gameData.playerName, (int)(leaderboardManager.roundToNearest(0.25f, totalInches) * 100), PublicData.gameData.countryCode + "," + PublicData.currentRunnerUsing);
             leadF.checkForOwnPlayer(4, 20); //checks to make sure it can stay in the top 20

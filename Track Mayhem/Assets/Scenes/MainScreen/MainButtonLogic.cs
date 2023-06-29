@@ -80,6 +80,11 @@ public class MainButtonLogic : MonoBehaviour
         SceneManager.LoadScene("Leaderboard");
     }
 
+    public void showProfile()
+    {
+        SceneManager.LoadScene("MakeCharacter");
+    }
+
     public void showRunnerInfo()
     {
        foreach (Transform tf in UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.transform) //find the name object
