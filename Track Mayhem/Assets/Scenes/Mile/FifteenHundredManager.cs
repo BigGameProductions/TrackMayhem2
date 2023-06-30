@@ -504,6 +504,7 @@ public class FifteenHundredManager : MonoBehaviour
                     {
                         finished = true;
                         playerTime = eventTimer * 6;
+                        runningMeter.barDecreaseSpeed = 150;
                         StartCoroutine(switchCameraAngle(1));
                         StartCoroutine(waitAfterFinish(2));
                     }

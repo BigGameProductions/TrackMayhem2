@@ -170,6 +170,10 @@ public class HighJumpManager : MonoBehaviour
     {
         jumpMeter.updateJumpMeter();
 
+        if (player.GetComponentsInChildren<Animator>()[1].speed == 100 && player.GetComponent<Rigidbody>().useGravity && player.GetComponentsInChildren<Animator>()[1].GetCurrentAnimatorStateInfo(0).normalizedTime >=0.67)
+        {
+            player.GetComponentsInChildren<Animator>()[1].speed = 1;
+        }
         if (Input.GetKey(KeyCode.P) || jumpButtonHeld)
         {
             onJumpButtonDown();
@@ -303,8 +307,8 @@ public class HighJumpManager : MonoBehaviour
             {
                 jumpPressed = false;
                 hasPiked = true;
-                player.GetComponentsInChildren<Animator>()[1].speed = 1;
-                player.GetComponentsInChildren<Animator>()[1].Play("HighJumpJump", 0, 0.67f);
+                player.GetComponentsInChildren<Animator>()[1].speed = 100;
+                //player.GetComponentsInChildren<Animator>()[1].Play("HighJumpJump", 0, 0.67f);
             }
         }
         if (player.GetComponent<Rigidbody>().velocity.y == 0 && secondInAir && !isRunning && !over)

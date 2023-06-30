@@ -28,6 +28,8 @@ public class PoleVaultManager : MonoBehaviour
     private bool runPressed;
     private bool jumpPressed;
 
+    private bool isFoul = false;
+
     [SerializeField] private float runningSpeedRatio; //stores the ratio for running compared to runningSpeed
     [SerializeField] private float animationRunningSpeedRatio; //stores the ratio for animation speed compared to runningSpeed
 
@@ -235,7 +237,10 @@ public class PoleVaultManager : MonoBehaviour
                 //jumpMeter.MakeJump();
                 jumpMeter.jumpBar.gameObject.transform.parent.GetComponent<Animator>().speed = 0;
                 float time = jumpMeter.jumpBar.gameObject.transform.parent.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime;
-                time = time % (int)time;
+                if (time >=1)
+                {
+                    time = time % (int)time;
+                }
                 if (time < 0.5)
                 {
                     timeDiff = Math.Abs(time - 0.25f);
@@ -425,11 +430,11 @@ public class PoleVaultManager : MonoBehaviour
         {
             foulImage.gameObject.SetActive(true);
             foulImage.GetComponent<Animator>().Play("FoulSlide");
-
+            isFoul = true;
             poleVaultPole.transform.parent = null;
             updatePlayerBanner(-10000);
             afterJump();
-        } else
+        } else if (!isFoul)
         {
             poleVaultPole.GetComponent<Animator>().enabled = true;
             poleVaultPole.transform.parent = null; //makes the parent root of scene so it moves independently
@@ -516,6 +521,7 @@ public class PoleVaultManager : MonoBehaviour
         jumpButton.SetActive(false); //hides jump button for after jump
         leaderboardManager.showCurrentPlayerMarks(currentPlayerBanner, 3); //updates and shows the player leaderboard
         poleVaultPole.GetComponent<Animator>().SetBool("Launched", false);
+        player.GetComponentsInChildren<Animator>()[0].speed = 1;
         currentJumpNumber++; //inceases to the next jump
         if (!passedBar) //if scratched
         {
@@ -673,6 +679,9 @@ public class PoleVaultManager : MonoBehaviour
             passHeight();
         }
         leaderboardManager.showUpdatedLeaderboard(leaderboardManager.getEventBanners().Length != 1);
+        poleVaultPole.transform.localPosition = new Vector3(-3.87800002F, -0.239999995f, -0.435000002f);
+        poleVaultPole.transform.localEulerAngles = new Vector3(8.60898876f, 4.03799057f, 223.470001f);
+        isFoul = false;
 
         //isFoul = false; //makes the jump not a foul
 
@@ -701,4 +710,3 @@ public class PoleVaultManager : MonoBehaviour
     }
 }
 
-//TODO fix no height bugs

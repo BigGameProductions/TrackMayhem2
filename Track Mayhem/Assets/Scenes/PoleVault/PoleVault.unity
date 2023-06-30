@@ -2279,8 +2279,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   eventName: PoleVault
-  useSeeded: 1
-  seededMark: 120
+  useSeeded: 0
+  seededMark: 0
   seedSpreadDown: 36
   seedSpreadUp: 12
   seedRoundInches: 6
@@ -2301,6 +2301,7 @@ MonoBehaviour:
   itemStorage: {fileID: 1555131527}
   eventNameTitle: {fileID: 1524269097}
   leaderboardDescriptionTitle: {fileID: 1524269096}
+  pointsText: {fileID: 0}
   recordBanner: {fileID: 41425409}
 --- !u!4 &1782467797
 Transform:

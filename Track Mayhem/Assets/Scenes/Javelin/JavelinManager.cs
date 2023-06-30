@@ -91,6 +91,10 @@ public class JavelinManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (isFoul)
+        {
+            runningMeter.updateRunMeter();
+        }
         if (!isRunning && player.GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 0.8f && !didThrow && player.GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).IsName("JavelinThrow"))
         {
             if (player.GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime == 1)
@@ -143,7 +147,7 @@ public class JavelinManager : MonoBehaviour
                     totalPowerPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 4.5f);
                     rb.AddForce(new Vector3(-20 * totalThrowPower, totalPowerPercent * totalThrowPower, 0), ForceMode.Impulse);
                     javelin.transform.eulerAngles = new Vector3(-37.336f, 32.927f, -45.454f);
-                    rb.AddRelativeTorque(new Vector3(0, 0, Math.Min(-140 + (totalPowerPercent*totalThrowPower* 4.228f), -30))); //was -40
+                    rb.AddRelativeTorque(new Vector3(0, 0, Math.Min(-120 + (totalPowerPercent*totalThrowPower* 4.228f), -30))); //was -40
                     runButton.gameObject.SetActive(false);
                     runningMeter.runMeterSlider.gameObject.SetActive(false);
                     jumpButton.SetActive(false);
@@ -165,7 +169,11 @@ public class JavelinManager : MonoBehaviour
                 foulImage.gameObject.SetActive(true);
                 foulImage.GetComponent<Animator>().Play("FoulSlide");
                 updatePlayerBanner(-1000); //update the banner to foul
-                StartCoroutine(showPersonalBanner(2));
+                runButton.gameObject.SetActive(false);
+                jumpButton.gameObject.SetActive(false);
+                runningMeter.runMeterSlider.gameObject.SetActive(false);
+                angleMeter.SetActive(false);
+                StartCoroutine(showPersonalBanner(2, true));
 
             }
         }
@@ -173,11 +181,14 @@ public class JavelinManager : MonoBehaviour
         {
             javelinCamera.transform.eulerAngles = new Vector3(0, 0, 0);
 
-            javelinCamera.transform.position = new Vector3(javelinCamera.transform.position.x, Math.Max(javelinCamera.transform.position.y,231.4f), javelinCamera.transform.position.z);
+           // javelinCamera.transform.position = new Vector3(javelinCamera.transform.position.x, Math.Max(javelinCamera.transform.position.y,231.4f), javelinCamera.transform.position.z);
 
             if (javelinCamera.transform.position.y > 231.4)
             {
-                javelinCamera.transform.localPosition = new Vector3(-0.237f, 200.3f, -36); //was 170
+                javelinCamera.transform.localPosition = new Vector3(-0.237f, 200.3f, -36); //was 170 for ys and -0.237 for x
+            } else
+            {
+                javelinCamera.transform.position = new Vector3(javelin.transform.position.x + 0.137f, 231.4f,javelin.transform.position.z-10); //was 170 for ys and -0.237 for x
             }
             if (javelin.transform.eulerAngles.z > 46)
             {
@@ -261,6 +272,10 @@ public class JavelinManager : MonoBehaviour
         if (runningCamera.enabled && !leaderboardManager.cinematicCamera.gameObject.activeInHierarchy && isRunning)
         {
             player.GetComponentInChildren<Animator>().Play("JavelinThrow");
+            if (runningMeter.runningSpeed < 50)
+            {
+                runningMeter.runningSpeed = 50;
+            }
             isRunning = false;
             float avSpeed = runningMeter.getAverageSpeed();
             if (avSpeed > 7750 && avSpeed < 8000)
@@ -337,22 +352,29 @@ public class JavelinManager : MonoBehaviour
         runningCamera.enabled = false;
     }
 
-    IEnumerator showPersonalBanner(float delay)
+    IEnumerator showPersonalBanner(float delay, bool hideJav=false)
     {
         yield return new WaitForSeconds(delay);
+        if (hideJav)
+        {
+            javelin.gameObject.SetActive(false);
+            foulImage.gameObject.SetActive(false);
+        }
         leaderboardManager.showCurrentPlayerMarks(currentPlayerBanner, 3); //updates and shows the player leaderboard
         currentThrowNumber++; //inceases to the next jump
         runningCamera.enabled = true;
         javelinCamera.enabled = false;
         //ringAnimation.gameObject.SetActive(false);
         player.GetComponentInChildren<Animator>().speed = 1;
-        player.GetComponentInChildren<Animator>().Play("Wave");
+        player.GetComponentsInChildren<Transform>()[1].localPosition = new Vector3(0, 0, 0);
+        frontCamera.enabled = true;
         if (totalInches > Int32.Parse(PublicData.gameData.leaderboardList[4][1][0]) / 100.0f && totalInches > PublicData.gameData.personalBests.javelin) //game record
         {
             PublicData.gameData.personalBests.javelin = totalInches;
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.javelin = totalInches;
             leadF.SetLeaderBoardEntry(4, PublicData.gameData.playerName, (int)(leaderboardManager.roundToNearest(0.25f, totalInches) * 100), PublicData.gameData.countryCode + "," + PublicData.currentRunnerUsing);
             leadF.checkForOwnPlayer(4, 20); //checks to make sure it can stay in the top 20
+            player.GetComponentInChildren<Animator>().Play("Exited");
             leaderboardManager.addMarkLabelToPlayer(1);
             leaderboardManager.showRecordBanner(2);
         }
@@ -361,6 +383,7 @@ public class JavelinManager : MonoBehaviour
             leadF.SetLeaderBoardEntry(4, PublicData.gameData.playerName, (int)(leaderboardManager.roundToNearest(0.25f, totalInches) * 100), PublicData.gameData.countryCode + "," + PublicData.currentRunnerUsing);
             leadF.checkForOwnPlayer(4, 20); //checks to make sure it can stay in the top 20
             leaderboardManager.showRecordBanner(1);
+            player.GetComponentInChildren<Animator>().Play("Exited");
             PublicData.gameData.personalBests.javelin = leaderboardManager.roundToNearest(0.25f, totalInches);
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.javelin = leaderboardManager.roundToNearest(0.25f, totalInches); ;
             leaderboardManager.addMarkLabelToPlayer(3);
@@ -368,9 +391,20 @@ public class JavelinManager : MonoBehaviour
         }
         else if (totalInches > PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.javelin)
         {
-            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.javelin = leaderboardManager.roundToNearest(0.25f, totalInches); ;
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.javelin = leaderboardManager.roundToNearest(0.25f, totalInches);
+            player.GetComponentInChildren<Animator>().Play("Exited");
             leaderboardManager.addMarkLabelToPlayer(2);
             leaderboardManager.showRecordBanner(0);
+        } else
+        {
+            if (isFoul)
+            {
+                player.GetComponentInChildren<Animator>().Play("Upset");
+            }
+            else
+            {
+                player.GetComponentInChildren<Animator>().Play("Wave");
+            }
         }
         StartCoroutine(waitAfterPersonalBanner(3));
     }
@@ -413,6 +447,8 @@ public class JavelinManager : MonoBehaviour
         runningMeter.runMeterSlider.gameObject.SetActive(true);
         isFoul = false;
         javelin.GetComponent<JavelinCollision>().hitGround = false;
+        frontCamera.enabled = false;
+        javelin.gameObject.SetActive(true);
         //jumpClicks = 0;
         //piviotPercents = new float[3];
     }

@@ -5246,7 +5246,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 403696700}
   m_LocalRotation: {x: 0, y: 0.98574466, z: -0.1682485, w: 0}
-  m_LocalPosition: {x: 0.15, y: 1.77, z: 2.93}
+  m_LocalPosition: {x: 0.18, y: 1.77, z: 2.93}
   m_LocalScale: {x: 0.33333334, y: 0.33333334, z: 0.33333337}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5535,6 +5535,7 @@ MonoBehaviour:
   itemStorage: {fileID: 430441366}
   eventNameTitle: {fileID: 1784147365}
   leaderboardDescriptionTitle: {fileID: 1784147363}
+  pointsText: {fileID: 0}
   recordBanner: {fileID: 597007148}
 --- !u!4 &486482767
 Transform:
