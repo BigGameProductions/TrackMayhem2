@@ -2279,10 +2279,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   eventName: PoleVault
-  useSeeded: 0
-  seededMark: 144
-  seedSpreadDown: 60
-  seedSpreadUp: 24
+  useSeeded: 1
+  seededMark: 120
+  seedSpreadDown: 36
+  seedSpreadUp: 12
   seedRoundInches: 6
   leaderboardBanners:
   - {fileID: 1771612328}

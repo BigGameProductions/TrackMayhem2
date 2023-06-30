@@ -14,6 +14,7 @@ public class FifteenHundredManager : MonoBehaviour
 
     [SerializeField] private LeaderboardManager leaderboardManager;
     [SerializeField] private Camera playerCamera;
+    [SerializeField] private Camera frontCamera;
     [SerializeField] private Camera birdEyeView;
 
     [SerializeField] private Image foulImage;
@@ -78,6 +79,8 @@ public class FifteenHundredManager : MonoBehaviour
 
     PlayerBanner[] laneOrders;
 
+    [SerializeField] private ParticleSystem dashParticles;
+
     private int currentStartLane;
 
     public bool godMode;
@@ -97,11 +100,11 @@ public class FifteenHundredManager : MonoBehaviour
         runningMeter.runningBar.transform.parent.gameObject.SetActive(false);
         foreach (GameObject go in competitorsList) //gets all competitors in the blocks
         {
-            go.GetComponentsInChildren<Animator>()[0].Play("Running");
+            go.GetComponentsInChildren<Animator>()[0].Play("MileStart");
             go.GetComponentsInChildren<Animator>()[0].speed = 0;
         }
         energyBar.gameObject.SetActive(false);
-        player.GetComponent<Animator>().Play("FourHundredRun", 0, 0.18f);
+        //player.GetComponent<Animator>().Play("FourHundredRun", 0, 0.18f);
 
 
     }
@@ -123,7 +126,7 @@ public class FifteenHundredManager : MonoBehaviour
     {
         if (runningMeter.runningSpeed > 220)
         {
-            if (energyBar.value > 0.1)
+            if (energyBar.value > 0.05f)
             {
                 runningSliderFill.color = Color.blue;
             }
@@ -160,7 +163,7 @@ public class FifteenHundredManager : MonoBehaviour
                 {
                     if (laneOrders[i].isPlayer)
                     {
-                        player.transform.position = competitorsList[i].transform.position - new Vector3(-2.3f, 0, 0);
+                        player.transform.position = competitorsList[i].transform.position - new Vector3(0, 0, 0);
                         competitorsList[i].SetActive(false);
                         currentStartLane = i + 1;
                     }
@@ -215,11 +218,11 @@ public class FifteenHundredManager : MonoBehaviour
                 jumpButton.gameObject.SetActive(false);
                 player.GetComponentsInChildren<Animator>()[1].Play("RunningLean");
             }
-            if (!playerCamera.enabled)
+            if (!playerCamera.enabled && !finished)
             {
                 playerCamera.enabled = true;
                 setText.enabled = true;
-                player.GetComponentsInChildren<Animator>()[1].Play("Running");
+                player.GetComponentsInChildren<Animator>()[1].Play("MileStart");
                 player.GetComponentsInChildren<Animator>()[1].speed=0;
                 setText.gameObject.transform.parent.GetComponent<Animator>().Play("FadeText");
                 setText.gameObject.transform.parent.GetComponent<Animator>().speed = 0.5f;
@@ -266,6 +269,7 @@ public class FifteenHundredManager : MonoBehaviour
             setText.text = "GO";
             setText.gameObject.transform.parent.GetComponent<Animator>().Play("FadeText");
             setText.gameObject.transform.parent.GetComponent<Animator>().speed = 0.5f;
+            player.GetComponentsInChildren<Animator>()[1].speed = 0;
             lapCounter.gameObject.SetActive(true);
             for (int i = 0; i < competitorsLapTimeProgess.Length; i++)
             {
@@ -319,11 +323,11 @@ public class FifteenHundredManager : MonoBehaviour
     {
         yield return new WaitForSeconds(length);
         setRun = false;
-        player.GetComponentsInChildren<Animator>()[1].speed = 0;
+        /*player.GetComponentsInChildren<Animator>()[1].speed = 0;
         foreach (GameObject go in competitorsList) //gets all competitors in the blocks
         {
             go.GetComponentsInChildren<Animator>()[0].speed = 0;
-        }
+        }*/
     }
 
     private void updateRunnerPosition(GameObject runner, float lapTime)
@@ -344,7 +348,7 @@ public class FifteenHundredManager : MonoBehaviour
             //-2162.03 for start
             float diff = 2162.03f - 1832f;
 
-            runner.transform.position = new Vector3(-2162.03f + (diff * (lapTime - 1)), runner.transform.position.y, (float)(runner.transform.position.z < -308.22 && speed > 0 ? runner.transform.position.z + 0.3 : runner.transform.position.z));
+            runner.transform.position = new Vector3(-2162.03f + (diff * (lapTime - 1)), runner.transform.position.y, (float)(runner.transform.position.z < -308.22 && runningMeter.runningSpeed > 0 ? runner.transform.position.z + 0.3 : runner.transform.position.z));
         }
         else if (lapTime < 3)
         {
@@ -384,6 +388,15 @@ public class FifteenHundredManager : MonoBehaviour
                     speed = 150;
                 }
             }
+            if (speed > 220 && energyBar.value != 0)
+            {
+                dashParticles.Play();
+            }
+            else
+            {
+                dashParticles.Stop();
+
+            }
             if (speed > PublicData.averageSpeedDuringRun - 25 && energyBar.value == 0)
             {
                 speed = PublicData.averageSpeedDuringRun -25 - (speed - (PublicData.averageSpeedDuringRun-25)); //makes it so over slows you down
@@ -403,13 +416,17 @@ public class FifteenHundredManager : MonoBehaviour
                 if (i+1 != currentStartLane && competitorsLapNumber[i] < 4)
                 {
                     updateRunnerPosition(competitorsList[i], competitorsLapTimeProgess[i]);
+
                 }
             }
             if (birdEyeView.enabled)
             {
                 player.GetComponent<Animator>().speed = speed / 200f;
             }
-            player.GetComponentsInChildren<Animator>()[1].speed = speed * animationRunningSpeedRatio; //making the animation match the sunning speed
+            if (player.GetComponentsInChildren<Animator>()[1].GetCurrentAnimatorStateInfo(0).IsName("Running"))
+            {
+                player.GetComponentsInChildren<Animator>()[1].speed = speed * animationRunningSpeedRatio; //making the animation match the sunning speed
+            }
             for (int i = 0; i < competitorsList.Length; i++)
             {
                 //float time = 13.87f;
@@ -455,9 +472,16 @@ public class FifteenHundredManager : MonoBehaviour
                     }
                 } else if (competitorsLapTimeProgess[i] >= 4 && competitorsLapNumber[i] == 4)
                 {
-                    competitorsList[i].transform.Translate(0, 0, competitorsSpeedList[i] * 100);
-                    competitorsSpeedList[i] -= 0.005f;
+                    if (competitorsSpeedList[i] > 0)
+                    {
+                        competitorsList[i].transform.Translate(i / 4, 0, competitorsSpeedList[i] * 300);
+                        competitorsSpeedList[i] -= 0.0005f;
+                    } else
+                    {
+                        competitorsList[i].GetComponentInChildren<Animator>().speed = 0;
+                    }
                 }
+                //competitorsList[i].GetComponentsInChildren<Animator>()[0].speed = competitorsSpeedList[i] * 2000*animationRunningSpeedRatio;
             }
             if (!finished)
             {
@@ -480,6 +504,7 @@ public class FifteenHundredManager : MonoBehaviour
                     {
                         finished = true;
                         playerTime = eventTimer * 6;
+                        StartCoroutine(switchCameraAngle(1));
                         StartCoroutine(waitAfterFinish(2));
                     }
                     else
@@ -505,6 +530,7 @@ public class FifteenHundredManager : MonoBehaviour
         currentPlayerBanner = leaderboardManager.getPlayerBanner();
         currentPlayerBanner.mark2 = playerTime;
         PersonalBests characterPB = PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests;
+        player.GetComponentsInChildren<Animator>()[1].speed = 1;
         int leaderboardTime = PublicData.maxInteger - ((int)(playerTime * 100));
         if (leaderboardTime > Int32.Parse(PublicData.gameData.leaderboardList[9][1][0])) //game record
         {
@@ -512,6 +538,7 @@ public class FifteenHundredManager : MonoBehaviour
             leadF.checkForOwnPlayer(9, 20); //checks to make sure it can stay in the top 20
             PublicData.gameData.personalBests.mile = playerTime;
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.mile = playerTime;
+            player.GetComponentsInChildren<Animator>()[1].Play("Exited");
             leaderboardManager.addMarkLabelToPlayer(1);
             leaderboardManager.showRecordBanner(2);
         }
@@ -521,6 +548,7 @@ public class FifteenHundredManager : MonoBehaviour
             leadF.checkForOwnPlayer(9, 20); //checks to make sure it can stay in the top 20
             PublicData.gameData.personalBests.mile = playerTime; //sets pr
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.mile = playerTime; //sets cb too
+            player.GetComponentsInChildren<Animator>()[1].Play("Exited");
             leaderboardManager.addMarkLabelToPlayer(3);
             leaderboardManager.showRecordBanner(1);
 
@@ -528,13 +556,24 @@ public class FifteenHundredManager : MonoBehaviour
         else if (playerTime < characterPB.mile || characterPB.mile == 0)
         {
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.mile = playerTime;
+            player.GetComponentsInChildren<Animator>()[1].Play("Exited");
             leaderboardManager.addMarkLabelToPlayer(2);
             leaderboardManager.showRecordBanner(0);
+        } else
+        {
+            player.GetComponentsInChildren<Animator>()[1].Play("Wave");
         }
         leaderboardManager.showCurrentPlayerMarks(currentPlayerBanner, 3); //updates and shows the player leaderboard
         leaderboardManager.addPlayerTime(playerTime); //adds player to the banners
         StartCoroutine(showEndScreen(3));
 
+    }
+
+    IEnumerator switchCameraAngle(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        frontCamera.enabled = true;
+        playerCamera.enabled = false;
     }
 
     IEnumerator showEndScreen(float delay)

@@ -10040,7 +10040,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   eventName: HundredMeter
   useSeeded: 1
-  seededMark: 850
+  seededMark: 1450
   seedSpreadDown: 50
   seedSpreadUp: 100
   seedRoundInches: 1
@@ -10057,6 +10057,7 @@ MonoBehaviour:
   leaderBoardHeader: {fileID: 2097925581}
   personalBanner: {fileID: 2097925579}
   pictogramImage: {fileID: 1822460979}
+  increment: 6
   itemStorage: {fileID: 1384978574}
   eventNameTitle: {fileID: 1822460978}
   leaderboardDescriptionTitle: {fileID: 1822460977}

@@ -6160,7 +6160,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   eventName: Shotput
   useSeeded: 1
-  seededMark: 360
+  seededMark: 300
   seedSpreadDown: 60
   seedSpreadUp: 24
   seedRoundInches: 0.25
@@ -6177,6 +6177,7 @@ MonoBehaviour:
   leaderBoardHeader: {fileID: 390189557}
   personalBanner: {fileID: 390189556}
   pictogramImage: {fileID: 390189555}
+  increment: 6
   itemStorage: {fileID: 1396871022}
   eventNameTitle: {fileID: 390189554}
   leaderboardDescriptionTitle: {fileID: 390189552}

@@ -200,7 +200,7 @@ public class hundredMeterController : MonoBehaviour
                     leaderboardManager.hidePersonalBanner();
                 }
             }
-            if ((Input.GetKeyDown(KeyCode.P) || jumpPressed) && runningMeter.runMeterSlider.gameObject.activeInHierarchy && !finished && !foulImage.gameObject.activeInHierarchy) {
+            if ((Input.GetKeyDown(KeyCode.P) || jumpPressed) && runningMeter.runMeterSlider.gameObject.activeInHierarchy && !finished && !foulImage.gameObject.activeInHierarchy && isRunning && !usedLean) {
                 jumpPressed = false;
                 usedLean = true;
                 jumpButton.gameObject.SetActive(false);
@@ -323,7 +323,10 @@ public class hundredMeterController : MonoBehaviour
             maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 18);
             speed = (speed / PublicData.averageSpeedDuringRun) * maxSpeed;
             player.transform.Translate(new Vector3(0, 0, speed * runningSpeedRatio)); //making character move according to run meter
-            player.GetComponentInChildren<Animator>().speed = speed * animationRunningSpeedRatio; //making the animation match the sunning speed
+            if (player.GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Running"))
+            {
+                player.GetComponentInChildren<Animator>().speed = speed * animationRunningSpeedRatio; //making the animation match the sunning speed
+            }
             for (int i=0; i<competitorsList.Length; i++)
             {
                 if (competitorsMarkedTimeList[i])
@@ -380,6 +383,7 @@ public class hundredMeterController : MonoBehaviour
         currentPlayerBanner = leaderboardManager.getPlayerBanner();
         currentPlayerBanner.mark2 = playerTime;
         PersonalBests characterPB = PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests;
+        player.GetComponentInChildren<Animator>().speed = 1;
         int leaderboardTime = PublicData.maxInteger - ((int)(playerTime*100));
         if (leaderboardTime > Int32.Parse(PublicData.gameData.leaderboardList[0][1][0])) //game record
         {

@@ -237,6 +237,11 @@ public class HighJumpManager : MonoBehaviour
                 player.GetComponentsInChildren<Animator>()[1].applyRootMotion = true;
                 canPike = false;
                 jumpPressed = false;
+                //show pike button
+                angleMeter.gameObject.SetActive(false);
+                jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Pike";
+                runButton.SetActive(false);
+                //show pike button
                 StartCoroutine(waitInAir());
 
             }

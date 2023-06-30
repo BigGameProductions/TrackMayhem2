@@ -15752,10 +15752,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   eventName: Hurdles
-  useSeeded: 0
+  useSeeded: 1
   seededMark: 2300
   seedSpreadDown: 50
-  seedSpreadUp: 50
+  seedSpreadUp: 100
   seedRoundInches: 1
   leaderboardBanners:
   - {fileID: 1003579944}
@@ -15774,6 +15774,7 @@ MonoBehaviour:
   itemStorage: {fileID: 893307735}
   eventNameTitle: {fileID: 1003579933}
   leaderboardDescriptionTitle: {fileID: 1003579931}
+  pointsText: {fileID: 0}
   recordBanner: {fileID: 2023677926}
 --- !u!4 &1079579933
 Transform:
@@ -24953,6 +24954,7 @@ MonoBehaviour:
   player: {fileID: 1549503388}
   leaderboardManager: {fileID: 1079579932}
   playerCamera: {fileID: 859166765}
+  frontCamera: {fileID: 1891072665}
   foulImage: {fileID: 2023677931}
   setText: {fileID: 394138502}
   runningMeter: {fileID: 200391994}

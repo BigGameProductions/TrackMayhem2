@@ -119,7 +119,11 @@ public class LongJumpManager : MonoBehaviour
         boardChangeButton.GetComponentInChildren<TextMeshProUGUI>().text = "Board: " + boardDistance / 12 + "'";
         boardChangeText.text = "Change board to: " + boardDistance / 12 + "'";
         jumpBoard.transform.position = new Vector3(startingBoardX - (boardDistance*ljSpaces), jumpBoard.transform.position.y, jumpBoard.transform.position.z);
-
+        EventTrigger trigger = jumpButton.gameObject.AddComponent<EventTrigger>();
+        var pointerDown = new EventTrigger.Entry();
+        pointerDown.eventID = EventTriggerType.PointerDown;
+        pointerDown.callback.AddListener((e) => jumpPressed = true);
+        trigger.triggers.Add(pointerDown);
 
     }
 
@@ -234,7 +238,10 @@ public class LongJumpManager : MonoBehaviour
                     //jumpMeter.MakeJump();
                     jumpMeter.jumpBar.gameObject.transform.parent.GetComponent<Animator>().speed = 0;
                     float time = jumpMeter.jumpBar.gameObject.transform.parent.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime;
-                    time = time % (int)time;
+                    if (time >= 1) {
+                        time = time % (int)time;
+                    }
+
                     if (time < 0.5)
                     {
                         timeDiff = Math.Abs(time - 0.25f);
@@ -344,7 +351,7 @@ public class LongJumpManager : MonoBehaviour
     {
         yield return new WaitForSeconds(time);
         if (!isFoul) {
-            if (jumpMeter.jumpBar.transform.parent.gameObject.activeInHierarchy)
+            if (jumpMeter.jumpBar.transform.parent.gameObject.activeInHierarchy && jumpMeter.jumpBar.gameObject.transform.parent.GetComponent<Animator>().speed != 0)
             {
                 jumpMeter.jumpBar.transform.parent.gameObject.SetActive(false);
                 runningCamera.enabled = true;

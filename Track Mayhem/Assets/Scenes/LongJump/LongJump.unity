@@ -5953,7 +5953,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   eventName: LongJump
   useSeeded: 1
-  seededMark: 204
+  seededMark: 156
   seedSpreadDown: 60
   seedSpreadUp: 24
   seedRoundInches: 0.25
@@ -5970,6 +5970,7 @@ MonoBehaviour:
   leaderBoardHeader: {fileID: 1878583432}
   personalBanner: {fileID: 577214912}
   pictogramImage: {fileID: 905930232817300194}
+  increment: 6
   itemStorage: {fileID: 1814421225}
   eventNameTitle: {fileID: 1881142412}
   leaderboardDescriptionTitle: {fileID: 1353255058}

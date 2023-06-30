@@ -115,6 +115,13 @@ public class MainButtonLogic : MonoBehaviour
     public void setCurrentEvent(int index)
     {
         PublicData.currentSelectedEventIndex = index;
+        if (PublicData.recordsInfo.ElementAt(index+1)[3] == "FALSE")
+        {
+            PublicData.usesTime = true;
+        } else
+        {
+            PublicData.usesTime = false;
+        }
         SceneManager.LoadScene("MainScreen");
     }
 

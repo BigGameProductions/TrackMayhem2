@@ -11,7 +11,7 @@ public class GameData
     public int tokens; //the amount of tokens the player has
     public int trainingCards; //the amount of training cards the player has
     public bool tutorial; //if player has done tutorial
-    public SerializationDictionary<string, bool> tempDict;
+    public SerializationDictionary<int, string> offlineLeaderboard;
     public PersonalBests personalBests; //personal bests class
     public List<RunnerInformation> allRunners;
     public ChestInfo[] chestSlots;
@@ -29,7 +29,7 @@ public class GameData
         this.tokens = 0;
         this.trainingCards = 0;
         this.tutorial = false;
-        this.tempDict = new SerializationDictionary<string,bool>();
+        this.offlineLeaderboard = new SerializationDictionary<int,string>();
         this.personalBests = new PersonalBests();
         this.allRunners = new List<RunnerInformation>();
         this.chestSlots = new ChestInfo[4];

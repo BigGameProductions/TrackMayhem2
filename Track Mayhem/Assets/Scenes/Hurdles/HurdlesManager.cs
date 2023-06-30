@@ -14,6 +14,7 @@ public class HurdlesManager : MonoBehaviour
 
     [SerializeField] private LeaderboardManager leaderboardManager;
     [SerializeField] private Camera playerCamera;
+    [SerializeField] private Camera frontCamera;
 
     [SerializeField] private Image foulImage;
     [SerializeField] private TextMeshProUGUI setText;
@@ -106,6 +107,10 @@ public class HurdlesManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (player.transform.position.x < -2125)
+        {
+            jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Lean";
+        }
         if (player.GetComponentsInChildren<Animator>()[0].GetCurrentAnimatorStateInfo(0).IsName("Hurdle") && !doneHurdle)
         {
             doneHurdle = true;
@@ -137,7 +142,7 @@ public class HurdlesManager : MonoBehaviour
         }
         if (!leaderboardManager.cinematicCamera.gameObject.activeInHierarchy)
         {
-            if (!runButton.gameObject.activeInHierarchy)
+            if (!runButton.gameObject.activeInHierarchy && !finished)
             {
                 controlCanvas.enabled = true;
                 runButton.gameObject.SetActive(true); //show controls
@@ -159,6 +164,10 @@ public class HurdlesManager : MonoBehaviour
                 finished = true;
                 Debug.Log("hit : " + hurdleHitCount);
                 playerTime = eventTimer;
+                runButton.gameObject.SetActive(false);
+                jumpButton.gameObject.SetActive(false);
+                runningMeter.runMeterSlider.gameObject.SetActive(false);
+                StartCoroutine(switchCameraAngle(1));
                 StartCoroutine(waitAfterFinish(2));
             }
             foreach (GameObject go in competitorsList)
@@ -249,7 +258,7 @@ public class HurdlesManager : MonoBehaviour
                 }
                 
             }
-            if (!playerCamera.enabled)
+            if (!playerCamera.enabled && !finished)
             {
                 playerCamera.enabled = true;
                 setText.enabled = true;
@@ -302,6 +311,13 @@ public class HurdlesManager : MonoBehaviour
 
     }
 
+    IEnumerator switchCameraAngle(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        frontCamera.enabled = true;
+        playerCamera.enabled = false;
+    }
+
     IEnumerator oppenentBlockStart(float delay, int index)
     {
         yield return new WaitForSeconds(delay);
@@ -348,7 +364,10 @@ public class HurdlesManager : MonoBehaviour
             maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 32);
             speed = (speed / PublicData.averageSpeedDuringRun) * maxSpeed;
             player.transform.Translate(new Vector3(0, 0, speed * runningSpeedRatio)); //making character move according to run meter
-            player.GetComponentInChildren<Animator>().speed = speed * animationRunningSpeedRatio; //making the animation match the sunning speed
+            if (player.GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Running"))
+            {
+                player.GetComponentInChildren<Animator>().speed = speed * animationRunningSpeedRatio; //making the animation match the sunning speed
+            }
             for (int i = 0; i < competitorsList.Length; i++)
             {
                 //float time = 13.87f;
@@ -367,10 +386,17 @@ public class HurdlesManager : MonoBehaviour
                 }
                 else if (competitorsList[i].transform.position.x <= -2122.37)
                 {
-                    competitorsSpeedList[i] = competitorsMaxSpeedList[i] + 0;
+                    if (!competitorsMarkedTimeList[i])
+                    {
+                        competitorsSpeedList[i] = competitorsMaxSpeedList[i] + 0;
+                    }
                 }
                 competitorsList[i].transform.Translate(new Vector3(0, 0, competitorsSpeedList[i] * runningSpeedRatio)); //making character move according to run meter
                 competitorsList[i].GetComponentInChildren<Animator>().speed = competitorsSpeedList[i] * animationRunningSpeedRatio; //making the animation match the sunning speed
+                if (competitorsMarkedTimeList[i] && competitorsSpeedList[i] > 0)
+                {
+                    competitorsSpeedList[i] -= 3;
+                }
                 if (competitorsList[i].transform.position.x > -2161.52 && competitorsList[i].transform.position.x < -2157 && competitorsList[i].GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Running"))
                 {
                     competitorsList[i].GetComponentInChildren<Animator>().Play("RunningLean");
@@ -404,6 +430,7 @@ public class HurdlesManager : MonoBehaviour
         yield return new WaitForSeconds(delay);
         currentPlayerBanner = leaderboardManager.getPlayerBanner();
         currentPlayerBanner.mark2 = playerTime;
+        player.GetComponentInChildren<Animator>().speed = 1;
         PersonalBests characterPB = PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests;
         int leaderboardTime = PublicData.maxInteger - ((int)(playerTime * 100));
         if (leaderboardTime > Int32.Parse(PublicData.gameData.leaderboardList[8][1][0])) //game record
@@ -412,6 +439,7 @@ public class HurdlesManager : MonoBehaviour
             leadF.checkForOwnPlayer(8, 20); //checks to make sure it can stay in the top 20
             PublicData.gameData.personalBests.hurdles = playerTime;
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hurdles = playerTime;
+            player.GetComponentInChildren<Animator>().Play("Exited");
             leaderboardManager.addMarkLabelToPlayer(1);
             leaderboardManager.showRecordBanner(2);
         }
@@ -421,6 +449,7 @@ public class HurdlesManager : MonoBehaviour
             leadF.checkForOwnPlayer(8, 20); //checks to make sure it can stay in the top 20
             PublicData.gameData.personalBests.hurdles = playerTime; //sets pr
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hurdles = playerTime; //sets cb too
+            player.GetComponentInChildren<Animator>().Play("Exited");
             leaderboardManager.addMarkLabelToPlayer(3);
             leaderboardManager.showRecordBanner(1);
 
@@ -428,8 +457,12 @@ public class HurdlesManager : MonoBehaviour
         else if (playerTime < characterPB.hundredMeter || characterPB.hundredMeter == 0)
         {
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.hurdles = playerTime;
+            player.GetComponentInChildren<Animator>().Play("Exited");
             leaderboardManager.addMarkLabelToPlayer(2);
             leaderboardManager.showRecordBanner(0);
+        } else
+        {
+            player.GetComponentInChildren<Animator>().Play("Wave");
         }
         leaderboardManager.showCurrentPlayerMarks(currentPlayerBanner, 3); //updates and shows the player leaderboard
         leaderboardManager.addPlayerTime(playerTime); //adds player to the banners

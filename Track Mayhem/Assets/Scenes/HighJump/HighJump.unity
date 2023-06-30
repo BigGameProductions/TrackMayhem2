@@ -1259,10 +1259,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   eventName: HighJump
-  useSeeded: 0
-  seededMark: 72
-  seedSpreadDown: 6
-  seedSpreadUp: 6
+  useSeeded: 1
+  seededMark: 36
+  seedSpreadDown: 8
+  seedSpreadUp: 4
   seedRoundInches: 1
   leaderboardBanners:
   - {fileID: 240115095}

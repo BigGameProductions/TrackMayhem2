@@ -135,7 +135,14 @@ public class DiscusManager : MonoBehaviour
         }
         else if (shotput.GetComponent<Rigidbody>().useGravity)
         {
-            shotCamera.transform.localPosition = new Vector3(0, 5, -10);
+            shotCamera.transform.position = new Vector3(shotCamera.transform.position.x, Math.Max(231.4f, shotCamera.transform.position.y), shotCamera.transform.position.z);
+            if (shotCamera.transform.position.y > 231.4f)
+            {
+                shotCamera.transform.localPosition = new Vector3(0, 5, -10);
+            } /*else
+            {
+                shotCamera.transform.localPosition = new Vector3(0, shotCamera.transform.localPosition.y, -10);
+            }*/
             shotCamera.transform.eulerAngles = new Vector3(30, 0, 0);
             shotput.transform.eulerAngles = new Vector3(0, 0, 0);
         }

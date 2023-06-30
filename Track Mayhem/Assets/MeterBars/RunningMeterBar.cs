@@ -72,7 +72,7 @@ public class RunningMeterBar : MonoBehaviour
         }
         runningBar.transform.position = new Vector3(runningBar.transform.position.x, startingBarHeight + (runningSpeed * barIncreasePerSpeed), runningBar.transform.position.z);
         runMeterSlider.value = runningSpeed;
-        if (SceneManager.GetActiveScene().name != "Mile")
+        if (SceneManager.GetActiveScene().name != "FifteenHundred")
         {
             if (runningSpeed < 220 || SceneManager.GetActiveScene().name != "FourHundred")
             {

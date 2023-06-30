@@ -4,6 +4,7 @@ using UnityEngine;
 using Dan.Main;
 using System;
 using Dan.Models;
+using System.Linq;
 
 public class LeaderboardFunctions
 {
@@ -74,31 +75,59 @@ public class LeaderboardFunctions
 
     public void SetLeaderBoardEntry(int eventCode, string name, int mark, string extra)
     {
-        Debug.Log(name + ":" + mark);
-        LeaderboardCreator.UploadNewEntry(keys[eventCode], name, mark, extra, ((msg) =>
-        {
-            
-        }), (error) => { Debug.Log("The error is: " + error); });
+        LeaderboardCreator.Ping(isServerReachable => {
+            if (isServerReachable)
+            {
+                LeaderboardCreator.UploadNewEntry(keys[eventCode], name, mark, extra, ((msg) =>
+                {
+
+                }), (error) => { Debug.Log("The error is: " + error); });
+            }
+            else
+            {
+                Debug.Log("No connection- uploading to offline leaderboard as: " + mark + "," + extra);
+                if (PublicData.gameData.offlineLeaderboard.ContainsKey(eventCode))
+                {
+                    PublicData.gameData.offlineLeaderboard[eventCode] = mark + "," + extra;
+                } else
+                {
+                    PublicData.gameData.offlineLeaderboard.Add(eventCode, mark + "," + extra);
+                }
+            }
+
+        });
+        
     }
 
 
     //find if the player is greater than the max rank and if so then deletes it
     public void checkForOwnPlayer(int eventCode, int maxRank)
     {
-        LeaderboardCreator.GetLeaderboard(keys[eventCode], ((msg) =>
-        {
-            for (int i = 0; i < Math.Min(msg.Length, 10); i++)
+        LeaderboardCreator.Ping(isServerReachable => {
+            if (isServerReachable)
             {
-                if (msg[i].IsMine())
+                LeaderboardCreator.GetLeaderboard(keys[eventCode], ((msg) =>
                 {
-                    if (msg[i].Rank > maxRank)
+                    for (int i = 0; i < Math.Min(msg.Length, 10); i++)
                     {
-                        Debug.Log("deletd");
-                        LeaderboardCreator.DeleteEntry(keys[eventCode]);
+                        if (msg[i].IsMine())
+                        {
+                            if (msg[i].Rank > maxRank)
+                            {
+                                Debug.Log("deletd");
+                                LeaderboardCreator.DeleteEntry(keys[eventCode]);
+                            }
+                        }
                     }
-                }
+                }));
             }
-        }));
+            else
+            {
+                Debug.Log("No connection");
+            }
+
+        });
+       
     }
 
 
@@ -107,6 +136,7 @@ public class LeaderboardFunctions
         LeaderboardCreator.Ping(isServerReachable => {
             if (isServerReachable)
             {
+                updateLeaderboardOffline();
                 GetLeaderboard(currentEventOn);
             }
             else
@@ -115,6 +145,23 @@ public class LeaderboardFunctions
             }
 
         });
+    }
+
+    private void updateLeaderboardOffline()
+    {
+        if (PublicData.gameData.offlineLeaderboard.Keys.Count > 0)
+        {
+            for (int i=0; i< PublicData.gameData.offlineLeaderboard.Keys.Count; i++)
+            {
+                int ev = PublicData.gameData.offlineLeaderboard.Keys.ToList()[i];
+                string data = PublicData.gameData.offlineLeaderboard[ev];
+                Debug.Log("Uplaoding new entry for event " + ev + " with the data: " + data);
+                PublicData.gameData.offlineLeaderboard.Remove(ev);
+                i--;
+                SetLeaderBoardEntry(ev, PublicData.gameData.playerName, Int32.Parse(data.Split(",")[0]), data.Split(",")[1] + "," + data.Split(",")[2]);
+                checkForOwnPlayer(ev, 20);
+            }
+        }
     }
 
 

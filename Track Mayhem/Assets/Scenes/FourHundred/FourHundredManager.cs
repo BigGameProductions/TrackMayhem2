@@ -14,6 +14,7 @@ public class FourHundredManager : MonoBehaviour
 
     [SerializeField] private LeaderboardManager leaderboardManager;
     [SerializeField] private Camera playerCamera;
+    [SerializeField] private Camera frontCamera;
 
     [SerializeField] private Image foulImage;
     [SerializeField] private TextMeshProUGUI setText;
@@ -87,6 +88,7 @@ public class FourHundredManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        leaderboardManager.cinematicCamera.GetComponent<Animator>().SetInteger("event", 5);
         itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform); //inits the runner into the current scene
         player.GetComponentsInChildren<Animator>()[1].applyRootMotion = false; //makes it so the player can run according to the animator
         controlCanvas.enabled = false;
@@ -124,6 +126,7 @@ public class FourHundredManager : MonoBehaviour
         //player.transform.position = ogPos;
         tf.position = new Vector3(circleRad * unitCirclePos.z * -1, 0, (circleRad * unitCirclePos.x) + zOffset) + ogPos;
         tf.eulerAngles = new Vector3(0, 270 - (180 / (((100 + stagger200Marks[lanePosition - 1]) / 100f)) * competitorsLapTimes[lanePosition - 1]), 0);
+        if (isPlayer) player.transform.Translate(new Vector3(0, -0.2f, 0));
     }
 
     public void buttonPressed(int code)
@@ -143,7 +146,7 @@ public class FourHundredManager : MonoBehaviour
     {
         if (runningMeter.runningSpeed > 220)
         {
-            if (energyBar.value >0.1)
+            if (energyBar.value >0.05f)
             {
                 runningSliderFill.color = Color.blue;
             } else
@@ -153,7 +156,7 @@ public class FourHundredManager : MonoBehaviour
         }
         if (!leaderboardManager.cinematicCamera.gameObject.activeInHierarchy)
         {
-            if (!runButton.gameObject.activeInHierarchy)
+            if (!runButton.gameObject.activeInHierarchy && !finished)
             {
                 controlCanvas.enabled = true;
                 runButton.gameObject.SetActive(true); //show controls
@@ -180,6 +183,8 @@ public class FourHundredManager : MonoBehaviour
                 playerTime = eventTimer * 2;
                 runningMeter.runMeterSlider.gameObject.SetActive(false);
                 runButton.gameObject.SetActive(false);
+                energyBar.gameObject.SetActive(false);
+                StartCoroutine(switchCameraAngle(1));
                 StartCoroutine(waitAfterFinish(2));
             }
             for (int i=0; i<competitorsList.Length; i++)
@@ -260,7 +265,7 @@ public class FourHundredManager : MonoBehaviour
                 jumpButton.gameObject.SetActive(false);
                 player.GetComponentsInChildren<Animator>()[1].Play("RunningLean");
             }
-            if (!playerCamera.enabled)
+            if (!playerCamera.enabled && !finished)
             {
                 playerCamera.enabled = true;
                 setText.enabled = true;
@@ -311,6 +316,13 @@ public class FourHundredManager : MonoBehaviour
 
         }
 
+    }
+
+    IEnumerator switchCameraAngle(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        frontCamera.enabled = true;
+        playerCamera.enabled = false;
     }
 
     IEnumerator oppenentBlockStart(float delay, int index)
@@ -435,18 +447,28 @@ public class FourHundredManager : MonoBehaviour
             if (lapTimeProgress < curveTimed*2+2)
             {
                 moveCharacterOnLane(lapTimeProgress, currentLane, player.transform);
+            } else
+            {
+                player.transform.Translate(new Vector3(0, 0, speed * runningSpeedRatio));
             }
             for (int i = 0; i < competitorsLapTimes.Length; i++)
             {
                 if (i + 1 != currentLane)
                 {
-                    moveCharacterOnLane(competitorsLapTimes[i], i + 1, competitorsList[i].transform);
+                    float curveTimedd = ((100 + stagger200Marks[i]) / 100f);
+                    if (competitorsLapTimes[i] < curveTimedd*2+2)
+                    {
+                        moveCharacterOnLane(competitorsLapTimes[i], i + 1, competitorsList[i].transform);
+                    }
                 }
             }
 
             //math for arch
             //player.transform.Translate(new Vector3(0, 0, speed * runningSpeedRatio)); //making character move according to run meter
-            player.GetComponentsInChildren<Animator>()[1].speed = speed * animationRunningSpeedRatio; //making the animation match the sunning speed
+            if (player.GetComponentsInChildren<Animator>()[1].GetCurrentAnimatorStateInfo(0).IsName("Running"))
+            {
+                player.GetComponentsInChildren<Animator>()[1].speed = speed * animationRunningSpeedRatio; //making the animation match the sunning speed
+            }
             /*for (int i = 0; i < competitorsList.Length; i++)
             {
                 //float time = 13.87f;
@@ -474,7 +496,7 @@ public class FourHundredManager : MonoBehaviour
                     competitorsList[i].GetComponentsInChildren<Animator>()[1].Play("RunningLean");
                 }
             }*/
-           
+
             runningMeter.updateTimeElapsed();
             eventTimer += Time.deltaTime;
             for(int i=0; i< competitorsLapTimes.Length;i++)
@@ -492,7 +514,7 @@ public class FourHundredManager : MonoBehaviour
                             competitorsLapTimes[i] += competitorsMaxSpeedList[i] / 75000f;
                         }
                         else if (competitorsMaxSpeedList[i] > 0) {
-                            competitorsMaxSpeedList[i] -= 10;
+                            competitorsMaxSpeedList[i] -= 3;
                             competitorsList[i].transform.Translate(0, 0, competitorsMaxSpeedList[i]/300);
                         }
                     }
@@ -522,6 +544,7 @@ public class FourHundredManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         currentPlayerBanner = leaderboardManager.getPlayerBanner();
+        player.GetComponentsInChildren<Animator>()[1].speed = 1;
         currentPlayerBanner.mark2 = playerTime;
         PersonalBests characterPB = PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests;
         int leaderboardTime = PublicData.maxInteger - ((int)(playerTime * 100));
@@ -531,6 +554,7 @@ public class FourHundredManager : MonoBehaviour
             leadF.checkForOwnPlayer(5, 20); //checks to make sure it can stay in the top 20
             PublicData.gameData.personalBests.fourHundred = playerTime;
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.fourHundred = playerTime;
+            player.GetComponentsInChildren<Animator>()[1].Play("Exited");
             leaderboardManager.addMarkLabelToPlayer(1);
             leaderboardManager.showRecordBanner(2);
         }
@@ -540,6 +564,7 @@ public class FourHundredManager : MonoBehaviour
             leadF.checkForOwnPlayer(5, 20); //checks to make sure it can stay in the top 20
             PublicData.gameData.personalBests.fourHundred = playerTime; //sets pr
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.fourHundred = playerTime; //sets cb too
+            player.GetComponentsInChildren<Animator>()[1].Play("Exited");
             leaderboardManager.addMarkLabelToPlayer(3);
             leaderboardManager.showRecordBanner(1);
 
@@ -547,8 +572,12 @@ public class FourHundredManager : MonoBehaviour
         else if (playerTime < characterPB.fourHundred || characterPB.fourHundred == 0)
         {
             PublicData.getCharactersInfo(PublicData.currentRunnerUsing).characterBests.fourHundred = playerTime;
+            player.GetComponentsInChildren<Animator>()[1].Play("Exited");
             leaderboardManager.addMarkLabelToPlayer(2);
             leaderboardManager.showRecordBanner(0);
+        } else
+        {
+            player.GetComponentsInChildren<Animator>()[1].Play("Wave");
         }
         leaderboardManager.showCurrentPlayerMarks(currentPlayerBanner, 3); //updates and shows the player leaderboard
         leaderboardManager.addPlayerTime(playerTime); //adds player to the banners

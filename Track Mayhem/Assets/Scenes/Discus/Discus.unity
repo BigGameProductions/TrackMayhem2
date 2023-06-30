@@ -13392,6 +13392,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1437335970725728874, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.62631345
+      objectReference: {fileID: 0}
+    - target: {fileID: 1437335970725728874, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -3.8350638e-17
+      objectReference: {fileID: 0}
+    - target: {fileID: 1437335970725728874, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 4.773498e-17
+      objectReference: {fileID: 0}
+    - target: {fileID: 1437335970725728874, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.77957135
+      objectReference: {fileID: 0}
+    - target: {fileID: 1437335970725728874, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 102.443
+      objectReference: {fileID: 0}
     - target: {fileID: 8589173095718245442, guid: be4f62325673042f5b7f217c51008d5c, type: 3}
       propertyPath: m_Name
       value: Area
@@ -13509,8 +13529,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   eventName: Discus
   useSeeded: 1
-  seededMark: 1200
-  seedSpreadDown: 60
+  seededMark: 840
+  seedSpreadDown: 120
   seedSpreadUp: 60
   seedRoundInches: 0.25
   leaderboardBanners:
@@ -13526,6 +13546,7 @@ MonoBehaviour:
   leaderBoardHeader: {fileID: 1307321852}
   personalBanner: {fileID: 1307321851}
   pictogramImage: {fileID: 1307321850}
+  increment: 6
   itemStorage: {fileID: 855391742}
   eventNameTitle: {fileID: 1307321849}
   leaderboardDescriptionTitle: {fileID: 1307321847}

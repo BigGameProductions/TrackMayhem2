@@ -144,7 +144,9 @@ public class JavelinManager : MonoBehaviour
                     rb.AddForce(new Vector3(-20 * totalThrowPower, totalPowerPercent * totalThrowPower, 0), ForceMode.Impulse);
                     javelin.transform.eulerAngles = new Vector3(-37.336f, 32.927f, -45.454f);
                     rb.AddRelativeTorque(new Vector3(0, 0, Math.Min(-140 + (totalPowerPercent*totalThrowPower* 4.228f), -30))); //was -40
-                    controlsCanvas.enabled = false;
+                    runButton.gameObject.SetActive(false);
+                    runningMeter.runMeterSlider.gameObject.SetActive(false);
+                    jumpButton.SetActive(false);
                     angleMeter.SetActive(false);
                     StartCoroutine(showJavelinCamera(1));
                 }
@@ -171,10 +173,11 @@ public class JavelinManager : MonoBehaviour
         {
             javelinCamera.transform.eulerAngles = new Vector3(0, 0, 0);
 
-            javelinCamera.transform.localPosition = new Vector3(-0.237f, 200.3f, -36); //was 170
-            if (javelinCamera.transform.position.y < 231.4)
+            javelinCamera.transform.position = new Vector3(javelinCamera.transform.position.x, Math.Max(javelinCamera.transform.position.y,231.4f), javelinCamera.transform.position.z);
+
+            if (javelinCamera.transform.position.y > 231.4)
             {
-                javelinCamera.transform.position = new Vector3(javelinCamera.transform.position.x,231.4f ,javelinCamera.transform.position.z);
+                javelinCamera.transform.localPosition = new Vector3(-0.237f, 200.3f, -36); //was 170
             }
             if (javelin.transform.eulerAngles.z > 46)
             {
@@ -407,6 +410,7 @@ public class JavelinManager : MonoBehaviour
         anglePower = 0;
         javelin.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
         foulImage.gameObject.SetActive(false);
+        runningMeter.runMeterSlider.gameObject.SetActive(true);
         isFoul = false;
         javelin.GetComponent<JavelinCollision>().hitGround = false;
         //jumpClicks = 0;
@@ -416,4 +420,3 @@ public class JavelinManager : MonoBehaviour
 
 
 
-//TODO make it based on collider hitting the ground not y position

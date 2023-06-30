@@ -35,6 +35,8 @@ public class LeaderboardManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI eventNameTitle;
     [SerializeField] private TextMeshProUGUI leaderboardDescriptionTitle;
 
+    [SerializeField] private TextMeshProUGUI pointsText; //for the end screen
+
     [SerializeField] private Image recordBanner; //banner for showing records
 
     private PersonalBests personalBests; //store personals bests for seeding
@@ -83,9 +85,6 @@ public class LeaderboardManager : MonoBehaviour
             currentEventBanners = PublicData.playerBannerTransfer;
             setLeaderboard(currentEventBanners, PublicData.leaderBoardMode); //shows the leaderboard sorted
         }
-
-
-
     }
 
 
@@ -553,6 +552,9 @@ public class LeaderboardManager : MonoBehaviour
                     if (PublicData.recordsInfo.ElementAt(i)[3] == "FALSE") //checks for time or feet
                     {
                         useTime = true; //sets it to time
+                    } else
+                    {
+                        useTime = false;
                     }
                     return PublicData.recordsInfo.ElementAt(i); //returns the attributes of the record
                 }
@@ -641,6 +643,7 @@ public class LeaderboardManager : MonoBehaviour
         {
             basedSeed = getMarkForEvent(theEvent, true);
             if (useTime) basedSeed *= 100;
+            if (basedSeed == 0) basedSeed = seededMark;
         }
         float finalMark = roundToNearest(seedRoundInches, UnityEngine.Random.Range((float)basedSeed - seedSpreadDown, basedSeed + seedSpreadUp + 1f));
         if (useTime)
@@ -983,7 +986,7 @@ public class LeaderboardManager : MonoBehaviour
                         if (pb.isPlayer)
                         {
                             PublicData.decPlayersScores[7].eventMarks[getEventID(eventName)] = pb.bestMark;
-                            Debug.Log("Points for this event :" + getPointsForEvent(getEventID(eventName), pb.bestMark));
+                            pointsText.text = "+" + getPointsForEvent(getEventID(eventName), pb.bestMark) + " Points";
                             PublicData.decPlayersScores[7].pointsMarks[getEventID(eventName)] = getPointsForEvent(getEventID(eventName),pb.bestMark);
                             continue;
                         }
@@ -1086,6 +1089,7 @@ public class LeaderboardManager : MonoBehaviour
                 //j==0 is the main banner
                 // j <= 6; j > 9 is the bound for the items that are needed
             }
+            textBoxes[1].text = PublicData.gameData.playerName;
             textBoxes[4].text = useTime ? "":markToString(personalBannersMarks.mark1, useTime); //hides if time
             textBoxes[5].text = markToString(personalBannersMarks.mark2, useTime);
             textBoxes[6].text = useTime ? "":markToString(personalBannersMarks.mark3, useTime); //hides if time
@@ -1094,7 +1098,6 @@ public class LeaderboardManager : MonoBehaviour
                 personalBanner.GetComponentsInChildren<Transform>(true)[10].gameObject.SetActive(true);
                 personalBanner.GetComponentsInChildren<Transform>(true)[11].gameObject.SetActive(true);
                 personalBanner.GetComponentsInChildren<Transform>(true)[12].gameObject.SetActive(true);
-                Debug.Log(currentBarHeight);
                 personalBanner.GetComponentsInChildren<Transform>(true)[12].GetComponent<TextMeshProUGUI>().text = markToString(currentBarHeight);
             }
 

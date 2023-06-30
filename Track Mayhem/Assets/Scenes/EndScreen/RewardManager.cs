@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using TMPro;
 
 public class RewardManager : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class RewardManager : MonoBehaviour
     [SerializeField] private GameObject chest;
     [SerializeField] private Material chestColor;
     [SerializeField] private ItemStorage itemStorage;
+    [SerializeField] private GameObject decathlonPoints;
 
     // Start is called before the first frame update
     void Start()
@@ -28,7 +30,7 @@ public class RewardManager : MonoBehaviour
         {
             makeFutureChests(10); //add more chests to the list
         }
-        if (player.place < 4) //if top three positions
+        if (player.place < 4 && !PublicData.inDec) //if top three positions
         {
             addChest(PublicData.gameData.futureChests.ElementAt(0).chestID); //adds the chest from the chest list to player
             chest.SetActive(true); //shows the visible chest
@@ -38,6 +40,10 @@ public class RewardManager : MonoBehaviour
         else
         {
             chest.SetActive(false); //hide the visibles chest as the player did not win anything
+        }
+        if (PublicData.inDec)
+        {
+            decathlonPoints.SetActive(true);
         }
     }
 
