@@ -5974,6 +5974,7 @@ MonoBehaviour:
   itemStorage: {fileID: 1814421225}
   eventNameTitle: {fileID: 1881142412}
   leaderboardDescriptionTitle: {fileID: 1353255058}
+  pointsText: {fileID: 0}
   recordBanner: {fileID: 418050193}
 --- !u!4 &730125509
 Transform:
@@ -12794,6 +12795,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 127824415785865332, guid: d077e6698862e4979974e57da8147e7b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 127824415785865332, guid: d077e6698862e4979974e57da8147e7b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 

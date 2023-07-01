@@ -170,7 +170,7 @@ public class HighJumpManager : MonoBehaviour
     {
         jumpMeter.updateJumpMeter();
 
-        if (player.GetComponentsInChildren<Animator>()[1].speed == 100 && player.GetComponent<Rigidbody>().useGravity && player.GetComponentsInChildren<Animator>()[1].GetCurrentAnimatorStateInfo(0).normalizedTime >=0.67)
+        if (player.GetComponentsInChildren<Animator>()[1].speed == 5 && player.GetComponent<Rigidbody>().useGravity && player.GetComponentsInChildren<Animator>()[1].GetCurrentAnimatorStateInfo(0).normalizedTime >=0.67)
         {
             player.GetComponentsInChildren<Animator>()[1].speed = 1;
         }
@@ -307,7 +307,8 @@ public class HighJumpManager : MonoBehaviour
             {
                 jumpPressed = false;
                 hasPiked = true;
-                player.GetComponentsInChildren<Animator>()[1].speed = 100;
+                jumpButton.gameObject.SetActive(false);
+                player.GetComponentsInChildren<Animator>()[1].speed = 5;
                 //player.GetComponentsInChildren<Animator>()[1].Play("HighJumpJump", 0, 0.67f);
             }
         }
@@ -833,6 +834,7 @@ public class HighJumpManager : MonoBehaviour
             player.GetComponentsInChildren<Animator>()[1].Play("Exited"); //Animation for after the jump
             leaderboardManager.addMarkLabelToPlayer(2);
             leaderboardManager.showRecordBanner(0);
+            currentJumpNumber = 0;
         }
         else
         {

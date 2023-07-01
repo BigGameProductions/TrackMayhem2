@@ -69,6 +69,7 @@ public class JavelinManager : MonoBehaviour
     void Start()
     {
         itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform); //inits the runner into the current scene
+        leaderboardManager.cinematicCamera.GetComponent<Animator>().SetInteger("event", 4); //sets animator to the current event
         player.GetComponentInChildren<Animator>().Play("JavelinRun");
         javelin.transform.SetParent(player.GetComponentsInChildren<Transform>()[rightHandTransformPosition]); //sets the parent of the pole to 
         javelin.transform.localPosition = new Vector3(-0.00200000009f, 0.140000001f, 0.0329999998f); //alligns shot to player hand

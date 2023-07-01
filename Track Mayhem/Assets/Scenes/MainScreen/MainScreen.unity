@@ -2003,7 +2003,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 929459191}
         m_TargetAssemblyTypeName: MainButtonLogic, Assembly-CSharp
-        m_MethodName: PlayEvent
+        m_MethodName: showTutorial
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -90,6 +90,7 @@ public class FifteenHundredManager : MonoBehaviour
     {
         itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform); //inits the runner into the current scene
         player.GetComponentsInChildren<Animator>()[1].applyRootMotion = false; //makes it so the player can run according to the animator
+        leaderboardManager.cinematicCamera.GetComponent<Animator>().SetInteger("event", 9); //sets animator to the current event
         controlCanvas.enabled = false;
         setText.enabled = false;
         foulImage.gameObject.SetActive(false);

@@ -57,6 +57,11 @@ public class MainButtonLogic : MonoBehaviour
         }
     }
 
+    public void showTutorial()
+    {
+        SceneManager.LoadScene("Tutorial");
+    }
+
 
     public void runnerMenu()
     {

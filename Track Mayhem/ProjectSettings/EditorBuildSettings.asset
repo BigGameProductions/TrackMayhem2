@@ -62,4 +62,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/MakeCharacter/MakeCharacter.unity
     guid: 7ae2e722b25ec4e25a7a8aab569871dd
+  - enabled: 1
+    path: Assets/Scenes/Tutorial/Tutorial.unity
+    guid: 84e7f2b384e134608988da31fd7b32f4
   m_configObjects: {}
