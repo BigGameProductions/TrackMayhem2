@@ -22,10 +22,40 @@ public class TutorialManager : MonoBehaviour
         "FifteenHundredTut.mp4"
     };
 
+    string dataPath;
+
     // Start is called before the first frame update
     void Start()
     {
-        tutorialPlayer.url = Path.Combine(Application.streamingAssetsPath, videoNames[PublicData.currentSelectedEventIndex]);
+        dataPath = Application.persistentDataPath;
+#if UNITY_EDITOR
+        dataPath = Application.streamingAssetsPath;
+#endif
+        if (true)
+        {
+            tutorialPlayer.url = Path.Combine(dataPath, videoNames[PublicData.currentSelectedEventIndex]);
+            tutorialPlayer.source = VideoSource.Url;
+            tutorialPlayer.Prepare();
+            tutorialPlayer.Play();
+            Debug.Log("this is the link:" + tutorialPlayer.url);
+            Debug.Log(File.Exists(tutorialPlayer.url));
+        }
+        else
+        {
+            var myLoadedAssetBundle
+            = AssetBundle.LoadFromFile(Path.Combine(Application.streamingAssetsPath,"sceneassetbundle"));
+            if (myLoadedAssetBundle == null)
+            {
+                Debug.Log("Failed to load AssetBundle!");
+                return;
+            }
+            Debug.Log("did it");
+            string[] prefab = myLoadedAssetBundle.GetAllAssetNames();
+            foreach (string st in prefab)
+            {
+                Debug.Log(st);
+            }
+        }
     }
 
     // Update is called once per frame

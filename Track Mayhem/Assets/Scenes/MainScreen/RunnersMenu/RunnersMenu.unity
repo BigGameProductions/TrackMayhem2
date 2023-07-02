@@ -205,6 +205,13 @@ MonoBehaviour:
   characterAnimator: {fileID: 0}
   flags: []
   chestColors: []
+  labelSprites: []
+  eventNames: []
+  pictogramSprites: []
+  pictogramSizes: []
+  bannerColors: []
+  decathalonCalculations: []
+  decathalonMeterConversions: []
 --- !u!1 &148805720
 GameObject:
   m_ObjectHideFlags: 0
@@ -240,8 +247,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00004807526}
-  m_SizeDelta: {x: 13.7323, y: 740.6049}
+  m_AnchoredPosition: {x: 0, y: -0.000022232}
+  m_SizeDelta: {x: 0, y: 1993.5034}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &243315552
 GameObject:
@@ -279,7 +286,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 338}
+  m_AnchoredPosition: {x: 0, y: 963}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &243315554
@@ -1157,7 +1164,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 30.8, y: -31.200012}
+  m_AnchoredPosition: {x: 30.800049, y: -31.200012}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1723278787
