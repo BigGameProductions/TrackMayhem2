@@ -43,7 +43,7 @@ public class DebugMenu : MonoBehaviour
 
             }
         }
-        if (Input.GetKeyDown(KeyCode.Q)) //maxes out best person
+        if (Input.GetKeyDown(KeyCode.Q)) //unlocks all runners
         {
             foreach (RunnerInformation ri in PublicData.gameData.allRunners)
             {
@@ -51,6 +51,7 @@ public class DebugMenu : MonoBehaviour
                 {
                     ri.unlocked = false;
                 }
+                ri.unlocked = true;
 
 
 
