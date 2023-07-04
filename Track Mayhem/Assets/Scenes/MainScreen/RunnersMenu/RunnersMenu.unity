@@ -212,6 +212,7 @@ MonoBehaviour:
   bannerColors: []
   decathalonCalculations: []
   decathalonMeterConversions: []
+  runnerImages: []
 --- !u!1 &148805720
 GameObject:
   m_ObjectHideFlags: 0
@@ -247,7 +248,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.000022232}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 1993.5034}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &243315552
@@ -1033,6 +1034,8 @@ MonoBehaviour:
   runnerObject: {fileID: 6867036189961317609, guid: 8441a0ed3de5e4510998e3f49d82d3a4, type: 3}
   lockedItems: {fileID: 243315552}
   normalCanvasSize: 1.8062
+  contentView: {fileID: 148805720}
+  itemStorage: {fileID: -3247370279329302664, guid: 71098ec722a8540268af9010c95b9bcd, type: 3}
 --- !u!1 &1543856645
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,7 +8,7 @@ using TMPro;
 using System;
 
 public class MainButtonLogic : MonoBehaviour
-{ 
+{
 
     public void PlayEvent()
     {
@@ -76,6 +76,7 @@ public class MainButtonLogic : MonoBehaviour
             SceneManager.LoadScene("Decathalon");
         } else
         {
+            PublicData.runnerMenuPosition = 0;
             SceneManager.LoadScene("MainScreen");
         }
     }
@@ -90,15 +91,22 @@ public class MainButtonLogic : MonoBehaviour
         SceneManager.LoadScene("MakeCharacter");
     }
 
+    public void selectRunner()
+    {
+        PublicData.currentRunnerUsing = PublicData.currentRunnerOn;
+        PublicData.runnerMenuPosition = 0;
+        SceneManager.LoadScene("MainScreen");
+    }
+
     public void showRunnerInfo()
     {
-       foreach (Transform tf in UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.transform) //find the name object
+        foreach (Transform tf in UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.transform) //find the name object
         {
             if (tf.name == "Name")
             {
-                for (int i=0; i<PublicData.charactersInfo.Count; i++) //mataches name with characters.csv 
+                for (int i = 0; i < PublicData.charactersInfo.Count; i++) //mataches name with characters.csv 
                 {
-                    if (i!=0)
+                    if (i != 0)
                     {
                         if (PublicData.charactersInfo.ElementAt(i)[1] == tf.GetComponent<TextMeshProUGUI>().text) //is they are the same then set current runner to that
                         {
@@ -108,13 +116,8 @@ public class MainButtonLogic : MonoBehaviour
                 }
             }
         }
+        PublicData.runnerMenuPosition = transform.parent.parent.transform.localPosition.y;
         SceneManager.LoadScene("RunnerInfo");
-    }
-
-    public void selectRunner()
-    {
-        PublicData.currentRunnerUsing = PublicData.currentRunnerOn;
-        SceneManager.LoadScene("MainScreen");
     }
 
     public void setCurrentEvent(int index)

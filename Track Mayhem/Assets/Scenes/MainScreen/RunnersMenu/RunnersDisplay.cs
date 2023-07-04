@@ -15,12 +15,17 @@ public class RunnersDisplay : MonoBehaviour
 
     [SerializeField] float normalCanvasSize;
 
+    [SerializeField] GameObject contentView;
+
+    [SerializeField] private ItemStorage itemStorage;
+
     private float lockedItemsMovementPerRow; //stores the amount of pixels locked items must move per each new row 
 
 
     // Start is called before the first frame update
     void Start()
     {
+        contentView.transform.localPosition = new Vector3(0, PublicData.runnerMenuPosition, 0);
         lockedItemsMovementPerRow = (unlockedGrid.cellSize.y + unlockedGrid.spacing.y) * (unlockedGrid.transform.parent.parent.parent.parent.GetComponent<RectTransform>().localScale.y); //scales the distance to runners and the locked title
 
         for (int i = 0; i < PublicData.charactersInfo.Count; i++) //finds all characters in characters.csv
@@ -86,6 +91,10 @@ public class RunnersDisplay : MonoBehaviour
                         tff.gameObject.SetActive(false);
                     }
                 }
+            }
+            if (tf.name == "RunnerImage")
+            {
+                tf.GetComponent<Image>().sprite = itemStorage.runnerImages[info.runnerId];
             }
         }
 

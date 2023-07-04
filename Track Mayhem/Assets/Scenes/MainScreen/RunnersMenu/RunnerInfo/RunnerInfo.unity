@@ -3252,7 +3252,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 424731f54504c48079aca819bbce0f3a, type: 2}
+  - {fileID: 2100000, guid: ca5c89832654945e1867c485c04b696d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3799,6 +3799,7 @@ MonoBehaviour:
   TCText: {fileID: 768455972}
   TCImage: {fileID: 686461354}
   buyButton: {fileID: 771670966}
+  backgroundMat: {fileID: 2100000, guid: ca5c89832654945e1867c485c04b696d, type: 2}
 --- !u!1 &1723971141
 GameObject:
   m_ObjectHideFlags: 0
@@ -4077,7 +4078,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 424731f54504c48079aca819bbce0f3a, type: 2}
+  - {fileID: 2100000, guid: ca5c89832654945e1867c485c04b696d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

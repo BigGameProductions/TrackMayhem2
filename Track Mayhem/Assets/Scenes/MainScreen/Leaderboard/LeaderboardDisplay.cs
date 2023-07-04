@@ -69,7 +69,7 @@ public class LeaderboardDisplay : MonoBehaviour
                 Runners.GetComponentsInChildren<TextMeshProUGUI>()[i].text = PublicData.charactersInfo.ElementAt(Int32.Parse(data[2][i].Split(",")[1])+1)[1]; //gets the runner name
                 Scores.GetComponentsInChildren<TextMeshProUGUI>()[i].text = getMark(Int32.Parse(data[1][i]), PublicData.recordsInfo.ElementAt(currentEvent + 1)[3] == "FALSE", currentEvent == 10); //sets the right mark
                 Countries.GetComponentsInChildren<Image>()[i].sprite = itemStorage.flags[itemStorage.findFlagIndexOfCountry(data[2][i].Split(",")[0])]; //sets the flag to the player
-
+                RunnerIcons.GetComponentsInChildren<Image>()[i].sprite = itemStorage.runnerImages[Int32.Parse(data[2][i].Split(",")[1])];
             }
             else
             {

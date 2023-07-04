@@ -23,11 +23,28 @@ public class RunnerInfoDisplay : MonoBehaviour
 
     [SerializeField] private Button buyButton;
 
+    [SerializeField] private Material backgroundMat;
+
 
 
     private void Start()
     {
         itemStorage.initRunner(PublicData.currentRunnerOn, player.transform);
+        string rarityName = PublicData.charactersInfo.ElementAt(PublicData.currentRunnerOn + 1)[7];
+        int rarityIndex = 3;
+        if (rarityName == "Common")
+        {
+            rarityIndex = 0;
+        }
+        else if (rarityName == "Rare")
+        {
+            rarityIndex = 1;
+        }
+        else if (rarityName == "Epic")
+        {
+            rarityIndex = 2;
+        }
+        backgroundMat.color = itemStorage.rarityColors[rarityIndex];
         updateBoxes();
     }
 

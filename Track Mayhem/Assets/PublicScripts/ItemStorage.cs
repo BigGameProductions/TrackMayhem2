@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ItemStorage : MonoBehaviour
 {
@@ -29,6 +30,10 @@ public class ItemStorage : MonoBehaviour
     public Vector3[] decathalonCalculations; //numbers to multiply the scores by
 
     public float[] decathalonMeterConversions; //number for conversions for each event
+
+    public Sprite[] runnerImages; //all the profile icons for the runners
+
+    public Color[] rarityColors; //color for the backround of the rarities
 
 
     public int findFlagIndexOfCountry(string code) //find the index of flags given the country code

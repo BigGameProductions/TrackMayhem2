@@ -81,7 +81,7 @@ public class hundredMeterController : MonoBehaviour
         foreach (GameObject go in competitorsList) //gets all competitors in the blocks
         {
             Destroy(go.GetComponentsInChildren<Transform>()[1].gameObject);
-            int charNum = UnityEngine.Random.Range(0, 11);
+            int charNum = UnityEngine.Random.Range(0, 22);
             itemStorage.initRunner(charNum, go.transform);
             go.GetComponentInChildren<Animator>().Play("BlockStart");
         }

@@ -43,6 +43,8 @@ public static class PublicData
     public static PlayerBanner[] decPlayers; //players of the dec for each event
     public static DecathalonScores[] decPlayersScores;
 
+    public static float runnerMenuPosition = 0;
+
 
     public static RunnerInformation getCharactersInfo(int id) //function to get the current data from game data of that runner
     {

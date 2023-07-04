@@ -49,23 +49,23 @@ MonoBehaviour:
   - {fileID: 919132149155446097, guid: 69fad06b93bc6463b82f7dc9854b78c2, type: 3}
   - {fileID: 919132149155446097, guid: a272f702b04734deca07040fe3920cc8, type: 3}
   - {fileID: 919132149155446097, guid: 4b852e0a22d2446ab971adec1c87918d, type: 3}
+  - {fileID: 919132149155446097, guid: a41e30719b9c543bfb1fcec7646fc470, type: 3}
   - {fileID: 919132149155446097, guid: c579d970af8804450b1b0870450706bb, type: 3}
-  - {fileID: 919132149155446097, guid: c579d970af8804450b1b0870450706bb, type: 3}
-  - {fileID: 919132149155446097, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
+  - {fileID: 919132149155446097, guid: b77798124a1ba4af7bef245eeb734912, type: 3}
   - {fileID: 919132149155446097, guid: 282a4e706aff54944bbf19034ea6303a, type: 3}
   - {fileID: 919132149155446097, guid: a1d8d83b8bafe4b8bae8fe1a67b82e25, type: 3}
   - {fileID: 919132149155446097, guid: 3f9a8e7f093ab4adc870cd7698e97345, type: 3}
   - {fileID: 919132149155446097, guid: e48e6e5a27c7d4995b8511ce14788644, type: 3}
   - {fileID: 919132149155446097, guid: a26f0d389961b49a6b70b9d2680ddc3f, type: 3}
   - {fileID: 919132149155446097, guid: 6ac889ba8919846509cf59eec164762f, type: 3}
-  - {fileID: 919132149155446097, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
+  - {fileID: 919132149155446097, guid: 7da729c599a1d4ce987c282b7cd5605c, type: 3}
   - {fileID: 919132149155446097, guid: 1fa8876e3f2a644a1b9a3134a6de3a8b, type: 3}
   - {fileID: 919132149155446097, guid: 2daa05a7a52264d6487810eb3acf665a, type: 3}
   - {fileID: 919132149155446097, guid: 392f4f6a206b74462addd486498e543f, type: 3}
   - {fileID: 919132149155446097, guid: bdc2e15cea3d94fbeb395f0c6dc06d25, type: 3}
-  - {fileID: 919132149155446097, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
+  - {fileID: 919132149155446097, guid: 65612c115ec1d47a1a3850202c08eefd, type: 3}
   - {fileID: 919132149155446097, guid: 7f6f85f2a4a4e4c0b8aeff0834c08b60, type: 3}
-  - {fileID: 919132149155446097, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
+  - {fileID: 919132149155446097, guid: 0c1f8113ee27a4df6b0349efd19b716c, type: 3}
   - {fileID: 919132149155446097, guid: 02592631e5a3047129f839bdc3c28a37, type: 3}
   - {fileID: 919132149155446097, guid: c7bc5e00cfcca4334bce4572ddd5dcd7, type: 3}
   mainCharacterAvatar: {fileID: 9000000, guid: 875d3f49e6ad6476f90a9be731c05f32, type: 3}
@@ -398,3 +398,32 @@ MonoBehaviour:
   - 2.54
   - 1
   - 1
+  runnerImages:
+  - {fileID: 21300000, guid: 82153b350ffe14506b2266956850d132, type: 3}
+  - {fileID: 21300000, guid: fe40c34ff9ef4416ea08e1ec17804822, type: 3}
+  - {fileID: 21300000, guid: 1638430c4e3214ece8febb8ca0220f20, type: 3}
+  - {fileID: 21300000, guid: 6da0354ba17dc4a74b30b1cbe6191724, type: 3}
+  - {fileID: 21300000, guid: 71da5bb57f3bf40f6ac9ccb10213e211, type: 3}
+  - {fileID: 21300000, guid: 66cf3a4fab62741ac98c500d3e627eb4, type: 3}
+  - {fileID: 21300000, guid: bc13738227ddf4833b2191fb04e34cff, type: 3}
+  - {fileID: 21300000, guid: fe22b0479f063403c80b7dd38dd018fd, type: 3}
+  - {fileID: 21300000, guid: d813b33cff4a2471e8a374f46b348086, type: 3}
+  - {fileID: 21300000, guid: 21a9558da036c44b1a88aaf2e6e44ccd, type: 3}
+  - {fileID: 21300000, guid: e1ff5e3e0c8844f30bb773411f621cb8, type: 3}
+  - {fileID: 21300000, guid: a294d50988807477e857c44977370788, type: 3}
+  - {fileID: 21300000, guid: 0cc35ae7e5ba747cbac7b0934d7579b7, type: 3}
+  - {fileID: 21300000, guid: 9cbe8dbbbe4aa4df58be3dcc3b50e107, type: 3}
+  - {fileID: 21300000, guid: 27e379ecf47a548ffa94c4e891ee5ccb, type: 3}
+  - {fileID: 21300000, guid: 028aeb0e6503c4054a6488ce71077e3a, type: 3}
+  - {fileID: 21300000, guid: e5c364ddc32124ec5906e50a0650c927, type: 3}
+  - {fileID: 21300000, guid: 81874a385c6e74b758fb072e53fffe08, type: 3}
+  - {fileID: 21300000, guid: 5737f0cf958e447f783d19331a04752d, type: 3}
+  - {fileID: 21300000, guid: f7bb9abbb161a4787960081349ce9d31, type: 3}
+  - {fileID: 21300000, guid: 801cb1bff10a24c1581deab84b81449d, type: 3}
+  - {fileID: 21300000, guid: f1460a0773b0741f2878c1b4a923f3ab, type: 3}
+  - {fileID: 21300000, guid: e9106f5d1de1549119eb31cda42739c2, type: 3}
+  rarityColors:
+  - {r: 0.6698113, g: 0.64137596, b: 0.64137596, a: 1}
+  - {r: 0, g: 0.66319036, b: 1, a: 1}
+  - {r: 0.73623174, g: 0.46662515, b: 0.9245283, a: 1}
+  - {r: 1, g: 0.8623096, b: 0, a: 1}
