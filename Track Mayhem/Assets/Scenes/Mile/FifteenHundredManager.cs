@@ -101,6 +101,9 @@ public class FifteenHundredManager : MonoBehaviour
         runningMeter.runningBar.transform.parent.gameObject.SetActive(false);
         foreach (GameObject go in competitorsList) //gets all competitors in the blocks
         {
+            Destroy(go.GetComponentsInChildren<Transform>()[1].gameObject);
+            int charNum = UnityEngine.Random.Range(0, 22);
+            itemStorage.initRunner(charNum, go.transform);
             go.GetComponentsInChildren<Animator>()[0].Play("MileStart");
             go.GetComponentsInChildren<Animator>()[0].speed = 0;
         }

@@ -101,6 +101,9 @@ public class FourHundredManager : MonoBehaviour
         runningMeter.runningBar.transform.parent.gameObject.SetActive(false);
         for (int i=0; i<competitorsList.Length; i++)
         {
+            Destroy(competitorsList[i].GetComponentsInChildren<Transform>()[1].gameObject);
+            int charNum = UnityEngine.Random.Range(0, 22);
+            itemStorage.initRunner(charNum, competitorsList[i].transform);
             competitorsList[i].GetComponentsInChildren<Animator>()[0].Play("BlockStart");
             setStartingPosition(i + 1, false, competitorsList[i].transform);
 
@@ -126,7 +129,7 @@ public class FourHundredManager : MonoBehaviour
         //player.transform.position = ogPos;
         tf.position = new Vector3(circleRad * unitCirclePos.z * -1, 0, (circleRad * unitCirclePos.x) + zOffset) + ogPos;
         tf.eulerAngles = new Vector3(0, 270 - (180 / (((100 + stagger200Marks[lanePosition - 1]) / 100f)) * competitorsLapTimes[lanePosition - 1]), 0);
-        if (isPlayer) player.transform.Translate(new Vector3(0, -0.2f, 0));
+        //if (isPlayer) player.transform.Translate(new Vector3(0, -0.2f, 0));
     }
 
     public void buttonPressed(int code)

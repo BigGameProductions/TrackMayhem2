@@ -427,3 +427,7 @@ MonoBehaviour:
   - {r: 0, g: 0.66319036, b: 1, a: 1}
   - {r: 0.73623174, g: 0.46662515, b: 0.9245283, a: 1}
   - {r: 1, g: 0.8623096, b: 0, a: 1}
+  audios:
+  - {fileID: 8300000, guid: 41153a0a15db24404aac17743dd2793c, type: 3}
+  - {fileID: 8300000, guid: 6607bfadecf2142609facbbf46f0eaf1, type: 3}
+  - {fileID: 8300000, guid: 69851318bae4245b7812acaeb28424e5, type: 3}

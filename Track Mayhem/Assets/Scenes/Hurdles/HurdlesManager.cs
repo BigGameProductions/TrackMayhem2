@@ -88,6 +88,9 @@ public class HurdlesManager : MonoBehaviour
         runningMeter.runningBar.transform.parent.gameObject.SetActive(false);
         foreach (GameObject go in competitorsList) //gets all competitors in the blocks
         {
+            Destroy(go.GetComponentsInChildren<Transform>()[1].gameObject);
+            int charNum = UnityEngine.Random.Range(0, 22);
+            itemStorage.initRunner(charNum, go.transform);
             go.GetComponentInChildren<Animator>().Play("BlockStart");
         }
     }
@@ -153,7 +156,7 @@ public class HurdlesManager : MonoBehaviour
                 {
                     if (laneOrders[i].isPlayer)
                     {
-                        player.transform.position = competitorsList[i].transform.position - new Vector3(-1.9f, 0.5f, 0);
+                        player.transform.position = competitorsList[i].transform.position - new Vector3(-1.9f, 0, 0);
                         competitorsList[i].SetActive(false);
                     }
                 }

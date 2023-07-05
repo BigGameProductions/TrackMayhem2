@@ -69,9 +69,18 @@ public class PoleVaultManager : MonoBehaviour
     //private Vector3 polePosition = new Vector3(-3.83200002f, -0.86500001f, 0.143999994f); // position relative to hand (local)
     //private Vector3 poleRotaion = new Vector3(288.128937f, 348.744415f, 233.137482f); //local pole rotaion
 
-    private Vector3 playerLaunchPosition = new Vector3(-0.049f, -0.0249f, 0.008f);
+    //private Vector3 playerLaunchPosition = new Vector3(-0.049f, -0.0249f, 0.008f);
     private Vector3 playerLaunchPositionStand = new Vector3(-0.0359001607f, -0.0293995682f, -0.0177000742f);
-    private Vector3 playerLaunchRotation = new Vector3(1.43247366f, 179.064468f, 65.4714813f);
+    //private Vector3 playerLaunchRotation = new Vector3(1.43247366f+90, 179.064468f, 65.4714813f);
+
+    //private Vector3 playerLaunchPosition = new Vector3(-0.0480000004f, -0.0226000007f, 0.0282000005f);
+    //private Vector3 playerLaunchRotation = new Vector3(51.4524994f, 109.728188f, 356.576141f);
+
+    private Vector3 playerLaunchPosition = new Vector3(-0.0555000007f, -0.0105999997f, -0.0142000001f);
+    private Vector3 playerLaunchRotation = new Vector3(61.2262878f, 50.4828796f, 339.850677f);
+
+    private Vector3 playerCurlPosition = new Vector3(-0.0476000011f, -0.0219000001f, -0.0348999985f);
+    private Vector3 playerCurlRotation = new Vector3(3.19156384f, 155.235565f, 77.0176849f);
 
     private Vector3 playerFinalPosition = new Vector3(0.00280068698f, 0.00170000177f, 0.0182998832f);
     private Vector3 playerFinalRotation = new Vector3(355.625885f, 178.877747f, 14.6459017f);
@@ -105,13 +114,14 @@ public class PoleVaultManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        rightHandTransformPosition = PublicData.rightHandTransform(player.transform);
         leaderboardManager.increment = 6;
         heightPickCanvas.enabled = false;
         controlsCanvas.enabled = false;
         jumpButton.GetComponentInChildren<TextMeshProUGUI>().text = "Plant";
         currentBarHeight = openingHeight;
         itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform, basePlayer); //inits the runner into the current scene
-        
+        rightHandTransformPosition = PublicData.rightHandTransform(player.transform);
         poleVaultPole.transform.SetParent(player.GetComponentsInChildren<Transform>()[rightHandTransformPosition]); //sets the parent of the pole to the right hand of the player
         //poleVaultPole.transform.localPosition = polePosition; //sets local position of pole
         //poleVaultPole.transform.localEulerAngles = poleRotaion; //sets local rotation of pole
@@ -436,6 +446,7 @@ public class PoleVaultManager : MonoBehaviour
             afterJump();
         } else if (!isFoul)
         {
+            player.GetComponentsInChildren<Transform>()[1].localPosition = new Vector3(0, 0, 0);
             poleVaultPole.GetComponent<Animator>().enabled = true;
             poleVaultPole.transform.parent = null; //makes the parent root of scene so it moves independently
             player.transform.parent = poleGrip.transform; //makes the player follow the pole grip
@@ -445,6 +456,8 @@ public class PoleVaultManager : MonoBehaviour
             player.transform.localEulerAngles = playerLaunchRotation; //makes the player in the right rotation
             poleVaultPole.GetComponent<Animator>().speed = 1;
             poleVaultPole.GetComponent<Animator>().Play("VaultStage1"); //makes the pole in the right animation
+            //player.transform.localPosition = new Vector3(-0.0441999994f, -0.0331000015f, 0.0166999996f);
+
             StartCoroutine(stage1Vault(1.5f));
         }
         
@@ -452,10 +465,13 @@ public class PoleVaultManager : MonoBehaviour
 
     IEnumerator stage1Vault(float delay) //stage on of the vault and waits for player input
     {
-        yield return new WaitForSeconds(delay);
-        player.transform.localPosition = playerLaunchPositionStand; //makes the player in the right curl up position
+        yield return new WaitForSeconds(delay*0.75f);
         player.GetComponentInChildren<Animator>().Play("PoleRunnerStage1"); //makes the player curl up
-        StartCoroutine(launchPlayer(0.5f)); //makes next stage temp
+        yield return new WaitForSeconds(delay*0.25f);
+        //player.transform.localPosition = playerLaunchPositionStand; //makes the player in the right curl up position
+        player.transform.localPosition = playerCurlPosition;
+        player.transform.localEulerAngles = playerCurlRotation;
+        StartCoroutine(launchPlayer(0)); //makes next stage temp
 
 
     }
@@ -476,6 +492,7 @@ public class PoleVaultManager : MonoBehaviour
     IEnumerator addUpForce(float delay) //adds delay to when the player in lauched up
     {
         yield return new WaitForSeconds(delay);
+        player.transform.parent = null;
         player.GetComponent<Rigidbody>().useGravity = true; //makes it so that player can fall
         float jumpPowerScale = 0.4f; //scale to balence the jumping power
         float runPowerScale = 1;
@@ -501,6 +518,7 @@ public class PoleVaultManager : MonoBehaviour
         float power = (runningPower + ((jumpingPower*jumpPercentage)*2))/3; //jump is 2/3 jump and 1/3 run  
         power += 1; //default power
         player.GetComponent<Rigidbody>().velocity = new Vector3(0, power, inPitSpeed); //makes player launch up
+        poleVaultPole.GetComponent<Animator>().Play("PoleFall");
         StartCoroutine(waitUntilCurlReady(0.05f));
 
 

@@ -38,6 +38,8 @@ public class hundredMeterController : MonoBehaviour
 
     private LeaderboardFunctions leadF = new LeaderboardFunctions();
 
+    [SerializeField] private AudioSource auSource;
+
     private float[] competitorsSpeedList = new float[8]; //speed of all the competitors
     private float[] competitorsAccelSpeedList = new float[8]; //acceleration of all the competitors
     private float[] competitorsStartSpeedList = new float[8]; //start speed of all the competitors
@@ -118,7 +120,7 @@ public class hundredMeterController : MonoBehaviour
                 {
                     if (laneOrders[i].isPlayer)
                     {
-                        player.transform.position = competitorsList[i].transform.position - new Vector3(-2.1f,0,0);
+                        player.transform.position = competitorsList[i].transform.position - new Vector3(-2f,0,0.04f); //was -2.1
                         competitorsList[i].SetActive(false);
                     }
                 }
@@ -225,6 +227,8 @@ public class hundredMeterController : MonoBehaviour
                 player.GetComponentInChildren<Animator>().Play("BlockStart");
                 setText.gameObject.transform.parent.GetComponent<Animator>().Play("FadeText");
                 setText.gameObject.transform.parent.GetComponent<Animator>().speed = 0.5f;
+                auSource.clip = itemStorage.audios[0];
+                auSource.Play();
                 StartCoroutine(showSet(3));
             }
         }
@@ -243,6 +247,8 @@ public class hundredMeterController : MonoBehaviour
         if (!foulImage.gameObject.activeInHierarchy)
         {
             setText.text = "Set";
+            auSource.clip = itemStorage.audios[1];
+            auSource.Play();
             setText.gameObject.transform.parent.GetComponent<Animator>().Play("FadeText");
             setText.gameObject.transform.parent.GetComponent<Animator>().speed = 0.75f;
             foreach (GameObject go in competitorsList) //gets all competitors up in the set position
@@ -265,6 +271,8 @@ public class hundredMeterController : MonoBehaviour
         if (!foulImage.gameObject.activeInHierarchy)
         {
             setText.text = "GO";
+            auSource.clip = itemStorage.audios[2];
+            auSource.Play();
             setText.gameObject.transform.parent.GetComponent<Animator>().Play("FadeText");
             isRunning = true;
             for (int i=0; i<competitorsList.Length;i++)

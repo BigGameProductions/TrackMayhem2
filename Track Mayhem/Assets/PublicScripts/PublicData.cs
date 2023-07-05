@@ -178,7 +178,16 @@ public static class PublicData
         return (float)(aVal * Math.Sqrt(value));
     }
 
-
-
+    public static int rightHandTransform(Transform tf)
+    {
+        for (int i = 0; i < tf.GetComponentsInChildren<Transform>().Length; i++)
+        {
+            if (tf.GetComponentsInChildren<Transform>()[i].name == "mixamorig1:RightHand")
+            {
+                return i;
+            }
+        }
+        return 55;
+    }
 
 }

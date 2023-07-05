@@ -69,6 +69,7 @@ public class JavelinManager : MonoBehaviour
     void Start()
     {
         itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform); //inits the runner into the current scene
+        rightHandTransformPosition = PublicData.rightHandTransform(player.transform);
         leaderboardManager.cinematicCamera.GetComponent<Animator>().SetInteger("event", 4); //sets animator to the current event
         player.GetComponentInChildren<Animator>().Play("JavelinRun");
         javelin.transform.SetParent(player.GetComponentsInChildren<Transform>()[rightHandTransformPosition]); //sets the parent of the pole to 
@@ -198,6 +199,7 @@ public class JavelinManager : MonoBehaviour
         }
         if (didThrow && javelin.GetComponent<JavelinCollision>().hitGround && !measure)
         {
+            javelin.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePosition;
             measure = true;
             if (isFoul)
             {
@@ -205,7 +207,6 @@ public class JavelinManager : MonoBehaviour
             }
             else
             {
-                javelin.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePosition;
                 float distance = (-1779.68f - javelin.transform.position.x) / (PublicData.spacesPerInch*0.6f);
                 totalInches = leaderboardManager.roundToNearest(0.25f, distance) * 2;
                 updatePlayerBanner(totalInches);

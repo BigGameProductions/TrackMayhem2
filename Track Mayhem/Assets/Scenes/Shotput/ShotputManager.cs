@@ -58,6 +58,7 @@ public class ShotputManager : MonoBehaviour
     void Start()
     {
         itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform, basePlayer); //inits the runner into the current scene
+        rightHandTransformPosition = PublicData.rightHandTransform(player.transform);
         jumpSparkle.transform.parent = player.GetComponentsInChildren<Transform>()[1];
         leaderboardManager.cinematicCamera.GetComponent<Animator>().SetInteger("event", 3);
         shotput.transform.SetParent(player.GetComponentsInChildren<Transform>()[rightHandTransformPosition]); //sets the parent of the pole to 

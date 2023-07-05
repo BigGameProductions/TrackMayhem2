@@ -35,6 +35,8 @@ public class ItemStorage : MonoBehaviour
 
     public Color[] rarityColors; //color for the backround of the rarities
 
+    public AudioClip[] audios; //list of sound effects in the game
+
 
     public int findFlagIndexOfCountry(string code) //find the index of flags given the country code
     {

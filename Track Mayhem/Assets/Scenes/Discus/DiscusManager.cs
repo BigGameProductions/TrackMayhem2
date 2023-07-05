@@ -59,6 +59,7 @@ public class DiscusManager : MonoBehaviour
     void Start()
     {
         itemStorage.initRunner(PublicData.currentRunnerUsing, player.transform, basePlayer); //inits the runner into the current scene
+        rightHandTransformPosition = PublicData.rightHandTransform(player.transform);
         shotput.transform.SetParent(player.GetComponentsInChildren<Transform>()[rightHandTransformPosition]); //sets the parent of the pole to
         leaderboardManager.cinematicCamera.GetComponent<Animator>().SetInteger("event", 6);
         shotput.transform.localPosition = new Vector3(-0.00200000009f, 0.140000001f, 0.0329999998f); //alligns shot to player hand
