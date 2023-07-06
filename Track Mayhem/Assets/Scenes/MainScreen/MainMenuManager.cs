@@ -38,6 +38,7 @@ public class MainMenuManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        PublicData.fromShop = false;
         //PublicData.gameData.chestSlots = new ChestInfo[4];
         //PublicData.gameData.chestSlots[0] = new ChestInfo(4, true);
         //making profile button appear
@@ -140,6 +141,10 @@ public class MainMenuManager : MonoBehaviour
             if (tf.name == "TrainingCards")
             {
                 tf.GetComponent<TextMeshProUGUI>().text = PublicData.gameData.trainingCards.ToString();
+            }
+            if (tf.name == "Rubies")
+            {
+                tf.GetComponent<TextMeshProUGUI>().text = PublicData.gameData.rubies.ToString();
             }
         }
     }

@@ -361,10 +361,10 @@ public class HurdlesManager : MonoBehaviour
             if (godMode) speed = PublicData.averageSpeedDuringRun;
             float maxSpeed = 0;
             maxSpeed += 117.3f;
-            maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 44);
-            maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 30);
-            maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 15);
-            maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 32);
+            maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 44, "sp");
+            maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 30, "ag");
+            maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 15, "st");
+            maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 32, "fl");
             speed = (speed / PublicData.averageSpeedDuringRun) * maxSpeed;
             player.transform.Translate(new Vector3(0, 0, speed * runningSpeedRatio)); //making character move according to run meter
             if (player.GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Running"))

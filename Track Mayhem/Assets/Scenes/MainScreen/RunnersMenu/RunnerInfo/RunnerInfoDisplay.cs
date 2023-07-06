@@ -13,6 +13,7 @@ public class RunnerInfoDisplay : MonoBehaviour
     [SerializeField] private ItemStorage itemStorage;
 
     [SerializeField] private GameObject popup;
+    [SerializeField] private GameObject gearPopup;
     [SerializeField] private TextMeshProUGUI resultText;
 
     [SerializeField] private TextMeshProUGUI coinsText;
@@ -24,6 +25,15 @@ public class RunnerInfoDisplay : MonoBehaviour
     [SerializeField] private Button buyButton;
 
     [SerializeField] private Material backgroundMat;
+
+    [SerializeField] private Image gearSelect;
+
+    [SerializeField] private TextMeshProUGUI gearName;
+    [SerializeField] private TextMeshProUGUI gearDescription;
+    [SerializeField] private TextMeshProUGUI gearUpgradeInfo;
+
+    [SerializeField] private Button gearUpgradeButton;
+    [SerializeField] private TextMeshProUGUI gearShardCount;
 
 
 
@@ -46,6 +56,91 @@ public class RunnerInfoDisplay : MonoBehaviour
         }
         backgroundMat.color = itemStorage.rarityColors[rarityIndex];
         updateBoxes();
+        RunnerInformation ri = PublicData.getCharactersInfo(PublicData.currentRunnerOn);
+        if (checkForGearElgible())
+        {
+            gearSelect.color = Color.green;
+            ri.hasGear = true;
+
+        } else
+        {
+            gearSelect.color = Color.red;
+        }
+    }
+
+    public void showGearMenu(bool show)
+    {
+        gearPopup.SetActive(show);
+        RunnerInformation ri = PublicData.getCharactersInfo(PublicData.currentRunnerOn);
+        if (show)
+        {
+            string[] charData = PublicData.charactersInfo.ElementAt(PublicData.currentRunnerOn + 1);
+            gearShardCount.text = "x" + (ri.gearLevel + 1);
+            if (PublicData.gameData.gearShards >= ri.gearLevel+1)
+            {
+                gearUpgradeButton.interactable = true;
+            } else
+            {
+                gearUpgradeButton.interactable = false;
+            }
+            gearName.text = convertTextExtras(charData, charData[17]);
+            gearDescription.text = convertTextExtras(charData, charData[18]);
+            gearUpgradeInfo.text = convertTextExtras(charData, charData[19]);
+        }
+    }
+
+    private string convertTextExtras(string[] charData, string text) //converts gear and ability texts to normal texts
+    {
+        text = checkForMultiply(charData, text);
+        text = checkForMultiply(charData, text);
+        text = text.Replace("<1>", charData[9]);
+        text = text.Replace("<2>", charData[10]);
+        text = text.Replace("<3>", charData[11]);
+        text = text.Replace("<4>", charData[12]);
+        text = text.Replace("<5>", charData[13]);
+        return text;
+    }
+
+    private string checkForMultiply(string[] charData, string text)
+    {
+        if (text.Contains("<<"))
+        {
+            int startPos = text.IndexOf("<<");
+            int endPos = text.IndexOf(">>");
+            float middleItem = float.Parse(charData[Int32.Parse(text[startPos + 2].ToString()) + 8]) + (PublicData.getCharactersInfo(PublicData.currentRunnerOn).gearLevel * float.Parse(charData[Int32.Parse(text[startPos + 5].ToString()) + 8]));
+            text = text.Substring(0, startPos) + middleItem + text.Substring(endPos + 2);
+        }
+        return text;
+    }
+
+    public void upgradeGear()
+    {
+        RunnerInformation ri = PublicData.getCharactersInfo(PublicData.currentRunnerOn);
+        PublicData.gameData.gearShards -= ri.gearLevel + 1;
+        ri.gearLevel++;
+        showGearMenu(true);
+    }
+
+    private bool checkForGearElgible()
+    {
+        RunnerInformation ri = PublicData.getCharactersInfo(PublicData.currentRunnerOn);
+        if (Int32.Parse(PublicData.charactersInfo.ElementAt(PublicData.currentRunnerOn + 1)[3]) > ri.speedLevel)
+        {
+            return false;
+        }
+        if (Int32.Parse(PublicData.charactersInfo.ElementAt(PublicData.currentRunnerOn + 1)[4]) > ri.strengthLevel)
+        {
+            return false;
+        }
+        if (Int32.Parse(PublicData.charactersInfo.ElementAt(PublicData.currentRunnerOn + 1)[5]) > ri.agilityLevel)
+        {
+            return false;
+        }
+        if (Int32.Parse(PublicData.charactersInfo.ElementAt(PublicData.currentRunnerOn + 1)[6]) > ri.flexabilityLevel)
+        {
+            return false;
+        }
+        return true;
     }
 
     private void updateBoxes()
@@ -60,7 +155,7 @@ public class RunnerInfoDisplay : MonoBehaviour
             }
             if (tf.name == "Description") //sets description for the runner
             {
-                tf.GetComponent<TextMeshProUGUI>().text = att[2];
+                tf.GetComponent<TextMeshProUGUI>().text = convertTextExtras(att, att[2]);
             }
             if (tf.name == "SelectButton" && !info.unlocked) //hides the select button for locked runners
             {
@@ -269,6 +364,14 @@ public class RunnerInfoDisplay : MonoBehaviour
                     PublicData.getCharactersInfo(PublicData.currentRunnerOn).flexabilityLevel++;
                 }
                 updateBoxes();
+                if (checkForGearElgible())
+                {
+                    gearSelect.color = Color.green;
+                }
+                else
+                {
+                    gearSelect.color = Color.red;
+                }
             }
         });
         

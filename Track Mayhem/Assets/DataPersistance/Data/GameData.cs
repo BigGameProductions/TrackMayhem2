@@ -9,7 +9,9 @@ public class GameData
     public string playerName; //players name
     public string countryCode; //code of the country by string
     public int tokens; //the amount of tokens the player has
+    public int rubies;
     public int trainingCards; //the amount of training cards the player has
+    public int gearShards;
     public bool tutorial; //if player has done tutorial
     public SerializationDictionary<int, string> offlineLeaderboard;
     public PersonalBests personalBests; //personal bests class
@@ -28,7 +30,9 @@ public class GameData
         this.playerName = "NONAME";
         this.countryCode = "us";
         this.tokens = 0;
+        this.rubies = 100; //TODO add starting rubies amount
         this.trainingCards = 0;
+        this.gearShards = 0;
         this.tutorial = false;
         this.offlineLeaderboard = new SerializationDictionary<int,string>();
         this.personalBests = new PersonalBests();

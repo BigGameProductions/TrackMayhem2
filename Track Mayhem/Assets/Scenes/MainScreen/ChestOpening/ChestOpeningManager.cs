@@ -31,6 +31,7 @@ public class ChestOpeningManager : MonoBehaviour
     private List<int> usedIDList = new List<int>();
 
     private bool hasChar = false; //tells if the box will unlock a new character
+    private bool hasGearShard = false; // tells if box will have gear shards
 
     // Start is called before the first frame update
     void Start()
@@ -44,6 +45,20 @@ public class ChestOpeningManager : MonoBehaviour
         if (getUnlockedCharacterCount() != PublicData.gameData.allRunners.Count && chance < Int32.Parse(PublicData.chestInfo.ElementAt(PublicData.currentBoxOpening + 1)[6]))
         {
             hasChar = true;
+        }
+        if (UnityEngine.Random.Range(0,100) < 90)
+        {
+            foreach (RunnerInformation ri in PublicData.gameData.allRunners)
+            {
+                if (ri.unlocked)
+                {
+                    if (checkForGearElgible(ri.runnerId))
+                    {
+                        hasGearShard = true;
+                        break;
+                    }
+                }
+            }
         }
         nextStage();
     }
@@ -74,6 +89,28 @@ public class ChestOpeningManager : MonoBehaviour
         {
             nextStage();
         }
+    }
+
+    private bool checkForGearElgible(int id)
+    {
+        RunnerInformation ri = PublicData.getCharactersInfo(id);
+        if (Int32.Parse(PublicData.charactersInfo.ElementAt(id + 1)[3]) > ri.speedLevel)
+        {
+            return false;
+        }
+        if (Int32.Parse(PublicData.charactersInfo.ElementAt(id+ 1)[4]) > ri.strengthLevel)
+        {
+            return false;
+        }
+        if (Int32.Parse(PublicData.charactersInfo.ElementAt(id + 1)[5]) > ri.agilityLevel)
+        {
+            return false;
+        }
+        if (Int32.Parse(PublicData.charactersInfo.ElementAt(id + 1)[6]) > ri.flexabilityLevel)
+        {
+            return false;
+        }
+        return true;
     }
 
     private void nextStage()
@@ -114,27 +151,50 @@ public class ChestOpeningManager : MonoBehaviour
             titleText.text = att[1] + " Points";
             numText.text = upgradePoints.ToString();
         }
-        if (stage == maxStage) //charatcer or over stage
+        if (stage == maxStage) //over stage
         {
-            if (!hasChar) //if a runner will be unlocked
+            if (hasGearShard)
             {
-                SceneManager.LoadScene("MainScreen");
+                int shardAmount = UnityEngine.Random.Range(1, 4);
+                titleText.text = " Gear Shards";
+                numText.text = shardAmount.ToString();
+                PublicData.gameData.gearShards += shardAmount;
+                hasGearShard = false;
+                stage--;
             } else
             {
-                counterImage.SetActive(false);
-                titleText.text = "";
-                numText.text = "";
-                mainCamera.GetComponent<Animator>().Play("CharacterUnlock");
-                playerController.SetActive(false);
-                StartCoroutine(showCharacterUnlock(7));
+                if (!hasChar) //if a runner will be unlocked
+                {
+                    returnBack();
+                }
+                else
+                {
+                    counterImage.SetActive(false);
+                    titleText.text = "";
+                    numText.text = "";
+                    mainCamera.GetComponent<Animator>().Play("CharacterUnlock");
+                    playerController.SetActive(false);
+                    StartCoroutine(showCharacterUnlock(7));
 
+                }
             }
         }
-        if (stage == maxStage+1) //over stage
+        if (stage == maxStage + 1) //over stage
+        {
+            returnBack();
+        }
+        stage++;
+    }
+
+    private void returnBack()
+    {
+        if (PublicData.fromShop)
+        {
+            SceneManager.LoadScene("Shop");
+        } else
         {
             SceneManager.LoadScene("MainScreen");
         }
-        stage++;
     }
 
     IEnumerator showCharacterUnlock(float delay)

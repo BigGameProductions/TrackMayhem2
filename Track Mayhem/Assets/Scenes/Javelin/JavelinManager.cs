@@ -143,10 +143,10 @@ public class JavelinManager : MonoBehaviour
                     Rigidbody rb = javelin.GetComponent<Rigidbody>();
                     rb.useGravity = true;
                     float totalPowerPercent = 4.5f;
-                    totalPowerPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 5f);
-                    totalPowerPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 3.5f);
-                    totalPowerPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 4f);
-                    totalPowerPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 4.5f);
+                    totalPowerPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 5f, "st", currentThrowNumber);
+                    totalPowerPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 3.5f, "sp", currentThrowNumber);
+                    totalPowerPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 4f, "ag", currentThrowNumber);
+                    totalPowerPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 4.5f, "fl", currentThrowNumber);
                     rb.AddForce(new Vector3(-20 * totalThrowPower, totalPowerPercent * totalThrowPower, 0), ForceMode.Impulse);
                     javelin.transform.eulerAngles = new Vector3(-37.336f, 32.927f, -45.454f);
                     rb.AddRelativeTorque(new Vector3(0, 0, Math.Min(-120 + (totalPowerPercent*totalThrowPower* 4.228f), -30))); //was -40

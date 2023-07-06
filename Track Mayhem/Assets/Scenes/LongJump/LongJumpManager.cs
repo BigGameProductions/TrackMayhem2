@@ -113,7 +113,7 @@ public class LongJumpManager : MonoBehaviour
 
         //jumpMeter.jumpBarSpeed -= PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel * 20; //makes the jump abr go slower
 
-        pullInLegPower += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 5);
+        pullInLegPower += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 5, "fl");
 
         boardDistance = PublicData.getCharactersInfo(PublicData.currentRunnerUsing).eventPrefs.longJumpBoard;
         boardChangeButton.GetComponentInChildren<TextMeshProUGUI>().text = "Board: " + boardDistance / 12 + "'";
@@ -527,9 +527,9 @@ public class LongJumpManager : MonoBehaviour
             powerPercent = 1 - ((averageSpeed - 8500) / 4500);
         }
         //curve formulas
-        float power = (float)(8.5f + PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 6));
-        power += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 1);
-        power += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 2);
+        float power = (float)(8.5f + PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 6, "st"));
+        power += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 1, "ag");
+        power += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 2, "sp");
         if (godMode) powerPercent = 1;
         power *= powerPercent;
         float jumpPercent = 1 - (timeDiff / 0.25f);
@@ -538,7 +538,13 @@ public class LongJumpManager : MonoBehaviour
         power += 10;
         player.GetComponentInChildren<Animator>().Play("LongJump");
         player.GetComponentInChildren<Animator>().speed = 1 - power * powerToAnimationSpeedRatio;
-        player.GetComponent<Rigidbody>().velocity = new Vector3(power, power * 0.6f, 0); //make charcter jump
+        if (PublicData.currentRunnerUsing == 2) //check for duncan ability
+        {
+            player.GetComponent<Rigidbody>().velocity = new Vector3(power * (1 + (float.Parse(PublicData.charactersInfo.ElementAt(PublicData.currentRunnerOn + 1)[9]) / 100f)), (power * 0.6f)* (1-(float.Parse(PublicData.charactersInfo.ElementAt(PublicData.currentRunnerOn + 1)[10])/100f)), 0); //make charcter jump
+        } else
+        {
+            player.GetComponent<Rigidbody>().velocity = new Vector3(power, power * 0.6f, 0); //make charcter jump
+        }
         player.GetComponent<Rigidbody>().useGravity = true;
         jumpButton.SetActive(true); //allows pike
 

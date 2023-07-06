@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
+using System.Linq;
 
 public class HighJumpManager : MonoBehaviour
 {
@@ -226,10 +227,10 @@ public class HighJumpManager : MonoBehaviour
                     anglePower = 1;
                 }
                 float additionalPower = 0;
-                additionalPower += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 0.25f);
-                additionalPower += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 0.5f);
-                additionalPower += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 1f);
-                additionalPower += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 0.75f);
+                additionalPower += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 0.25f, "st", currentJumpNumber);
+                additionalPower += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 0.5f, "sp", currentJumpNumber);
+                additionalPower += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 1f, "ag", currentJumpNumber);
+                additionalPower += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 0.75f, "fl", currentJumpNumber);
                 //7,9+3,0
                 //runPowerPercentage*(7+((72-currentBarHeight)/15f))
                 rb.AddForce(new Vector3(runPowerPercentage * (7 + ((72 - currentBarHeight) / 15f)),(anglePower*(3+additionalPower) + runPowerPercentage*(1+additionalPower)) + 3.8f, 0), ForceMode.Impulse);
@@ -774,7 +775,17 @@ public class HighJumpManager : MonoBehaviour
         float jumpPercentage = 1 - (Math.Abs(100 - jumpMeter.jumpMeterSpeed) / 100);
         float power = (runningPower + ((jumpingPower * jumpPercentage) * 2)) / 3; //jump is 2/3 jump and 1/3 run  
         power += 1; //default power
-        player.GetComponent<Rigidbody>().velocity = new Vector3(0, power, inPitSpeed); //makes player launch up
+        if (PublicData.currentRunnerUsing == 2) //if duncan
+        {
+            player.GetComponent<Rigidbody>().velocity = new Vector3(0, power * (1 - (float.Parse(PublicData.charactersInfo.ElementAt(PublicData.currentRunnerOn + 1)[9]) / 100f)), inPitSpeed * (1 + (float.Parse(PublicData.charactersInfo.ElementAt(PublicData.currentRunnerOn + 1)[10]) / 100f)));
+        } else if (PublicData.currentRunnerUsing == 4) //if diliwonson
+        {
+            player.GetComponent<Rigidbody>().velocity = new Vector3(0, power * (1 + (float.Parse(PublicData.charactersInfo.ElementAt(PublicData.currentRunnerOn + 1)[9]) / 100f)), inPitSpeed);
+        }
+        else
+        {
+            player.GetComponent<Rigidbody>().velocity = new Vector3(0, power, inPitSpeed); //makes player launch up
+        }
         StartCoroutine(waitUntilCurlReady(0.05f));
 
 

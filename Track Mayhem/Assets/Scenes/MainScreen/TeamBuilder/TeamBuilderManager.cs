@@ -86,6 +86,7 @@ public class TeamBuilderManager : MonoBehaviour
                     {
                         percentNum += 15; //maybe change
                     }
+                    PublicData.getCharactersInfo(PublicData.gameData.teamCharacters[j]).percentOfPower = percentNum;
                     if (percentNum >= 75)
                     {
                         teamMembers[j].GetComponentsInChildren<Transform>()[i].GetComponent<TextMeshProUGUI>().color = colors[0];
@@ -103,6 +104,7 @@ public class TeamBuilderManager : MonoBehaviour
                     {
                         int powerTotal = runnerInfo.strengthLevel + runnerInfo.agilityLevel + runnerInfo.speedLevel + runnerInfo.flexabilityLevel + 4;
                         totalPowerOfTeam += (int)Math.Round(powerTotal * (percentNum / 100f));
+                        totalPowerOfTeam += runnerInfo.gearLevel;
                     } 
                 }
             }

@@ -325,10 +325,10 @@ public class hundredMeterController : MonoBehaviour
             if (godMode) speed = PublicData.averageSpeedDuringRun;
             float maxSpeed = 0;
             maxSpeed += 162.3f;
-            maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 40);
-            maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 27);
-            maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 20);
-            maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 18);
+            maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 40, "sp");
+            maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 27, "st");
+            maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 20, "ag");
+            maxSpeed += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 18, "fl");
             speed = (speed / PublicData.averageSpeedDuringRun) * maxSpeed;
             player.transform.Translate(new Vector3(0, 0, speed * runningSpeedRatio)); //making character move according to run meter
             if (player.GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Running"))

@@ -11,10 +11,13 @@ public class RunnerInformation
     public int agilityLevel;
     public int flexabilityLevel;
     public int points;
+    public int gearLevel;
+    public int percentOfPower;
 
     public int upgradePoints;
 
     public bool unlocked;
+    public bool hasGear;
 
     public PersonalBests characterBests;
 
@@ -29,7 +32,10 @@ public class RunnerInformation
         this.flexabilityLevel = 0;
         this.points = 0;
         this.upgradePoints = 0;
+        this.percentOfPower = 0;
+        this.gearLevel = 0;
         this.unlocked = unlocked;
+        this.hasGear = false;
     }
 
     public void increasePoints(int num)
