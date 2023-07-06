@@ -19,6 +19,8 @@ public class RunnersDisplay : MonoBehaviour
 
     [SerializeField] private ItemStorage itemStorage;
 
+    [SerializeField] GameObject backButton;
+
     private float lockedItemsMovementPerRow; //stores the amount of pixels locked items must move per each new row 
 
 
@@ -37,6 +39,10 @@ public class RunnersDisplay : MonoBehaviour
         }
         float movementAmount = lockedItemsMovementPerRow * (((unlockedGrid.transform.childCount % 3) == 0 ? 0 : 1) + (int)(unlockedGrid.transform.childCount/3));
         lockedItems.transform.position -= new Vector3(0, movementAmount, 0);
+        if (PublicData.selectingCharacter)
+        {
+            backButton.SetActive(false);
+        }
 
 
     }
@@ -48,7 +54,7 @@ public class RunnersDisplay : MonoBehaviour
         if (info.unlocked)
         {
             runnerIcon = Instantiate(runnerObject, unlockedGrid.transform); //copies the runner object for the unlocked grid
-        } else
+        } else 
         {
             runnerIcon = Instantiate(runnerObject, lockedGrid.transform); //copies the runner object for the locked grid
         }

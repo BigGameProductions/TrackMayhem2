@@ -18,6 +18,7 @@ public class GameData
     public List<ChestInfo> futureChests;
     public string[][][] leaderboardList; //list of the online leaderbaord
     public SerializationLeaderboard saveLeaderboard;
+    public int[] teamCharacters; //the list for the team with character ids
 
     public int[] offlineRecords; //list of ints which are the runner index in the order of the events for offline records
     //Game Data
@@ -35,6 +36,11 @@ public class GameData
         this.chestSlots = new ChestInfo[4];
         this.futureChests = new List<ChestInfo>();
         this.leaderboardList = new string[11][][];
+        this.teamCharacters = new int[11];
+        for (int i=0; i< teamCharacters.Length;i++)
+        {
+            teamCharacters[i] = -1;
+        }
 
         //start characters
         allRunners.Add(new RunnerInformation(0, true));

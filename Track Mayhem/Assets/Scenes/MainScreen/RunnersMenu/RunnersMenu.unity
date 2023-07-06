@@ -213,6 +213,8 @@ MonoBehaviour:
   decathalonCalculations: []
   decathalonMeterConversions: []
   runnerImages: []
+  rarityColors: []
+  audios: []
 --- !u!1 &148805720
 GameObject:
   m_ObjectHideFlags: 0
@@ -1036,6 +1038,7 @@ MonoBehaviour:
   normalCanvasSize: 1.8062
   contentView: {fileID: 148805720}
   itemStorage: {fileID: -3247370279329302664, guid: 71098ec722a8540268af9010c95b9bcd, type: 3}
+  backButton: {fileID: 1723278785}
 --- !u!1 &1543856645
 GameObject:
   m_ObjectHideFlags: 0

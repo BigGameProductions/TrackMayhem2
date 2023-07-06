@@ -45,6 +45,9 @@ public static class PublicData
 
     public static float runnerMenuPosition = 0;
 
+    public static bool selectingCharacter = false; //if the player is selecting for their team
+    public static int currentSelectEvent = 0; //the event for team selection
+
 
     public static RunnerInformation getCharactersInfo(int id) //function to get the current data from game data of that runner
     {

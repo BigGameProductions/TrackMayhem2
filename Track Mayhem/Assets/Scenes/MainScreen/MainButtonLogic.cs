@@ -116,8 +116,15 @@ public class MainButtonLogic : MonoBehaviour
                 }
             }
         }
-        PublicData.runnerMenuPosition = transform.parent.parent.transform.localPosition.y;
-        SceneManager.LoadScene("RunnerInfo");
+        if (PublicData.selectingCharacter)
+        {
+            SceneManager.LoadScene("TeamBuilder");
+        } else
+        {
+            PublicData.runnerMenuPosition = transform.parent.parent.transform.localPosition.y;
+            SceneManager.LoadScene("RunnerInfo");
+        }
+        
     }
 
     public void setCurrentEvent(int index)
@@ -130,6 +137,7 @@ public class MainButtonLogic : MonoBehaviour
         {
             PublicData.usesTime = false;
         }
+        PublicData.currentRunnerUsing = PublicData.gameData.teamCharacters[index];
         SceneManager.LoadScene("MainScreen");
     }
 
@@ -143,6 +151,18 @@ public class MainButtonLogic : MonoBehaviour
         PublicData.currentBoxOpening = PublicData.gameData.chestSlots[slot].chestID;
         PublicData.gameData.chestSlots[slot] = null;
         SceneManager.LoadScene("ChestOpening");
+    }
+
+    public void selectRunnerForTeam(int eventId)
+    {
+        PublicData.selectingCharacter = true;
+        PublicData.currentSelectEvent = eventId;
+        SceneManager.LoadScene("RunnersMenu");
+    }
+
+    public void showTeam()
+    {
+        SceneManager.LoadScene("TeamBuilder");
     }
     
 }

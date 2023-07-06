@@ -68,4 +68,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Tutorial/Tutorial.unity
     guid: 84e7f2b384e134608988da31fd7b32f4
+  - enabled: 1
+    path: Assets/Scenes/MainScreen/TeamBuilder/TeamBuilder.unity
+    guid: 6f5cd5e2c6d1544c9897196c0c9630e4
   m_configObjects: {}
