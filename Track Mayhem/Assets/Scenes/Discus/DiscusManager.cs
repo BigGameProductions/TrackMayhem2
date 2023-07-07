@@ -196,10 +196,10 @@ public class DiscusManager : MonoBehaviour
             totalThrowPower += secondPiviotPercents[1]/2;
             totalThrowPower += secondPiviotPercents[2];
             float throwPercent = 0;
-            throwPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 1.6f, "st", currentThrowNumber);
-            throwPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 0.2f, "sp", currentThrowNumber);
-            throwPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 0.7f, "ag", currentThrowNumber);
-            throwPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 1.18f, "fl", currentThrowNumber);
+            throwPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 1.6f);
+            throwPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 0.2f);
+            throwPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 0.7f);
+            throwPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 1.18f);
             float power = (3.38f + throwPercent) * totalThrowPower; //was 3.93
             power += 2;
             shotput.GetComponent<Rigidbody>().AddForce(new Vector3(-1 * power, power * 0.5f, Math.Min(10,power/4)), ForceMode.Impulse); //adds the throwing force

@@ -31,7 +31,6 @@ public class ChestOpeningManager : MonoBehaviour
     private List<int> usedIDList = new List<int>();
 
     private bool hasChar = false; //tells if the box will unlock a new character
-    private bool hasGearShard = false; // tells if box will have gear shards
 
     // Start is called before the first frame update
     void Start()
@@ -45,24 +44,6 @@ public class ChestOpeningManager : MonoBehaviour
         if (getUnlockedCharacterCount() != PublicData.gameData.allRunners.Count && chance < Int32.Parse(PublicData.chestInfo.ElementAt(PublicData.currentBoxOpening + 1)[6]))
         {
             hasChar = true;
-        }
-        if (getUnlockedCharacterCount() == 0)
-        {
-            hasChar = true;
-        }
-        if (UnityEngine.Random.Range(0,100) < 90)
-        {
-            foreach (RunnerInformation ri in PublicData.gameData.allRunners)
-            {
-                if (ri.unlocked)
-                {
-                    if (checkForGearElgible(ri.runnerId))
-                    {
-                        hasGearShard = true;
-                        break;
-                    }
-                }
-            }
         }
         nextStage();
     }
@@ -93,28 +74,6 @@ public class ChestOpeningManager : MonoBehaviour
         {
             nextStage();
         }
-    }
-
-    private bool checkForGearElgible(int id)
-    {
-        RunnerInformation ri = PublicData.getCharactersInfo(id);
-        if (Int32.Parse(PublicData.charactersInfo.ElementAt(id + 1)[3]) > ri.speedLevel)
-        {
-            return false;
-        }
-        if (Int32.Parse(PublicData.charactersInfo.ElementAt(id+ 1)[4]) > ri.strengthLevel)
-        {
-            return false;
-        }
-        if (Int32.Parse(PublicData.charactersInfo.ElementAt(id + 1)[5]) > ri.agilityLevel)
-        {
-            return false;
-        }
-        if (Int32.Parse(PublicData.charactersInfo.ElementAt(id + 1)[6]) > ri.flexabilityLevel)
-        {
-            return false;
-        }
-        return true;
     }
 
     private void nextStage()
@@ -155,50 +114,27 @@ public class ChestOpeningManager : MonoBehaviour
             titleText.text = att[1] + " Points";
             numText.text = upgradePoints.ToString();
         }
-        if (stage == maxStage) //over stage
+        if (stage == maxStage) //charatcer or over stage
         {
-            if (hasGearShard)
+            if (!hasChar) //if a runner will be unlocked
             {
-                int shardAmount = UnityEngine.Random.Range(1, 4);
-                titleText.text = " Gear Shards";
-                numText.text = shardAmount.ToString();
-                PublicData.gameData.gearShards += shardAmount;
-                hasGearShard = false;
-                stage--;
+                SceneManager.LoadScene("MainScreen");
             } else
             {
-                if (!hasChar) //if a runner will be unlocked
-                {
-                    returnBack();
-                }
-                else
-                {
-                    counterImage.SetActive(false);
-                    titleText.text = "";
-                    numText.text = "";
-                    mainCamera.GetComponent<Animator>().Play("CharacterUnlock");
-                    playerController.SetActive(false);
-                    StartCoroutine(showCharacterUnlock(7));
+                counterImage.SetActive(false);
+                titleText.text = "";
+                numText.text = "";
+                mainCamera.GetComponent<Animator>().Play("CharacterUnlock");
+                playerController.SetActive(false);
+                StartCoroutine(showCharacterUnlock(7));
 
-                }
             }
         }
-        if (stage == maxStage + 1) //over stage
-        {
-            returnBack();
-        }
-        stage++;
-    }
-
-    private void returnBack()
-    {
-        if (PublicData.fromShop)
-        {
-            SceneManager.LoadScene("Shop");
-        } else
+        if (stage == maxStage+1) //over stage
         {
             SceneManager.LoadScene("MainScreen");
         }
+        stage++;
     }
 
     IEnumerator showCharacterUnlock(float delay)
@@ -276,7 +212,7 @@ public class ChestOpeningManager : MonoBehaviour
         {
             if (!ri.unlocked)
             {
-                if (rarityList.IndexOf(PublicData.charactersInfo.ElementAt(ri.runnerId+1)[7]) == rarity)
+                if (rarityList.IndexOf(PublicData.charactersInfo.ElementAt(ri.runnerId)[7]) == rarity)
                 {
                     i++;
                 }
@@ -307,7 +243,7 @@ public class ChestOpeningManager : MonoBehaviour
             List<RunnerInformation> chanceList = new List<RunnerInformation>();
             foreach (RunnerInformation ri in PublicData.gameData.allRunners)
             {
-                if (!ri.unlocked && rarityList.IndexOf(PublicData.charactersInfo.ElementAt(ri.runnerId+1)[7]) == rarity)
+                if (!ri.unlocked && rarityList.IndexOf(PublicData.charactersInfo.ElementAt(ri.runnerId)[7]) == rarity)
                 {
                     chanceList.Add(ri);
                 }

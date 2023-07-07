@@ -6,7 +6,6 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
-using System.Linq;
 
 public class PoleVaultManager : MonoBehaviour
 {
@@ -518,13 +517,7 @@ public class PoleVaultManager : MonoBehaviour
         float jumpPercentage = 1 - (timeDiff / 0.25f);
         float power = (runningPower + ((jumpingPower*jumpPercentage)*2))/3; //jump is 2/3 jump and 1/3 run  
         power += 1; //default power
-        if (PublicData.currentRunnerUsing == 2) //if duncan
-        {
-            player.GetComponent<Rigidbody>().velocity = new Vector3(0, power * (1 - (float.Parse(PublicData.charactersInfo.ElementAt(PublicData.currentRunnerOn + 1)[9]) / 100f)), inPitSpeed * (1 + (float.Parse(PublicData.charactersInfo.ElementAt(PublicData.currentRunnerOn + 1)[10]) / 100f))); //makes player launch up
-        } else
-        {
-            player.GetComponent<Rigidbody>().velocity = new Vector3(0, power, inPitSpeed); //makes player launch up
-        }
+        player.GetComponent<Rigidbody>().velocity = new Vector3(0, power, inPitSpeed); //makes player launch up
         poleVaultPole.GetComponent<Animator>().Play("PoleFall");
         StartCoroutine(waitUntilCurlReady(0.05f));
 

@@ -439,10 +439,10 @@ public class FourHundredManager : MonoBehaviour
                 }
             }
             float maxSpeedPercent = 0;
-            maxSpeedPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 0.07f, "st");
-            maxSpeedPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 0.18f, "sp");
-            maxSpeedPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 0.3f, "ag");
-            maxSpeedPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 0.12f, "fl");
+            maxSpeedPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 0.07f);
+            maxSpeedPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 0.18f);
+            maxSpeedPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 0.3f);
+            maxSpeedPercent += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 0.12f);
 
             speed *= 0.96f + maxSpeedPercent;
             //math for arch

@@ -38,12 +38,13 @@ public class MainMenuManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        PublicData.fromShop = false;
         //PublicData.gameData.chestSlots = new ChestInfo[4];
         //PublicData.gameData.chestSlots[0] = new ChestInfo(4, true);
         //making profile button appear
         //make chests hide is not real
         //temp
+        PublicData.gameData.allRunners[0].unlocked = true;
+        PublicData.gameData.allRunners[0].unlocked = true;
         //temp
 
 
@@ -59,15 +60,6 @@ public class MainMenuManager : MonoBehaviour
             }
             
         }
-
-        PublicData.currentRunnerUsing = PublicData.gameData.teamCharacters[PublicData.currentSelectedEventIndex];
-        if (PublicData.currentRunnerUsing == -1)
-        {
-            PublicData.currentRunnerUsing = getCharacterForEvent();
-            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).percentOfPower = 0;
-        }
-        
-
         //make chests hide if not real
         playerFlag.sprite = itemStorage.flags[itemStorage.findFlagIndexOfCountry(PublicData.gameData.countryCode)];
         playerName.text = PublicData.gameData.playerName;
@@ -124,18 +116,6 @@ public class MainMenuManager : MonoBehaviour
         updateCurrency();
     }
 
-    private int getCharacterForEvent()
-    {
-        foreach (RunnerInformation ri in PublicData.gameData.allRunners)
-        {
-            if (ri.unlocked)
-            {
-                return ri.runnerId;
-            }
-        }
-        return -1;
-    }
-
 
     private int indexOfCurrentRunner() //find the current index of the runner in the runner array in game data
     {
@@ -160,10 +140,6 @@ public class MainMenuManager : MonoBehaviour
             if (tf.name == "TrainingCards")
             {
                 tf.GetComponent<TextMeshProUGUI>().text = PublicData.gameData.trainingCards.ToString();
-            }
-            if (tf.name == "Rubies")
-            {
-                tf.GetComponent<TextMeshProUGUI>().text = PublicData.gameData.rubies.ToString();
             }
         }
     }

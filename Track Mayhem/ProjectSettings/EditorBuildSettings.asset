@@ -71,7 +71,4 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/MainScreen/TeamBuilder/TeamBuilder.unity
     guid: 6f5cd5e2c6d1544c9897196c0c9630e4
-  - enabled: 1
-    path: Assets/Scenes/MainScreen/Shop/Shop.unity
-    guid: 91bfdfed700ce4b8a8d212dcdf130d69
   m_configObjects: {}

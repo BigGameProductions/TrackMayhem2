@@ -137,12 +137,8 @@ public class MainButtonLogic : MonoBehaviour
         {
             PublicData.usesTime = false;
         }
+        PublicData.currentRunnerUsing = PublicData.gameData.teamCharacters[index];
         SceneManager.LoadScene("MainScreen");
-    }
-
-    public void toShop()
-    {
-        SceneManager.LoadScene("Shop");
     }
 
     public void selectEvent()

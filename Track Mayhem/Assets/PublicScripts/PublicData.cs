@@ -19,7 +19,6 @@ public static class PublicData
     public static int currentRunnerOn = 0; //shows the current runner that the player is on
     public static int currentRunnerUsing = 1;//shows the current runner that play is using for events
     public static int currentBoxOpening = 0; //the id of the current chest that is being opened between main menu and opening scene
-    public static bool fromShop = false;
 
     public static float spacesPerInch = (1875.03f - 1864.7f) / 36f; //spaces per inch for the game
     public static float averageSpeedDuringRun = 175; //the speed of the green bar during the run
@@ -30,10 +29,10 @@ public static class PublicData
 
 
     private static int upgradeStartPrice = 100; //starting price for upgrades
-    private static float upgradeScale = 1.2f; //upgrage multiplication scale; was 3
+    private static float upgradeScale = 3; //upgrage multiplication scale
 
     private static int startGoldPrice = 50; //starting price of gold
-    private static float upgradeGoldScale = 1.2f; //scale of the gold for the upgrade price; was 3
+    private static float upgradeGoldScale = 3; //scale of the gold for the upgrade price
 
 
     public static int currentSelectedEventIndex = 1; //holds the index of the current event according to the records.csv
@@ -176,46 +175,10 @@ public static class PublicData
         return finalResult;
     }
 
-    public static float curveValue(float value, float maxValue, string trait, int currentJump=-1)
+    public static float curveValue(float value, float maxValue)
     {
-        if (currentRunnerUsing == 1 && trait == "fl") //Luke ability
-        {
-            value++;
-        }
         float aVal = (float)(maxValue / Math.Sqrt(10));
-        float returningValue = (float)(aVal * Math.Sqrt(value));
-        if (currentRunnerUsing == 0 && getCharactersInfo(currentRunnerUsing).hasGear) //nashville gear
-        {
-            returningValue *= (100 + float.Parse(charactersInfo.ElementAt(currentRunnerUsing+1)[10]) + (float.Parse(charactersInfo.ElementAt(currentRunnerUsing+1)[11]) * getCharactersInfo(currentRunnerUsing+1).gearLevel)) / 100f;
-            //Debug.Log(charactersInfo.ElementAt(currentRunnerUsing + 1)[10] + ":" + charactersInfo.ElementAt(currentRunnerUsing + 1)[11] + ":" + getCharactersInfo(currentRunnerUsing + 1).gearLevel);
-            //Debug.Log((100 + float.Parse(charactersInfo.ElementAt(currentRunnerUsing+1)[10]) + (float.Parse(charactersInfo.ElementAt(currentRunnerUsing+1)[11]) * getCharactersInfo(currentRunnerUsing+1).gearLevel)) / 100f);
-        }
-        if (currentRunnerUsing == 3 && currentJump > -1) //if zeke
-        {
-            if (currentJump == 1)
-            {
-                returningValue *= (1 + (float.Parse(charactersInfo.ElementAt(currentRunnerUsing+1)[9]) / 100f));
-            } else
-            {
-                returningValue *= (1 - (float.Parse(charactersInfo.ElementAt(currentRunnerUsing+1)[10]) / 100f));
-            }
-        }
-        if (currentRunnerUsing == 5) //if dewy
-        {
-            if (usesTime)
-            {
-                returningValue *= (1 - (float.Parse(charactersInfo.ElementAt(currentRunnerUsing+1)[10]) / 100f));
-            } else if (inDec)
-            {
-                if (currentEventDec == 3 || currentEventDec == 4 || currentEventDec == 6)
-                {
-                    returningValue *= (1 + (float.Parse(charactersInfo.ElementAt(currentRunnerUsing+1)[9]) / 100f));
-                }
-            } else if (currentSelectedEventIndex == 3 || currentSelectedEventIndex == 4 || currentSelectedEventIndex == 6) {
-                returningValue *= (1 + (float.Parse(charactersInfo.ElementAt(currentRunnerUsing+1)[9]) / 100f));
-            }
-        }
-        return (getCharactersInfo(currentRunnerUsing).percentOfPower / 100f) * returningValue;
+        return (float)(aVal * Math.Sqrt(value));
     }
 
     public static int rightHandTransform(Transform tf)

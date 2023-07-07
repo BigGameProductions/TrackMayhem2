@@ -491,10 +491,10 @@ public class FifteenHundredManager : MonoBehaviour
             {
                 runningMeter.updateTimeElapsed();
                 float speedAdjuster = 33000;
-                speedAdjuster -= PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 1500, "st");
-                speedAdjuster -= PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 2500, "sp");
-                speedAdjuster -= PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 3500, "ag");
-                speedAdjuster -= PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 5500, "fl");
+                speedAdjuster -= PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 1500);
+                speedAdjuster -= PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 2500);
+                speedAdjuster -= PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 3500);
+                speedAdjuster -= PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 5500);
                 energyDepletion = speedAdjuster / 12500000; //makes energy match the speed
                 lapTimeProgress += speed / speedAdjuster; //normal mode
                 

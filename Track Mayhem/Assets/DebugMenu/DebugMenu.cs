@@ -30,13 +30,17 @@ public class DebugMenu : MonoBehaviour
         {
             foreach (RunnerInformation ri in PublicData.gameData.allRunners)
             {
-                if (ri.runnerId == 1)
+                if (ri.runnerId==1)
                 {
                     ri.speedLevel = 10;
                     ri.strengthLevel = 10;
                     ri.agilityLevel = 10;
                     ri.flexabilityLevel = 10;
                 }
+
+
+                
+
             }
         }
         if (Input.GetKeyDown(KeyCode.Q)) //unlocks all runners
@@ -53,26 +57,6 @@ public class DebugMenu : MonoBehaviour
 
 
             }
-        }
-        if (Input.GetKeyDown(KeyCode.S)) //adds gear shards
-        {
-            PublicData.gameData.gearShards++;
-        }
-
-        if (Input.GetKeyDown(KeyCode.D)) //adds gear shards
-        {
-            foreach (RunnerInformation ri in PublicData.gameData.allRunners)
-            {
-                if (ri.runnerId == 1)
-                {
-                    ri.upgradePoints += 10000;
-                }
-            }
-        }
-
-        if (Input.GetKeyDown(KeyCode.W)) //adds gear shards
-        {
-            PublicData.gameData.tokens += 1000;
         }
     }
 }

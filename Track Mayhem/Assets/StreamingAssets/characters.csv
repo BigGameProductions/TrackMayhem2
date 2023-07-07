@@ -1,24 +1,24 @@
-id,Runner,Description,Speed,Strength,Agility,Flexability,Rarity,Starter,Extra 1,Extra 2,Extra 3,Extra 4 ,Extra 5,Year,Type,Events,GearName,GearDescription,Upgrade Scale,GearMax
-0,Nashville,Best high jumper in the game. Nashville has a <1>%  chance to have an old offical and get an extra attempt,3,4,6,5,Common,TRUE,20,5,2,,,3,2,7,W Form,Nashville has a <<2><3>>% increase in height in High Jump,+<3>% increase,0
-1,Luke,Wow I'm the creator that's kinda cool. Has additional <1>% flexibility,7,5,8,10,Legendary,TRUE,100,0.25,0.1,,,2,1,10;8,Cheat Code,Luke gains a visual indicator when the gun for a race will go off that will count down <<2><3>> seconds,+<3> seconds of countdown,23
-2,Duncan,Loves the Sand. +<1>% increase in horizontal force but <1>% decrease in vertical force,4,5,4,5,Common,,10,10,10,5,,3,2,2,Bald Duncan,Duncan becomes bald and aerodynamic. He has a <<3><4>>% running boost on runways,+<4>% more running boost,0
-3,Zeke,A legend who can't be beat! Unless it's a injury... Does <1>% better on second attempts but <2>% worse on the other attempts,6,6,3,3,Common,,10,5,5,3,,2,4,5,Not Injured,Zeke is finally not injured and gets <<3><4>>% boost generation in the 400m,+<4>% generation,0
-4,Dilowonson,Too optimal at everything. <1>% boost in vertical jumps but has a <2>% chance to become injured,6,9,9,2,Epic,,5,10,1,1,1,3,2,10;7,Icyhot,Dilowoson gets some icy hot making him <<3><5>>% less likely to be injured and gains <<3><4>>% more vertical jump power,+<5>% less likely to be injured and +<5>% increase to vertical jumps,0
-5,Dewy,The real representation of America. <1>% boost in all throwing events but <2>% decrease in running events,4,10,7,5,Epic,,5,10,10,5,,2,3,3;6;4,Amercian Pride,Dewy's team spirit is so big that has has a <3>% increase in chemistry with others,+<4>% increase in team chemsitry,0
-6,Lex,Fastest around. <1>% better acceleration,10,5,6,9,Legendary,,10,,10,4,,3,1,0;5,Hawked,Lex's speed is increased <3>% when behind in the last 50m of a race,+<4>% increase,0
-7,Big Joe,,4,6,3,5,Common,,,,,,,3,4,5;9,,,,
-8,Dominator,Skinny but muscular,9,7,8,6,Legendary,,,,,,,2,1,0;5,,,,
-9,Itsleo4real,6foot,5,3,7,3,Common,,,,,,,2,4,9;5,,,,
-10,Mr.54,6’0 black skinny,5,5,7,5,Rare,,,,,,,1,4,9,,,,
-11,Hurdling Hurricane,Don't think you have a lead against this cyclone.... Increased speed between hurdles,7,4,8,3,Rare,,,,,,,3,1,8,,,,
-12,Mike,Black ; strong; and athletic,3,2,7,6,Common,,,,,,,1,2,1;7,,,,
-13,Rami,short girl and blonde long hair ; green eyes ; buff muscles,7,6,4,9,Epic,,,,,,,2,1,8;3,,,,
-14,Manny,brown skin; short hair; tall and lean,6,7,7,6,Epic,,,,,,,3,1,8,,,,
-15,Velocity,6’0 long stride,6,8,4,4,Rare,,,,,,,3,1,0,,,,
-16,Hispanic Titanic,Short and compact,7,8,10,5,Legendary,,,,,,,1,2,2,,,,
-17,Tytherookie,Short and a little buff,4,4,6,4,Common,,,,,,,3,1,1,,,,
-18,Frankenstein,red and black pigtails,5,4,6,7,Rare,,,,,,,3,2,8;1,,,,
-19,Runner Up,An average looking guy but when it’s time for him to shine he almost an entirely new person. Gets extra strength on final jumps,5,6,6,5,Rare,,,,,,,2,2,2;8,,,,
-20,Jayvan,It's Jayvan c'mon now,5,8,3,6,Rare,,,,,,,2,3,6;4,,,,
-21,Charlie Bolt,5 foot 11 3/4 inches; pretty cool guy; toned muscles; runs fast. Uses less energy while running,8,7,9,6,Legendary,,,,,,,2,4,9,,,,
-22,David,Like me in real life.,7,7,8,4,Epic,,,,,,,2,2,1,,,,
+id,Runner,Description,Speed,Strength,Agility,Flexability,Rarity,Starter,Extra 1,Extra 2,Extra 3,Extra 4 ,Extra 5,Year,Type,Events
+0,Nashville,Best high jumper in the game,3,4,6,5,Common,TRUE,0,0,,,,3,2,7
+1,Luke,Wow I'm the creator that's kinda cool. Has additional flexibility,7,5,8,10,Legendary,TRUE,,,,,,2,1,10;8
+2,Duncan,Good at sand events bad at high jump and pole vault ,4,5,4,5,Common,,,,,,,3,2,2
+3,Zeke,A legend who can't be beat! Unless it's a injury... Does best on second attempts but has decreased jumping ability,6,6,3,3,Common,,,,,,,2,4,5
+4,Dilowonson,Too optimal at everything. 5% boost in vertical jumps but has a chance to become injured,6,9,9,2,Epic,,,,,,,3,2,10;7
+5,Dewy,The real representation of America. 5% boost in all throwing events but 10% decrease in running events,4,10,7,5,Epic,,,,,,,2,3,3;6;4
+6,Lex,Tall ; Pink hair ;pink shoes ; fast;also does hurdles,10,5,6,9,Legendary,,,,,,,3,1,0;5
+7,Big Joe,,4,6,3,5,Common,,,,,,,3,4,5;9
+8,Dominator,Skinny but muscular,9,7,8,6,Legendary,,,,,,,2,1,0;5
+9,Itsleo4real,6foot,5,3,7,3,Common,,,,,,,2,4,9;5
+10,Mr.54,6’0 black skinny,5,5,7,5,Rare,,,,,,,1,4,9
+11,Hurdling Hurricane,Don't think you have a lead against this cyclone.... Increased speed between hurdles,7,4,8,3,Rare,,,,,,,3,1,8
+12,Mike,Black ; strong; and athletic,3,2,7,6,Common,,,,,,,1,2,1;7
+13,Rami,short girl and blonde long hair ; green eyes ; buff muscles,7,6,4,9,Epic,,,,,,,2,1,8;3
+14,Manny,brown skin; short hair; tall and lean,6,7,7,6,Epic,,,,,,,3,1,8
+15,Velocity,6’0 long stride,6,8,4,4,Rare,,,,,,,3,1,0
+16,Hispanic Titanic,Short and compact,7,8,10,5,Legendary,,,,,,,1,2,2
+17,Tytherookie,Short and a little buff,4,4,6,4,Common,,,,,,,3,1,1
+18,Frankenstein,red and black pigtails,5,4,6,7,Rare,,,,,,,3,2,8;1
+19,Runner Up,An average looking guy but when it’s time for him to shine he almost an entirely new person. Gets extra strength on final jumps,5,6,6,5,Rare,,,,,,,2,2,2;8
+20,Jayvan,It's Jayvan c'mon now,5,8,3,6,Rare,,,,,,,2,3,6;4
+21,Charlie Bolt,5 foot 11 3/4 inches; pretty cool guy; toned muscles; runs fast. Uses less energy while running,8,7,9,6,Legendary,,,,,,,2,4,9
+22,David,Like me in real life.,7,7,8,4,Epic,,,,,,,2,2,1

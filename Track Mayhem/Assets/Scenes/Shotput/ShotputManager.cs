@@ -168,10 +168,10 @@ public class ShotputManager : MonoBehaviour
             totalThrowPower += piviotPercents[1];
             totalThrowPower += piviotPercents[2];
             float maxPower = 77;
-            maxPower += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 80, "st", currentThrowNumber);
-            maxPower += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 30, "ag", currentThrowNumber);
-            maxPower += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 17, "sp", currentThrowNumber);
-            maxPower += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 15, "fl", currentThrowNumber);
+            maxPower += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).strengthLevel, 80);
+            maxPower += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).agilityLevel, 30);
+            maxPower += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).speedLevel, 17);
+            maxPower += PublicData.curveValue(PublicData.getCharactersInfo(PublicData.currentRunnerUsing).flexabilityLevel, 15);
             float power = (totalThrowPower / 4f) * maxPower;
             power += 50;
             shotput.GetComponent<Rigidbody>().AddForce(new Vector3(-1*power, power*0.75f, 0), ForceMode.Impulse); //adds the throwing force
