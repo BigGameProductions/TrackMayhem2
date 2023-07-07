@@ -46,6 +46,10 @@ public class ChestOpeningManager : MonoBehaviour
         {
             hasChar = true;
         }
+        if (getUnlockedCharacterCount() == 0)
+        {
+            hasChar = true;
+        }
         if (UnityEngine.Random.Range(0,100) < 90)
         {
             foreach (RunnerInformation ri in PublicData.gameData.allRunners)
@@ -272,7 +276,7 @@ public class ChestOpeningManager : MonoBehaviour
         {
             if (!ri.unlocked)
             {
-                if (rarityList.IndexOf(PublicData.charactersInfo.ElementAt(ri.runnerId)[7]) == rarity)
+                if (rarityList.IndexOf(PublicData.charactersInfo.ElementAt(ri.runnerId+1)[7]) == rarity)
                 {
                     i++;
                 }
@@ -303,7 +307,7 @@ public class ChestOpeningManager : MonoBehaviour
             List<RunnerInformation> chanceList = new List<RunnerInformation>();
             foreach (RunnerInformation ri in PublicData.gameData.allRunners)
             {
-                if (!ri.unlocked && rarityList.IndexOf(PublicData.charactersInfo.ElementAt(ri.runnerId)[7]) == rarity)
+                if (!ri.unlocked && rarityList.IndexOf(PublicData.charactersInfo.ElementAt(ri.runnerId+1)[7]) == rarity)
                 {
                     chanceList.Add(ri);
                 }

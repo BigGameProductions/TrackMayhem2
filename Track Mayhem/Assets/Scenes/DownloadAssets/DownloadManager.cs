@@ -78,7 +78,15 @@ public class DownloadManager : MonoBehaviour
     {
         if (filesLoaded == filesToLoad)
         {
-            SceneManager.LoadScene("MainScreen");
+            if (PublicData.gameData.playerName == "NONAME")
+            {
+                SceneManager.LoadScene("MakeCharacter");
+                //TODO add tutorial
+            }
+            else
+            {
+                SceneManager.LoadScene("MainScreen");
+            }
         }
         loadProgress.value = filesLoaded;
     }

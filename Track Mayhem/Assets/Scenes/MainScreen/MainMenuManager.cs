@@ -44,8 +44,6 @@ public class MainMenuManager : MonoBehaviour
         //making profile button appear
         //make chests hide is not real
         //temp
-        PublicData.gameData.allRunners[0].unlocked = true;
-        PublicData.gameData.allRunners[0].unlocked = true;
         //temp
 
 
@@ -61,6 +59,15 @@ public class MainMenuManager : MonoBehaviour
             }
             
         }
+
+        PublicData.currentRunnerUsing = PublicData.gameData.teamCharacters[PublicData.currentSelectedEventIndex];
+        if (PublicData.currentRunnerUsing == -1)
+        {
+            PublicData.currentRunnerUsing = getCharacterForEvent();
+            PublicData.getCharactersInfo(PublicData.currentRunnerUsing).percentOfPower = 0;
+        }
+        
+
         //make chests hide if not real
         playerFlag.sprite = itemStorage.flags[itemStorage.findFlagIndexOfCountry(PublicData.gameData.countryCode)];
         playerName.text = PublicData.gameData.playerName;
@@ -115,6 +122,18 @@ public class MainMenuManager : MonoBehaviour
         tempEventName.text = PublicData.recordsInfo.ElementAt(PublicData.currentSelectedEventIndex + 1)[0];
         setChests();
         updateCurrency();
+    }
+
+    private int getCharacterForEvent()
+    {
+        foreach (RunnerInformation ri in PublicData.gameData.allRunners)
+        {
+            if (ri.unlocked)
+            {
+                return ri.runnerId;
+            }
+        }
+        return -1;
     }
 
 

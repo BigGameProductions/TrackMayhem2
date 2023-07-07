@@ -137,11 +137,6 @@ public class MainButtonLogic : MonoBehaviour
         {
             PublicData.usesTime = false;
         }
-        PublicData.currentRunnerUsing = PublicData.gameData.teamCharacters[index];
-        if (PublicData.currentRunnerUsing == -1)
-        {
-            PublicData.currentRunnerUsing = 0;
-        }
         SceneManager.LoadScene("MainScreen");
     }
 

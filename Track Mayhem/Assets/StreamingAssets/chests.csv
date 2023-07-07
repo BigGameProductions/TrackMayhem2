@@ -1,5 +1,5 @@
 chest,goldMin,goldMax,runnersAmount,pointsPerRunnerMin,pointsPerRunnerMax,runnerChance,common,rare,epic,legendary
-char,0,0,0,0,0,100,75,20,5,0
+char,100,100,0,0,0,100,75,20,5,0
 wood,50,100,2,50,100,15,60,25,10,5
 gold,200,300,3,200,300,25,45,30,15,10
 epic,500,1000,4,500,1000,35,30,30,25,15
